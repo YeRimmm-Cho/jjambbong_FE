@@ -1,0 +1,53 @@
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px 60px 20px;
+  background-color: #ffffff;
+  position: relative;
+  overflow-y: auto; /* 스크롤이 필요한 경우에만 스크롤 */
+}
+
+.title {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.chatInputContainer {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  max-width: 900px;
+  position: fixed;
+  bottom: 20px;
+  left: 475px; /* 사이드바 너비 고려 */
+  right: 0;
+  background-color: #ffffff;
+}
+
+.chatInput {
+  flex: 1;
+  padding: 15px 10px 15px 20px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 40px;
+  outline: none;
+}
+
+.chatInput.focused {
+  border-color: #282828;
+}
+
+.sendIcon {
+  position: absolute;
+  right: 40px;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  transition: opacity 0.3s;
+}
