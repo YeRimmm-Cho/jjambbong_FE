@@ -7,36 +7,97 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 20px 60px 20px;
+  padding: 0px 20px;
   background-color: #ffffff;
   position: relative;
-  overflow-y: auto; /* 스크롤이 필요한 경우에만 스크롤 */
+  overflow-y: auto;
+}
+
+.header {
+  width: 100%;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
 }
 
 .title {
   font-size: 20px;
-  margin-bottom: 20px;
+  margin: 20px 0;
+  text-align: left;
+}
+
+.chatWindow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  overflow-y: auto;
+  width: 85%;
+  margin: 0 auto;
+}
+
+.userBubble {
+  align-self: flex-end;
+  background-color: #ffebb4;
+  color: #000;
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 70%;
+  margin: 5px 0;
+  display: inline-block;
+  border-top-right-radius: 0;
+}
+
+.userMessageContainer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.gptMessageContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 5px 0;
+}
+
+.gptBubble {
+  background-color: #ececec;
+  color: #000;
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 70%;
+  display: inline-block;
+  border-top-left-radius: 0;
+}
+
+.gptProfileIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 
 .chatInputContainer {
   display: flex;
   align-items: center;
-  padding: 20px;
-  max-width: 900px;
+  padding: 0px 20px 20px 20px;
+  width: calc(100% - 400px);
   position: fixed;
-  bottom: 20px;
-  left: 475px; /* 사이드바 너비 고려 */
-  right: 0;
+  bottom: 0;
   background-color: #ffffff;
 }
 
 .chatInput {
   flex: 1;
-  padding: 15px 10px 15px 20px;
+  padding: 15px 20px;
+  max-width: 1000px;
   font-size: 16px;
   border: 1px solid #ddd;
   border-radius: 40px;
   outline: none;
+  resize: none;
+  height: auto;
+  max-height: 80px;
+  min-height: 20px;
+  overflow-y: auto;
 }
 
 .chatInput.focused {
@@ -44,10 +105,8 @@
 }
 
 .sendIcon {
-  position: absolute;
-  right: 40px;
-  cursor: pointer;
+  margin-left: 10px;
   width: 24px;
   height: 24px;
-  transition: opacity 0.3s;
+  cursor: pointer;
 }
