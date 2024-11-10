@@ -1,0 +1,7 @@
+.with-whom{
+    display: flex;
+    justify-content: center;
+    border-radius: 99px;
+    margin: 50px;
+    padding: 50px;
+}
