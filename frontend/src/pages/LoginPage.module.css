@@ -1,0 +1,99 @@
+.background {
+    background-color: rgba(252, 225, 130, 1);
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.loginContainer{
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    height: 80vh;
+    width: 60vh;
+    margin: auto;
+    border-radius: 50px;
+    background-color:white;
+}
+.header{
+    display: flex;
+    justify-content: center;
+    height: 25%;
+    width: 100%;
+    margin-top:20px;
+
+}
+.headerInner{
+    display: flex;
+    flex-direction: column;
+    margin: 20px auto;
+
+}
+.nomargin{
+    margin: 0;
+}
+.textColor {
+    color: rgba(184, 117, 20, 1);
+    cursor: pointer;
+
+}
+.inputContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 20px;
+}
+.inputBox{
+    display: flex;
+    flex-direction: column;
+    margin:0;
+    margin: auto;
+    width: 80%;
+    height:50px;
+    border-radius: 10px;
+    border: 1px solid black;
+}
+.label{
+    margin: 10px;
+    margin-left:50px;
+}
+.loginButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    width: 80%;
+    height: 50px;
+    border-radius: 10px;
+    border:none;
+    color:white;
+    font-size: 20px;
+    background-color: rgba(255, 169, 79, 1);
+    cursor: pointer;
+}
+.loginButton:hover{
+    background-color: rgba(255, 169, 79, 0.8);
+}
+.kakaoButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+    width: 80%;
+    height: 50px;
+    border-radius: 10px;
+    border:none;
+    color:rgba(184, 117, 20, 1);
+    font-size: 20px;
+    background-color: rgba(255, 244, 227, 1);
+    cursor: pointer;
+}
+.kakaoButton:hover{
+    background-color: rgba(255, 244, 227, 0.8);
+}
+.kakaoIcon{
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
