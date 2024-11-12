@@ -1,9 +1,11 @@
 import React from "react";
 import { ReactComponent as Logo } from "../assets/logo.svg";
-// import { useNavigation } from "react-router-dom";  TODO: 나중에 페이지 연결
+import { useNavigate } from "react-router-dom"; // TODO: 나중에 페이지 연결
 import styles from "./Sidebar.module.css";
 
 function Sidebar({ children }) {
+  const navigate = useNavigate();
+
   return (
     <div className={styles.sidebar}>
       <div className={styles.header}>
@@ -17,8 +19,13 @@ function Sidebar({ children }) {
       </div>
       <div className={styles.navigation}>
         <button className={styles.navButton}>메인 화면으로 가기</button>
-        <button className={styles.navButton}>커뮤니티</button>
-        <button className={styles.navButton}>마이페이지 이동</button>
+        <button className={styles.navButton}>메모장</button>
+        <button
+          className={styles.navButton}
+          onClick={() => navigate("/mypage")} // 마이페이지로 이동
+        >
+          마이페이지 이동
+        </button>
       </div>
     </div>
   );
