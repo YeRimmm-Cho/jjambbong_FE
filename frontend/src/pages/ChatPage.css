@@ -3,6 +3,7 @@
     flex-direction: column;
     height: 100vh;
     background-color: #F5F5F5;
+    overflow-y: auto;
 }
 
 .client-message{
@@ -12,7 +13,7 @@
     padding: 10px 15px;
     margin: 20px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    margin-top:auto;
+    margin-top: auto;
 }
 .llm-message{
     background-color: #FDE56B;
@@ -21,7 +22,7 @@
     padding: 10px 15px;
     margin: 10px 0;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    display: inline-flex; /* span 요소의 크기를 내용에 맞춤 */
+    display: inline-flex;
     align-self: flex-start; 
 }
 .client-message:empty {
@@ -31,19 +32,17 @@
     display: flex;
     flex-direction: column;
 }
-.calendar{
-    display:flex;
+.question-style {
+    display: flex;
     justify-content: space-between;
-    margin:20px;
     align-items: flex-start;
-    height: 400px;
-    gap:20px;
+    gap: 20px;
+    flex-grow: 1; /* 높이를 확장하여 차지 */
+    padding: 20px; /* padding을 사용하여 공간 확보 */
 }
-.with{
-    display:flex;
-    justify-content: space-between;
-    margin:20px;
-    align-items: flex-start;
-    height: 110px;
-    gap:20px;
+.with-whom-style{
+    display: flex;
+    justify-content: center;
+    border-radius: 99px;
+    margin: 10px;   
 }
