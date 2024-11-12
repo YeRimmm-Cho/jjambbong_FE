@@ -2,16 +2,23 @@ import { useState } from 'react';
 import Calendar from '../components/Calendar';
 import './ChatPage.css';
 import WithWhom from '../components/WithWhom';
+import Thema from '../components/Thema';
 
 function ChatPage() {
   const [dateRange, setDateRange] = useState([null, null]);
-  const [selectedCompanion, setSelectedCompanion] = useState(null); 
+  const [selectedCompanion, setSelectedCompanion] = useState(null);
+  const [selectedThemes, setSelectedThemes] = useState([]); // 선택된 테마를 저장
 
   const handleCompanionSelect = (companion) => {
     setSelectedCompanion(companion);
   };
 
-  const isDateRangeSelected = dateRange[0] && dateRange[1]; // dateRange의 값이 모두 설정되었는지 확인
+  const handleThemeSelectionChange = (themes) => {
+    setSelectedThemes(themes);
+    console.log("선택된 테마:", themes); // 선택된 테마 출력
+  };
+
+  const isDateRangeSelected = dateRange[0] && dateRange[1];
 
   return (
     <div className="screen">
@@ -26,18 +33,34 @@ function ChatPage() {
         </span>
       </div>
       
-      {isDateRangeSelected && ( // dateRange가 설정되었을 때만 렌더링
+      {isDateRangeSelected && (
         <div className="question-style">
           <div>
             <span className="llm-message"> 누구와 함께 여행을 떠나시나요? </span>
             <WithWhom onCompanionSelect={handleCompanionSelect} />
           </div>
-          {selectedCompanion && ( // selectedCompanion이 null이 아닐 때만 표시
+          {selectedCompanion && (
             <span className="client-message">
               {selectedCompanion}
             </span>
           )}
-        </div> 
+        </div>    
+      )}
+
+      {selectedCompanion && (
+        <div className="question-style">
+         <div>
+          <span className="llm-message"> 여행의 테마를 골라주세요! (다중 선택이 가능해요) </span>
+          <Thema onSelectionChange={handleThemeSelectionChange} />
+         </div>
+          <span className="bubble-container">
+            {selectedThemes.map((theme, index) => (
+              <span key={index} className="bubble">
+                #{theme}
+              </span>
+            ))}
+          </span>
+        </div>
       )}
     </div>
   );
