@@ -38,3 +38,5 @@ out/
 
 # Ignore application properties to keep sensitive data out of VCS
 src/main/resources/application.properties
+
+.env
