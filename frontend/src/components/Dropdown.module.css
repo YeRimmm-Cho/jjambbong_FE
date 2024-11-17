@@ -21,7 +21,7 @@
 .dropdownMenu {
   position: absolute;
   top: 100%;
-  transform: translateX(-25px);
+  transform: translateX(-15px);
   background-color: white;
   color: #b8b8b8;
   border: 1px solid #282828;
@@ -33,6 +33,23 @@
   padding: 0;
   list-style-type: none;
   overflow: hidden;
+}
+
+/* 테두리가 있을 때 사용할 스타일 */
+.bordered {
+  padding: 10px;
+  width: 100px;
+  border: 1px solid #282828;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.centeredMenu {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
 }
 
 .dropdownItem {
