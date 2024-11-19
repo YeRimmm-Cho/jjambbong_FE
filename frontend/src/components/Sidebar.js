@@ -18,8 +18,6 @@ function Sidebar({ children }) {
         {children} {/* 중간에 다른 컴포넌트가 들어갈 자리 */}
       </div>
       <div className={styles.navigation}>
-        <button className={styles.navButton}>메인 화면으로 가기</button>
-        <button className={styles.navButton}>메모장</button>
         <button
           className={styles.navButton}
           onClick={() => navigate("/mypage")} // 마이페이지로 이동

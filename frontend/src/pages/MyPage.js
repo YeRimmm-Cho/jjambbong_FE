@@ -25,7 +25,7 @@ function MyPage() {
 
   // 테스트용 모크데이터
   useEffect(() => {
-    fetch("../mockdata/mockItinerary.json")
+    fetch("../mockdata/mockMyItinerary.json")
       .then((response) => response.json())
       .then((data) => setItineraries(data))
       .catch((error) => console.error("Error fetching itineraries:", error));
