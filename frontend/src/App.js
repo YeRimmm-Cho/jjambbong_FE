@@ -5,6 +5,7 @@ import TamtamPage from "./pages/TamtamPage";
 import MyPage from "./pages/MyPage";
 import NewChat from "./pages/NewChat"
 import Kakaoauth from "./pages/Kakaoauth"
+import TestPage from "./pages/TestPage"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/new" element={<NewChat/>} />
         <Route path="/kakaoauth" element={<Kakaoauth/>} />
+        <Route path="/test" element={<TestPage/>} />
       </Routes>
     </Router>
   );
