@@ -4,6 +4,7 @@ import KakaoLoginPage from "./pages/KakaoLoginPage";
 import ChatPage from "./pages/ChatPage";
 import TamtamPage from "./pages/TamtamPage";
 import MyPage from "./pages/MyPage";
+import DetailedItineraryPage from "./pages/DetailedItineraryPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/kakaoLogin" element={<KakaoLoginPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/" element={<TamtamPage />} />
+        <Route path="/detailed-itinerary" element={<DetailedItineraryPage />} />
         <Route path="/mypage" element={<MyPage />} />
       </Routes>
     </Router>
