@@ -5,7 +5,14 @@ import kakaoIcon from '../assets/images/kakao_logo.svg'
 import Footer from '../components/Footer';
 
 function KakaoLoginPage() {
-    const kakaoLogin = () => {console.log("카카오 로그인 버튼 클릭")};  // 카카오 버튼 클릭시 실행 동작 
+    const Rest_api_key='19bd1cef6d04beb937c1f7a84130fc11' //REST API KEY
+    const redirect_uri = 'http://localhost:3000/kakaoauth' //Redirect URI
+    // oauth 요청 URL
+    const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${Rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`
+    const kakaoLogin = ()=>{
+        window.location.href = kakaoURL
+    }
+
     return(
        <div className = {styles.background}>
             <div className = {styles.title}>
