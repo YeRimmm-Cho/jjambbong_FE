@@ -37,17 +37,20 @@ public class UserController {
             Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
             String nickname = (String) properties.getOrDefault("nickname", "기본 닉네임");
             String email = (String) kakaoAccount.getOrDefault("email", "이메일 없음");
+            String profileImageUrl = (String) properties.getOrDefault("thumbnail_image", "기본 이미지 URL");
 
             // 사용자 정보 저장 또는 업데이트
             User user = userRepository.findByEmail(email).orElse(new User());
             user.setNickname(nickname);
             user.setEmail(email);
+            user.setProfileImageUrl(profileImageUrl); // 프로필 이미지 URL 설정
             userRepository.save(user);
 
             // 반환 데이터 생성
             Map<String, Object> response = new HashMap<>();
             response.put("nickname", nickname);
             response.put("email", email);
+            response.put("profileImageUrl", profileImageUrl); // 프로필 이미지 URL 포함
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
