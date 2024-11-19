@@ -11,9 +11,21 @@
   z-index: 1000;
 }
 
+.closeIcon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  fill: #282828; /* 아이콘 색상 */
+  transition: transform 0.2s ease-in-out;
+}
+
 .modal {
+  position: relative;
   background-color: #fafafa;
-  padding: 20px; /* padding을 줄여 공간 확보 */
+  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 450px;
@@ -21,13 +33,13 @@
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 콘텐츠를 가운데 정렬 */
+  justify-content: center;
 }
 
 .modalTitle {
   font-size: 24px;
   font-weight: 700;
-  margin-bottom: 15px; /* 타이틀과 메시지 사이 간격 조정 */
+  margin-bottom: 30px;
   color: #282828;
 }
 
@@ -35,7 +47,7 @@
   font-size: 14px;
   color: #282828;
   margin-top: 0px;
-  margin-bottom: 20px; /* 메시지와 버튼 사이 간격 조정 */
+  margin-bottom: 40px; /* 메시지와 버튼 사이 간격 조정 */
 }
 
 .modalButton {
