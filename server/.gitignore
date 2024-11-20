@@ -42,3 +42,7 @@ server/src/main/resources/application.properties
 # .env file
 agentPersone/.env
 .env
+
+# H2 Database files
+*.mv.db
+*.trace.db

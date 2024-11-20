@@ -24,20 +24,31 @@ repositories {
 }
 
 dependencies {
-	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// Spring Boot Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.security:spring-security-web:6.3.3'
-	implementation 'org.springframework.security:spring-security-config:6.3.3'
+
+	// Spring Security & OAuth2 Client
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// JPA & Database
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'com.h2database:h2'
+
+	// Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+//	// Jakarta Servlet
+//	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+
+	// Lombok
 	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// Testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()
