@@ -38,6 +38,7 @@ public class CustomBotController {
     // KSH: Python LangChain 서버와 통신하는 새로운 엔드포인트
     @GetMapping("/custom-chat")
     public String customChat(@RequestParam(name = "prompt") String prompt) {
+        System.out.println("Received prompt: " + prompt);
         return gptService.getPersonaResponse(prompt);  // Python 서버로 요청을 전달하고 응답 반환
     }
 }

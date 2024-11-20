@@ -14,7 +14,7 @@ build/
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/
+!**/src/main/**/bin\
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
@@ -37,7 +37,12 @@ out/
 .vscode/
 
 # Ignore application properties to keep sensitive data out of VCS
-src/main/resources/application.properties
+server/src/main/resources/application.properties
 
 # .env file
 .env
+agentPersone/.env
+
+# H2 Database files
+*.mv.db
+*.trace.db
