@@ -40,8 +40,8 @@ out/
 server/src/main/resources/application.properties
 
 # .env file
-agentPersone/.env
 .env
+agentPersone/.env
 
 # H2 Database files
 *.mv.db
