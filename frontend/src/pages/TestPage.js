@@ -1,4 +1,3 @@
-import map from "../components/Map";
 import Map from "../components/Map";
 
 function TestPage() {
