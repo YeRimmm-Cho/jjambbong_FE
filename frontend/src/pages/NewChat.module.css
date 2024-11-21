@@ -247,6 +247,7 @@
   border-top-right-radius: 0;
 }
 
+
 .leftButtonContainer {
   display: flex;
   justify-content: flex-start;
@@ -269,3 +270,4 @@
   background-color: #ffa94f;
   color: #fff;
 }
+
