@@ -68,14 +68,18 @@ function NewChat() {
       travel_theme: selectedThemes.join(", "), // 테마
     };
 
-    const ngrokUrl = "http://abcd1234.ngrok.io"; // 백엔드 URL
+    const ngrokUrl = "https://b39b-210-94-220-228.ngrok-free.app"; // 스프링 백엔드 URL
 
     axios
-      .post(`${ngrokUrl}/api/endpoint`, requestData)
+      .post(`${ngrokUrl}/plan`, requestData)
       .then((response) => {
         console.log("백엔드 응답:", response.data);
         alert("백엔드로 데이터가 성공적으로 전송되었습니다!");
-        addMessage(response.data.message || "일정 추천을 시작합니다.", false);
+        addMessage(
+          response.data.response + response.data.follow_up ||
+            "일정 추천을 시작합니다.",
+          false
+        );
       })
       .catch((error) => {
         console.error("백엔드 요청 오류:", error);
