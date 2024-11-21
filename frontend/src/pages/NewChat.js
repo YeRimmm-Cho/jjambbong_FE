@@ -58,6 +58,31 @@ function NewChat() {
     scrollToBottom();
   }, [messages]);
 
+  const handleConfirm = () => {
+    const requestData = {
+      travel_date: `${dateRange[0].toLocaleDateString()} ~ ${dateRange[1].toLocaleDateString()}`, // 날짜 범위
+      travel_days: Math.ceil(
+        (dateRange[1] - dateRange[0]) / (1000 * 60 * 60 * 24) + 1
+      ), // 여행 일수 계산
+      travel_mate: selectedCompanion, // 동반자
+      travel_theme: selectedThemes.join(", "), // 테마
+    };
+
+    const ngrokUrl = "http://abcd1234.ngrok.io"; // 백엔드 URL
+
+    axios
+      .post(`${ngrokUrl}/api/endpoint`, requestData)
+      .then((response) => {
+        console.log("백엔드 응답:", response.data);
+        alert("백엔드로 데이터가 성공적으로 전송되었습니다!");
+        addMessage(response.data.message || "일정 추천을 시작합니다.", false);
+      })
+      .catch((error) => {
+        console.error("백엔드 요청 오류:", error);
+        alert("데이터 전송에 실패했습니다.");
+      });
+  };
+
   const addMessage = (text, isUser) => {
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -71,9 +96,12 @@ function NewChat() {
       setMessage("");
 
       try {
-        const response = await axios.post("백엔드 API 실제 주소", {
-          prompt: message,
-        });
+        const response = await axios.post(
+          "http://abcd1234.ngrok.io/api/endpoint",
+          {
+            prompt: message, // GPT 모델로 전달할 프롬프트
+          }
+        );
 
         if (response.data) {
           addMessage(response.data.responseText || "응답이 없습니다.", false);
@@ -152,14 +180,13 @@ function NewChat() {
               <span className={styles.gptBubble}>언제 여행을 떠나시나요?</span>
             </div>
             <span className={styles.userBubble}>
-              {dateRange[0]
-                ? dateRange[0].toLocaleDateString()
-                : null}
+              {dateRange[0] ? dateRange[0].toLocaleDateString() : null}
               {dateRange[1] && dateRange[0] !== dateRange[1]
                 ? ` ~ ${dateRange[1].toLocaleDateString()}`
                 : ""}
             </span>
           </div>
+          <div></div>
 
           {/* 동반자 선택 */}
           {isDateRangeSelected && (
@@ -171,9 +198,7 @@ function NewChat() {
                 <WithWhom onCompanionSelect={handleCompanionSelect} />
               </div>
               {selectedCompanion && (
-                <span className={styles.userBubble}>
-                  {selectedCompanion}
-                </span>
+                <span className={styles.userBubble}>{selectedCompanion}</span>
               )}
             </div>
           )}
@@ -185,8 +210,14 @@ function NewChat() {
                 <span className={styles.gptBubble}>
                   여행의 테마를 골라주세요! (다중 선택 가능)
                 </span>
-                <Thema onSelectionChange={handleThemeSelectionChange} />
+                <Thema
+                  onSelectionChange={(themes) => {
+                    setSelectedThemes(themes);
+                  }}
+                />
               </div>
+
+              {/* 선택한 테마 표시 */}
               <div className={styles.bubbleContainer}>
                 {selectedThemes.map((theme, index) => (
                   <span key={index} className={styles.bubble}>
@@ -196,13 +227,24 @@ function NewChat() {
               </div>
             </div>
           )}
+
+          {/* 테마 선택 이후에 확정 버튼 표시 */}
+          {selectedThemes.length > 0 && (
+            <div className={styles.leftButtonContainer}>
+              <button className={styles.confirmButton} onClick={handleConfirm}>
+                이 정보를 바탕으로 탐탐이에게 일정 추천받기
+              </button>
+            </div>
+          )}
+
           <div>
-          {isGenerating && (
-                <div className={styles.gptBubble}>
-                  여행 일정을 생성중입니다...
-                </div>
-              )}
+            {isGenerating && (
+              <div className={styles.gptBubble}>
+                여행 일정을 생성중입니다...
+              </div>
+            )}
           </div>
+
           {/* 기존 채팅 메시지 */}
           {messages.map((msg) => (
             <div
@@ -235,21 +277,21 @@ function NewChat() {
 
         {/* 메시지 입력창 */}
         <div className={styles.chatInputContainer}>
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="메시지 보내기"
-          className={`${styles.chatInput} ${isFocused ? styles.focused : ""}`}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          rows={1}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault(); // Enter 시 기본 동작 차단
-              handleSendMessage(); // 메시지 전송
-            }
-          }}
-        />
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="메시지 보내기"
+            className={`${styles.chatInput} ${isFocused ? styles.focused : ""}`}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            rows={1}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault(); // Enter 시 기본 동작 차단
+                handleSendMessage(); // 메시지 전송
+              }
+            }}
+          />
           <img
             src={iconSend}
             alt="send"
