@@ -7,6 +7,8 @@
     background-color: #FDE56B;
     color:black;
 }
+
+
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
   background: #FDE56B;
