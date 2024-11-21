@@ -1,6 +1,6 @@
 :root {
-  --primary-bg-color: #FDE56B;
-  --secondary-bg-color: #ECECEC;
+  --primary-bg-color: #fde56b;
+  --secondary-bg-color: #ececec;
   --text-color: #333;
   --border-radius: 12px;
   --shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
@@ -28,7 +28,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 20px;
+  padding: 0px 40px;
   box-sizing: border-box;
 }
 
@@ -75,12 +75,13 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 20px; /* 전체 내부 여백 조정 */
-  overflow-y: auto; /* 세로 스크롤 활성화 */
+  padding: 20px;
+  overflow-y: auto;
   height: calc(100vh - 150px); /* 화면 높이에서 헤더와 입력창 높이를 뺀 크기 */
-  width: 100%; /* 너비를 100%로 설정하여 양쪽 여백 제거 */
+  width: 100%;
   margin: 0; /* 외부 여백 제거 */
-  box-sizing: border-box; /* 패딩 포함 크기 계산 */
+  box-sizing: border-box;
+  position: relative;
 }
 
 /* 스크롤바 스타일 */
@@ -147,17 +148,23 @@
 
 .chatInputContainer {
   display: flex;
+  box-sizing: border-box;
+  position: absolute;
   align-items: center;
+  justify-content: center;
+  left: 50%;
+  transform: translateX(-50%);
   padding: 0px 20px 20px 20px;
-  width: calc(100% - 400px);
-  position: fixed;
+  width: 100%;
   bottom: 0;
   background-color: #ffffff;
+  overflow: hidden;
 }
 
 .chatInput {
-  flex: 1;
+  flex: none;
   padding: 15px 20px;
+  width: 85%;
   max-width: 1000px;
   font-size: 16px;
   border: 1px solid #ddd;
@@ -239,28 +246,28 @@
   display: inline-block;
   border-top-right-radius: 0;
 }
-.confirm {
-  background-color: white;
-  color: #333;
-  border: 3px solid #FFA94F;
-  border-radius: 10px;
-  padding: 10px 20px;
-  margin: 10px 20px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+
+
+.leftButtonContainer {
+  display: flex;
+  justify-content: flex-start;
+  padding: 25px 0 20px 20px;
+}
+
+.confirmButton {
+  padding: 10px 15px;
   font-size: 16px;
-  font-weight: bold;
+  color: #282828;
+  background-color: #fff;
+  border: 3px solid #ffa94f;
+  border-radius: 12px;
+  border-top-left-radius: 0;
   cursor: pointer;
-  text-align: center;
+  transition: background-color 0.2s ease;
 }
 
-.confirm:hover {
-  background-color: #FFA94F; /* 호버 시 배경색 변경 */
-  color: white; /* 호버 시 글자색 변경 */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 강조 */
+.confirmButton:hover {
+  background-color: #ffa94f;
+  color: #fff;
 }
 
-.confirm:active {
-  background-color: #FF8A00; /* 클릭 시 더 진한 배경색 */
-  transform: translateY(0); /* 클릭 시 원래 위치 */
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 줄이기 */
-}
