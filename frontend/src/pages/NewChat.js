@@ -62,13 +62,13 @@ function NewChat() {
     const requestData = {
       travel_date: `${dateRange[0].toLocaleDateString()} ~ ${dateRange[1].toLocaleDateString()}`, // 날짜 범위
       travel_days: Math.ceil(
-        (dateRange[1] - dateRange[0]) / (1000 * 60 * 60 * 24) + 1
+        (dateRange[1] - dateRange[0]) / (1000 * 60 * 60 * 24)
       ), // 여행 일수 계산
       travel_mate: selectedCompanion, // 동반자
       travel_theme: selectedThemes.join(", "), // 테마
     };
 
-    const ngrokUrl = "https://b39b-210-94-220-228.ngrok-free.app"; // 스프링 백엔드 URL
+    const ngrokUrl = "백엔드 파이썬 URL"; // 스프링 백엔드 URL
 
     axios
       .post(`${ngrokUrl}/plan`, requestData)
