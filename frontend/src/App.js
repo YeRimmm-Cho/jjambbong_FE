@@ -6,6 +6,7 @@ import MyPage from "./pages/MyPage";
 import NewChat from "./pages/NewChat"
 import Kakaoauth from "./pages/Kakaoauth"
 import TestPage from "./pages/TestPage"
+import DetailedItineraryPage from "./pages/DetailedItineraryPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/kakaoLogin" element={<KakaoLoginPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/" element={<TamtamPage />} />
+        <Route path="/detailed-itinerary" element={<DetailedItineraryPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/new" element={<NewChat/>} />
         <Route path="/kakaoauth" element={<Kakaoauth/>} />
