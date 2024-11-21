@@ -21,7 +21,8 @@ function NewChat() {
   const [dateRange, setDateRange] = useState([null, null]);
   const [selectedCompanion, setSelectedCompanion] = useState(null);
   const [selectedThemes, setSelectedThemes] = useState([]);
-  const [isGenerating, setIsGenerating] = useState(false); // 일정 생성 중 상태
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isLocked, setIsLocked] = useState(false); // 수정 불가능 상태 추가
 
   const navigate = useNavigate();
   const chatWindowRef = useRef(null);
@@ -32,27 +33,9 @@ function NewChat() {
     nickname: "여행이 가고 싶은 예림",
   };
 
-  // Scroll to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  // Observe chatWindow size change
-  useEffect(() => {
-    const observer = new ResizeObserver(() => {
-      scrollToBottom(); // chatWindow 크기 변경 시 아래로 스크롤
-    });
-
-    if (chatWindowRef.current) {
-      observer.observe(chatWindowRef.current);
-    }
-
-    return () => {
-      if (chatWindowRef.current) {
-        observer.unobserve(chatWindowRef.current); // cleanup observer
-      }
-    };
-  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -90,24 +73,36 @@ function NewChat() {
     setDateRange([null, null]);
     setSelectedCompanion(null);
     setSelectedThemes([]);
-    setIsGenerating(false); // 초기화 시 일정 생성 상태도 리셋
+    setIsGenerating(false);
+    setIsLocked(false); // 초기화 시 잠금 해제
   };
 
-  const handleProfileClick = () => {
-    navigate("/mypage");
-  };
+  const handleConfirm = async () => {
+    if (!dateRange[0] || !selectedCompanion || selectedThemes.length === 0) {
+      alert("모든 정보를 입력해주세요!");
+      return;
+    }
 
-  const handleCompanionSelect = (companion) => {
-    setSelectedCompanion(companion);
-  };
+    setIsGenerating(true);
 
-  const handleThemeSelectionChange = (themes) => {
-    setSelectedThemes(themes);
-    if (themes.length > 0) {
-      setIsGenerating(true); // 일정 생성 중 상태로 변경
-      setTimeout(() => {
-        setIsGenerating(false); // 3초 후 생성 완료
-      }, 3000);
+    try {
+      const response = await axios.post("백엔드 API 실제 주소", {
+        dateRange: {
+          start: dateRange[0].toISOString(),
+          end: dateRange[1]?.toISOString() || dateRange[0].toISOString(),
+        },
+        companion: selectedCompanion,
+        themes: selectedThemes,
+      });
+      
+      console.log("백엔드 응답:", response.data);
+      setIsLocked(true); // 일정 생성 후 잠금
+      alert("일정 생성이 완료되었습니다!");
+    } catch (error) {
+      console.error("Error sending data to backend:", error);
+      alert("백엔드로 데이터를 전송하는 중 오류가 발생했습니다.");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -115,12 +110,10 @@ function NewChat() {
 
   return (
     <div className={styles.container}>
-      {/* Sidebar 영역 */}
       <Sidebar>
         <PlacePreview itinerary={itinerary} />
       </Sidebar>
 
-      {/* Main Content */}
       <div className={styles.mainContent}>
         <div className={styles.header}>
           <div className={styles.headerTitle}>
@@ -133,7 +126,7 @@ function NewChat() {
               title="대화 초기화"
             />
           </div>
-          <div className={styles.profileContainer} onClick={handleProfileClick}>
+          <div className={styles.profileContainer} onClick={() => navigate("/mypage")}>
             <img
               src={mockUserData.profileImage}
               alt="User Profile"
@@ -143,12 +136,14 @@ function NewChat() {
           </div>
         </div>
 
-        {/* Chat Window */}
         <div className={styles.chatWindow} ref={chatWindowRef}>
-          {/* 날짜 선택 */}
           <div className={styles.questionStyle}>
             <div className={styles.calendarStyle}>
-              <Calendar dateRange={dateRange} onChange={setDateRange} />
+              <Calendar
+                dateRange={dateRange}
+                onChange={setDateRange}
+                disabled={isLocked} // 수정 불가능 상태 적용
+              />
               <span className={styles.gptBubble}>언제 여행을 떠나시나요?</span>
             </div>
             <span className={styles.userBubble}>
@@ -161,31 +156,33 @@ function NewChat() {
             </span>
           </div>
 
-          {/* 동반자 선택 */}
           {isDateRangeSelected && (
             <div className={styles.questionStyle}>
               <div>
                 <span className={styles.gptBubble}>
                   누구와 함께 여행을 떠나시나요?
                 </span>
-                <WithWhom onCompanionSelect={handleCompanionSelect} />
+                <WithWhom
+                  onCompanionSelect={setSelectedCompanion}
+                  disabled={isLocked} // 수정 불가능 상태 적용
+                />
               </div>
               {selectedCompanion && (
-                <span className={styles.userBubble}>
-                  {selectedCompanion}
-                </span>
+                <span className={styles.userBubble}>{selectedCompanion}</span>
               )}
             </div>
           )}
 
-          {/* 테마 선택 */}
           {selectedCompanion && (
             <div className={styles.questionStyle}>
               <div>
                 <span className={styles.gptBubble}>
                   여행의 테마를 골라주세요! (다중 선택 가능)
                 </span>
-                <Thema onSelectionChange={handleThemeSelectionChange} />
+                <Thema
+                  onSelectionChange={setSelectedThemes}
+                  disabled={isLocked} // 수정 불가능 상태 적용
+                />
               </div>
               <div className={styles.bubbleContainer}>
                 {selectedThemes.map((theme, index) => (
@@ -196,14 +193,19 @@ function NewChat() {
               </div>
             </div>
           )}
-          <div>
+
+          {selectedThemes.length > 0 && !isLocked && (
+            <button className={styles.confirm} onClick={handleConfirm}>
+              일정 생성
+            </button>
+          )}
+
           {isGenerating && (
-                <div className={styles.gptBubble}>
-                  여행 일정을 생성중입니다...
-                </div>
-              )}
-          </div>
-          {/* 기존 채팅 메시지 */}
+            <div className={styles.gptBubble}>
+              여행 일정을 생성중입니다...
+            </div>
+          )}
+
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -229,27 +231,25 @@ function NewChat() {
               </div>
             </div>
           ))}
-          {/* 스크롤 기준점 */}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* 메시지 입력창 */}
         <div className={styles.chatInputContainer}>
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="메시지 보내기"
-          className={`${styles.chatInput} ${isFocused ? styles.focused : ""}`}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          rows={1}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault(); // Enter 시 기본 동작 차단
-              handleSendMessage(); // 메시지 전송
-            }
-          }}
-        />
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="메시지 보내기"
+            className={`${styles.chatInput} ${isFocused ? styles.focused : ""}`}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            rows={1}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }}
+          />
           <img
             src={iconSend}
             alt="send"

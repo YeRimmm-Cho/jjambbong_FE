@@ -239,3 +239,28 @@
   display: inline-block;
   border-top-right-radius: 0;
 }
+.confirm {
+  background-color: white;
+  color: #333;
+  border: 3px solid #FFA94F;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin: 10px 20px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+}
+
+.confirm:hover {
+  background-color: #FFA94F; /* 호버 시 배경색 변경 */
+  color: white; /* 호버 시 글자색 변경 */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 강조 */
+}
+
+.confirm:active {
+  background-color: #FF8A00; /* 클릭 시 더 진한 배경색 */
+  transform: translateY(0); /* 클릭 시 원래 위치 */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 줄이기 */
+}
