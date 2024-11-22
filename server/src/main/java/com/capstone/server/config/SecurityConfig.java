@@ -30,7 +30,7 @@ public class SecurityConfig {
                         .frameOptions(frameOptions -> frameOptions.sameOrigin()) // H2 콘솔을 위한 설정
                 )
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("/oauth/login/success", true)
+                        .defaultSuccessUrl("http://172.20.10.3:3000/kakaoauth", true)
                         .failureUrl("/login/error")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 );
