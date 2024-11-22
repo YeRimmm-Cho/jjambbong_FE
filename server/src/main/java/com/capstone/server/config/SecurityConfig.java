@@ -23,7 +23,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/oauth2/**", "/error", "/h2-console/**").permitAll() // H2 콘솔 접근 허용
+                        .requestMatchers("/", "/login", "/oauth2/**", "/error", "/h2-console/**", "/bot/**").permitAll() // H2 콘솔 접근 허용
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
