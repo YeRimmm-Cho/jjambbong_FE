@@ -1,6 +1,5 @@
 import React from "react";
 import KakaoLoginPage from "./pages/KakaoLoginPage";
-import ChatPage from "./pages/ChatPage";
 import TamtamPage from "./pages/TamtamPage";
 import MyPage from "./pages/MyPage";
 import NewChat from "./pages/NewChat";
@@ -15,13 +14,12 @@ function App() {
     <Router>
       <Routes>
         <Route path="/kakaoLogin" element={<KakaoLoginPage />} />
-        <Route path="/chat" element={<ChatPage />} />
-        <Route path="/" element={<TamtamPage />} />
         <Route path="/detailed-itinerary" element={<DetailedItineraryPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/new" element={<NewChat />} />
         <Route path="/RedirectPage" element={<RedirectPage />} />
         <Route path="/main" element={<Main />} />
+        <Route path="/*" element={<Main />} />
         <Route path="/test" element={<TestPage />} />
       </Routes>
     </Router>
