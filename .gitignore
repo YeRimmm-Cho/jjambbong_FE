@@ -49,4 +49,4 @@ agentPersona/.env
 *.trace.db
 
 # venv
-venv
+agentPersona/venv/
