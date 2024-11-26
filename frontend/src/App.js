@@ -21,6 +21,7 @@ function App() {
         <Route path="/main" element={<Main />} />
         <Route path="/*" element={<Main />} />
         <Route path="/test" element={<TestPage />} />
+        <Route path="/" element={<Main />} />
       </Routes>
     </Router>
   );
