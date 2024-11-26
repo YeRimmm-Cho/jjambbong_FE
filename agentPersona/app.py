@@ -19,6 +19,7 @@ pinecone_api_key = os.getenv("PINECONE_API_KEY")
 app = Flask(__name__)
 CORS(app) # CORS 설정
 app.secret_key = secret_key # 세션 키 설정
+app.config['JSON_AS_ASCII'] = False # KSH: 한글이 깨지는 문제 해결
 
 # OpenAI API 키 설정
 llm = OpenAI(api_key=openai_api_key, max_tokens=3000)
@@ -105,6 +106,7 @@ def generate_response():
             "budget": session["budget"]
         })["text"].strip()
         session.clear()  # 세션 초기화
+
         return jsonify({"response": response})
 
 # Pinecone 및 OpenAI 설정

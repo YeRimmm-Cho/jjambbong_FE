@@ -39,16 +39,4 @@
 ├── .env
 
 
-├── server
-│   ├── src
-│   │   ├── main
-│   │   │   ├── java
-│   │   │   │   └── com
-│   │   │   │       └── test
-│   │   │   │           ├── Application.java
-│   │   │   ├── python
-
-...TBD
-
-
 ```
