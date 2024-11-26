@@ -7,6 +7,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -18,30 +23,55 @@ public class SecurityConfig {
     }
 
     @Bean
-
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/oauth2/**", "/error", "/h2-console/**").permitAll() // H2 콘솔 접근 허용
+                        .requestMatchers("/", "/login", "/oauth2/**", "/error", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
-                        .frameOptions(frameOptions -> frameOptions.sameOrigin()) // H2 콘솔을 위한 설정
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 )
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("/oauth/login/success", true)
+                        .defaultSuccessUrl("/oauth/login/success", true) //http://172.20.10.3:3000/kakaoauth
                         .failureUrl("/login/error")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 );
 
         return http.build();
+    }
 
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
 
+        config.setAllowCredentials(true); // 인증 정보 포함 허용
+        config.setAllowedOrigins(List.of("http://172.20.10.3:3000")); // 프론트엔드 URL
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용 메서드
+        config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
+
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://172.20.10.3:3000")); //v 프론트 url
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
