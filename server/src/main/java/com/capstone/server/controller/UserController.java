@@ -53,6 +53,9 @@ public class UserController {
             response.put("profileImageUrl", profileImageUrl); // 프로필 이미지 URL 포함
 
             return ResponseEntity.ok(response);
+
+
+
         } catch (Exception e) {
             e.printStackTrace(); // 예외 로그 출력
             return ResponseEntity.status(500).body("에러 발생: " + e.getMessage());

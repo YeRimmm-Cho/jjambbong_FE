@@ -1,10 +1,10 @@
-import Map from "../components/Map";
+
+import Main from "../pages/Main"
 
 function TestPage() {
     return (
         <div>
-            <h1>Test Page</h1>
-            <Map />
+            <Main/>
         </div>
     );
 }
