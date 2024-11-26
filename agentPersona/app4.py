@@ -37,4 +37,4 @@ with app.app_context():  # 앱 컨텍스트를 생성
     db.create_all()  # 테이블 생성
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
