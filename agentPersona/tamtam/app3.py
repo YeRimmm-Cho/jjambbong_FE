@@ -7,12 +7,14 @@ import json
 import os
 from dotenv import load_dotenv
 
-from template import greeting_template, plan_template, modify_template, final_template
-from openAi import call_openai_gpt
+from tamtam.template import greeting_template, plan_template, modify_template, final_template
+from tamtam.openAi import call_openai_gpt
 
 from datetime import timedelta
+from models import TravelPlan
+from db import db
 
-# env 변수 불러오기
+# 1: env 변수 불러오기
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
 secret_key = os.getenv("SECRET_KEY")
@@ -20,7 +22,7 @@ secret_key = os.getenv("SECRET_KEY")
 print("Loaded SECRET_KEY:", secret_key)  # SECRET_KEY 출력
 pinecone_api_key = os.getenv("PINECONE_API_KEY")
 
-# Flask 앱 설정
+# 2: Flask 앱 설정
 app = Flask(__name__)
 CORS(app)
 app.secret_key = secret_key
@@ -35,16 +37,20 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='Lax' # 크로스 사이트 요청 제한 (Strict, Lax, None 중 선택)
 )
 
-# OpenAI API 설정
+# # H2 Remote 모드 URL
+app.config['SQLALCHEMY_DATABASE_URI'] = 'jdbc:h2:tcp://localhost:9092/./data/testdb'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# 3: OpenAI API 설정
 llm = OpenAI(api_key=openai_api_key, max_tokens=3000)
 
-# 체인 생성
+# 4: 체인 생성
 greeting_chain = LLMChain(llm=llm, prompt=greeting_template)
 plan_chain = LLMChain(llm=llm, prompt=plan_template)
 modify_chain = LLMChain(llm=llm, prompt=modify_template)
 final_chain = LLMChain(llm=llm, prompt=final_template)
 
-
+# 5: 라우트 생성
 @app.route("/greeting", methods=["POST"])
 def greeting():
     '''에이전트가 인사말을 건넴'''
@@ -87,8 +93,13 @@ def plan():
         travel_mate=travel_mate,
         travel_theme=travel_theme
     )
-    session["current_plan"] = plan_response
-    print(f"DEBUG: Saved to session: {session.get('current_plan')}")
+
+    db.session.add(TravelPlan(plan_response=plan_response))
+    db.session.commit()
+    print(f"DEBUG: Saved plan to H2 database with ID {plan.id}")
+
+    # session["current_plan"] = plan_response
+    # print(f"DEBUG: Saved to session: {session.get('current_plan')}")
 
     follow_up_message = "여행 계획이 생성되었습니다. 수정하고 싶은 부분이 있으면 말씀해주세요! 😊"
 
