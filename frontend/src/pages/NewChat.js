@@ -28,7 +28,7 @@ function NewChat() {
   const [isGreetingAccepted, setIsGreetingAccepted] = useState(false); // 첫 트리거
   const [greetingMessage, setGreetingMessage] = useState(""); // 서버에서 받은 인삿말
   const [isWaitingForModify, setIsWaitingForModify] = useState(false); // Modify 대기
-  const ngrokUrl = "http://your-ngrok-url.ngrok.io"; // 백엔드 서버 (ngrok URL)
+  const ngrokUrl = ""; // 백엔드 서버 (ngrok URL)
 
   const mockUserData = {
     profileImage: iconUserProfile,
