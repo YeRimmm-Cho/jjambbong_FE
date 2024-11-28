@@ -10,8 +10,10 @@ import iconSend from "../assets/icon_send.png";
 import iconGptProfile from "../assets/icon_gptprofile.png";
 import iconUserProfile from "../assets/icon_userprofile.png";
 import iconClear from "../assets/icon_clear.png";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import { getGreetingMessage } from "../api/chatApi";
+import { getTravelPlan } from "../api/chatApi";
+import { modifyTravelPlan } from "../api/chatApi";
 
 function NewChat() {
   const itinerary = 4;
@@ -28,7 +30,6 @@ function NewChat() {
   const [isGreetingAccepted, setIsGreetingAccepted] = useState(false); // 첫 트리거
   const [greetingMessage, setGreetingMessage] = useState(""); // 서버에서 받은 인삿말
   const [isWaitingForModify, setIsWaitingForModify] = useState(false); // Modify 대기
-  const ngrokUrl = ""; // 백엔드 서버 (ngrok URL)
 
   const mockUserData = {
     profileImage: iconUserProfile,
@@ -63,12 +64,10 @@ function NewChat() {
     if (greetingMessage) return; // 이미 메시지가 존재하면 함수 종료
 
     try {
-      const response = await axios.post(`${ngrokUrl}/greeting`, {
-        front_input: "탐탐이와 여행 일정 시작",
-      });
-      const generateResponse = response.data.response;
+      const frontInput = "탐탐이와 여행 일정 시작";
+      const generateResponse = await getGreetingMessage(frontInput);
 
-      // 상태 업데이트 및 메시지 추가
+      // 상태 업데이트
       setGreetingMessage(generateResponse);
       setIsGreetingAccepted(true);
     } catch (error) {
@@ -78,7 +77,7 @@ function NewChat() {
   };
 
   // plan API 연결
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const requestData = {
       travel_date: `${dateRange[0].toLocaleDateString()} ~ ${dateRange[1].toLocaleDateString()}`,
       travel_days: Math.ceil(
@@ -90,57 +89,44 @@ function NewChat() {
 
     setIsGenerating(true); // 로딩 시작
 
-    axios
-      .post(`${ngrokUrl}/plan`, requestData)
-      .then((response) => {
-        const planResponse = response.data.response;
-        const followUp = response.data.follow_up;
+    try {
+      const { response: planResponse, follow_up: followUp } =
+        await getTravelPlan(requestData);
 
-        // Plan 응답 버블
-        addMessage(planResponse, false);
-        addMessage(followUp, false);
+      // Plan 응답 버블
+      addMessage(planResponse, false);
+      addMessage(followUp, false);
 
-        // Modify 입력 대기 상태
-        setIsWaitingForModify(true);
-      })
-      .catch((error) => {
-        console.error("Plan 요청 오류:", error);
-        addMessage(
-          "Error: 일정 생성에 실패했습니다. 다시 시도해주세요.",
-          false
-        );
-      })
-      .finally(() => {
-        setIsGenerating(false); // 로딩 상태 종료
-      });
+      // Modify 입력 대기 상태
+      setIsWaitingForModify(true);
+    } catch (error) {
+      console.error("Plan 요청 오류:", error);
+      addMessage("Error: 일정 생성에 실패했습니다. 다시 시도해주세요.", false);
+    } finally {
+      setIsGenerating(false); // 로딩 상태 종료
+    }
   };
 
   // modify API 연결
-  const handleModifyRequest = (modifyRequest) => {
+  const handleModifyRequest = async (modifyRequest) => {
     setIsGenerating(true); // 로딩 시작
-    axios
-      .post(`${ngrokUrl}/modify`, { modify_request: modifyRequest })
-      .then((response) => {
-        const modifyResponse = response.data.response;
-        const followUp = response.data.follow_up;
 
-        // Modify 응답 버블 추가
-        addMessage(modifyResponse, false);
-        addMessage(followUp, false);
+    try {
+      const { response: modifyResponse, follow_up: followUp } =
+        await modifyTravelPlan(modifyRequest); // Modify API 호출
 
-        // Modify 대기 상태
-        setIsWaitingForModify(true);
-      })
-      .catch((error) => {
-        console.error("Modify 요청 오류:", error);
-        addMessage(
-          "Error: 일정 수정에 실패했습니다. 다시 시도해주세요.",
-          false
-        );
-      })
-      .finally(() => {
-        setIsGenerating(false); // 로딩 종료
-      });
+      // Modify 응답 버블
+      addMessage(modifyResponse, false);
+      addMessage(followUp, false);
+
+      // Modify 대기 상태
+      setIsWaitingForModify(true);
+    } catch (error) {
+      console.error("Modify 요청 오류:", error);
+      addMessage("Error: 일정 수정에 실패했습니다. 다시 시도해주세요.", false);
+    } finally {
+      setIsGenerating(false); // 로딩 상태 종료
+    }
   };
 
   const addMessage = (text, isUser) => {
