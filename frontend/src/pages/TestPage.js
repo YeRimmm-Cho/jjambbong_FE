@@ -1,12 +1,12 @@
-
-import Main from "../pages/Main"
+import React from "react";
+import KakaoMap from "../components/KakaoMap";
 
 function TestPage() {
-    return (
-        <div>
-            <Main/>
-        </div>
-    );
+  return (
+    <div>
+      <KakaoMap />
+    </div>
+  );
 }
 
 export default TestPage;

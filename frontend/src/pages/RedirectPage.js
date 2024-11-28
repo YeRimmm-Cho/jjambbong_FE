@@ -6,8 +6,8 @@ import iconUserProfile from "../assets/icon_userprofile.png";
 function RedirectPage() {
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   // Spring Boot API에서 회원 정보 가져오기
+  //useEffect(() => {
+  // Spring Boot API에서 회원 정보 가져오기
   //   axios
   //     .get("주소 입려부분")
   //     .then((response) => {
