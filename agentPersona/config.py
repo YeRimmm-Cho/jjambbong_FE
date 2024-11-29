@@ -1,7 +1,7 @@
 # Flask 설정
 import os
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///../data/testdb.sqlite'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///C:/codespace/projects/Capstone/data/testdb.sqlite'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_key")
 SESSION_COOKIE_SECURE = False
