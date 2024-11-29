@@ -117,7 +117,6 @@ def plan():
     input_data = {"travel_plan": travel_plan}
     location_response = location_chain.invoke(input_data)
     location_response = location_response.strip().strip("```json")
-    location_response = json.loads(location_response)
 
     print(travel_info)
     print(plan_response)
@@ -194,6 +193,7 @@ def plan():
     #         status=500
     #     )
 
+    location_response = json.loads(location_response)
     plan_response_data = {"response": plan_response,
                           "follow_up": follow_up_message,
                           "user_id": user_id,
@@ -289,7 +289,6 @@ def modify3():
     input_data = {"travel_plan": travel_plan}
     location_response = location_chain.invoke(input_data)
     location_response = location_response.strip().strip("```json")
-    location_response = json.loads(location_response)
 
     print(modification_response)
     print(location_response)
@@ -304,6 +303,7 @@ def modify3():
     travel_info = TravelPlan.query.get(user_id).travel_info
     follow_up_message = "수정이 완료되었습니다. 추가 수정이 필요하면 말씀해주세요! 😊"
 
+    location_response = json.loads(location_response)
     # JSON 응답 생성
     modify_response_data = {
         "response": modification_response,
