@@ -48,6 +48,7 @@ public class UserController {
 
             // 반환 데이터 생성
             Map<String, Object> response = new HashMap<>();
+            response.put("id", user.getId());
             response.put("nickname", nickname);
             response.put("email", email);
             response.put("profileImageUrl", profileImageUrl); // 프로필 이미지 URL 포함
