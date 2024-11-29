@@ -5,7 +5,8 @@ import kakaoIcon from "../assets/images/kakao_logo.svg";
 import Footer from "../components/Footer";
 
 function KakaoLoginPage() {
-  const url = "http://localhost:8080/oauth2/authorization/kakao";
+  const url =
+    "https://6596-210-94-220-228.ngrok-free.app/oauth2/authorization/kakao"; // 배포 링크
 
   const onClick = () => {
     window.location.href = url;
