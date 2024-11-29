@@ -12,23 +12,28 @@ import MyItinerary from "../components/MyItinerary";
 
 function MyPage() {
   const navigate = useNavigate();
+
+  // 사용자 정보 상태
   const [profileImage, setProfileImage] = useState(iconUserProfile);
-  const [nickname, setNickname] = useState("여행이 가고 싶은 예림");
+  const [nickname, setNickname] = useState("닉네임 없음");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
-  const email = "me@kakao.com"; // 사용자 이메일 모크 데이터
-  const [itineraries, setItineraries] = useState([]);
+
+  const [itineraries] = useState([]);
   const [filteredItineraries, setFilteredItineraries] = useState([]);
 
   // SearchBar
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("latest");
 
-  // 테스트용 모크데이터
+  // 컴포넌트 마운트 시 localStorage에서 사용자 정보 불러오기
   useEffect(() => {
-    fetch("../mockdata/mockMyItinerary.json")
-      .then((response) => response.json())
-      .then((data) => setItineraries(data))
-      .catch((error) => console.error("Error fetching itineraries:", error));
+    const storedUserInfo = localStorage.getItem("userInfo");
+
+    if (storedUserInfo) {
+      const userInfo = JSON.parse(storedUserInfo);
+      setProfileImage(userInfo.profileImage || iconUserProfile); // 기본 프로필 이미지 설정
+      setNickname(userInfo.nickname || "닉네임 없음");
+    }
   }, []);
 
   // 일정 필터링
@@ -59,6 +64,13 @@ function MyPage() {
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setProfileImage(imageUrl);
+
+      // 프로필 이미지 업데이트를 localStorage에 반영
+      const updatedUserInfo = {
+        nickname,
+        profileImage: imageUrl,
+      };
+      localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
     }
   };
 
@@ -73,6 +85,13 @@ function MyPage() {
   const handleSaveNickname = (newNickname) => {
     setNickname(newNickname);
     setIsNicknameModalOpen(false);
+
+    // 닉네임 업데이트를 localStorage에 반영
+    const updatedUserInfo = {
+      nickname: newNickname,
+      profileImage,
+    };
+    localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
   };
 
   const handleMeetTamtamClick = () => {
@@ -87,7 +106,9 @@ function MyPage() {
           <Logo className={styles.logo} />
         </div>
         <div className={styles.headerLinks}>
-          <span className={styles.link}>메인 페이지</span>
+          <span className={styles.link} onClick={() => navigate("/")}>
+            메인 페이지
+          </span>
           <span>|</span>
           <span className={styles.link}>로그아웃</span>
         </div>
@@ -124,14 +145,12 @@ function MyPage() {
             onClick={handleEditNickname}
           />
         </div>
-        <div className={styles.email}>{email}</div>
       </div>
       <div className={styles.separator} />
       <div className={styles.memorySection}>
-        <div calssName={styles.memoryHeader}>
+        <div className={styles.memoryHeader}>
           <span className={styles.memoryTitle}>나의 일정 목록</span>
         </div>
-        {/* SearchBar */}
         <SearchBar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}

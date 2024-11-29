@@ -5,7 +5,6 @@ import styles from "./TravelSummary.module.css";
 function TravelSummary({ userName = "예림", itineraryDays = 2 }) {
   const [itinerarySummary, setItinerarySummary] = useState({
     totalDistance: "",
-    totalPlaces: 0,
     tags: [],
   });
   const [sampleHighlights, setSampleHighlights] = useState([]);
@@ -20,10 +19,8 @@ function TravelSummary({ userName = "예림", itineraryDays = 2 }) {
         // 총 요약 정보 계산
         const totalPlaces = Object.values(data).flat().length; // 모든 장소의 수
         const tags = ["#액티비티", "#테마파크", "#바다"]; // 샘플 태그
-        const totalDistance = "70km"; // 이동거리 샘플 데이터
 
         setItinerarySummary({
-          totalDistance,
           totalPlaces,
           tags,
         });
@@ -52,9 +49,8 @@ function TravelSummary({ userName = "예림", itineraryDays = 2 }) {
           여행코스
         </p>
         <p>
-          <b>총 이동거리</b> | {itinerarySummary.totalDistance}
+          총 <b>{itinerarySummary.totalPlaces}</b>개 여행지/음식점/카페/숙소
         </p>
-        <p>총 {itinerarySummary.totalPlaces}개 여행지/음식점/카페/숙소</p>
         <p>{itinerarySummary.tags.join(" ")}</p>
       </div>
 

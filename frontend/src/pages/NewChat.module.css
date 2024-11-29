@@ -246,16 +246,25 @@
   display: inline-block;
   border-top-right-radius: 0;
 }
-
+.confirm {
+  background-color: white;
+  color: #333;
+  border: 3px solid #ffa94f;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin: 10px 20px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
 
 .leftButtonContainer {
   display: flex;
   justify-content: flex-start;
-  padding: 25px 0 20px 20px;
+  padding: 20px 0 20px 20px;
 }
 
 .confirmButton {
   padding: 10px 15px;
+  margin-bottom: 30px;
   font-size: 16px;
   color: #282828;
   background-color: #fff;
@@ -271,3 +280,66 @@
   color: #fff;
 }
 
+.greetingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.gptProfileIconLarge {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 20px;
+  margin-top: -80px;
+}
+
+.greetingButton {
+  background-color: #ffa94f;
+  color: white;
+  padding: 15px 30px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.confirm:hover {
+  background-color: #ffa94f; /* 호버 시 배경색 변경 */
+  color: white; /* 호버 시 글자색 변경 */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 강조 */
+}
+
+.confirm:active {
+  background-color: #ff8a00; /* 클릭 시 더 진한 배경색 */
+  transform: translateY(0); /* 클릭 시 원래 위치 */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 줄이기 */
+}
+
+.greetingButton:hover {
+  background-color: #ff9526;
+}
+
+/* 로딩 메세지 점 3개 깜빡이는 애니메이션 */
+.dots {
+  display: inline-block;
+  font-weight: bold;
+  animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+  0% {
+    content: "";
+  }
+  33% {
+    content: ".";
+  }
+  66% {
+    content: "..";
+  }
+  100% {
+    content: "...";
+  }
+}
