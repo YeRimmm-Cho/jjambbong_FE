@@ -8,10 +8,16 @@ import Route from "../components/Route";
 import Checklist from "../components/Checklist";
 import Modal from "../components/Modal";
 import styles from "./DetailedItineraryPage.module.css";
+import axios from "axios";
 
 function DetailedItineraryPage() {
   const [activeTab, setActiveTab] = useState("여행 요약");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dateRange, setDateRange] = useState([
+    new Date(),
+    new Date(new Date().setDate(new Date().getDate() + 3)),
+  ]);
+  const [selectedThemes, setSelectedThemes] = useState(["자연", "휴양"]);
   const navigate = useNavigate();
 
   const tabs = [
@@ -32,9 +38,31 @@ function DetailedItineraryPage() {
   };
 
   // 일정 확정 (확인 버튼용)
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setIsModalOpen(false); // 모달 닫기
-    navigate("/mypage"); // 마이페이지로 이동
+
+    // 카드 형식으로 저장할 일정 데이터
+    const itineraryData = {
+      title: `여행 일정 - ${dateRange[0].toLocaleDateString()} ~ ${dateRange[1].toLocaleDateString()}`,
+      imageUrl: "https://example.com/your-image.jpg", // 이미지 URL
+      date: `${dateRange[0].toLocaleDateString()} ~ ${dateRange[1].toLocaleDateString()}`,
+      tags: selectedThemes.join(", "), // 선택한 테마
+      userId: "current_user_id", // 현재 로그인한 사용자의 ID
+    };
+
+    try {
+      // 서버에 일정 데이터 전송
+      const response = await axios.post("URL", itineraryData);
+
+      // 서버에서 저장된 일정 다시 받아옴
+      const savedItinerary = response.data;
+
+      // 마이페이지로 데이터 전달
+      navigate("/mypage", { state: { newItinerary: response.data } });
+    } catch (error) {
+      console.error("일정 저장 오류:", error);
+      alert("일정을 저장하는데 오류가 발생했습니다.");
+    }
   };
 
   return (

@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/oauth2/**", "/error", "/h2-console/**").permitAll()
+                        .requestMatchers("/", "/login", "/oauth2/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
@@ -47,7 +47,6 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-
         config.setAllowCredentials(true); // 인증 정보 포함 허용
         config.setAllowedOrigins(List.of("http://172.20.10.3:3000")); // 프론트엔드 URL
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용 메서드
