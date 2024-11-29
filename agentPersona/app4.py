@@ -6,6 +6,7 @@ from db import db
 from routes import main_bp
 import os
 from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
 
 # 환경 변수 로드
 load_dotenv()
@@ -24,7 +25,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
 
 # DB 초기화
-db.init_app(app)
+db.init_app(app)  # Flask 앱과 연결
+
+# 기존 테이블 메타데이터 반영
+with app.app_context():
+    db.Model.metadata.reflect(bind=db.engine)  # Spring Boot에서 관리하는 테이블 메타데이터 반영
 
 # Blueprint 등록
 app.register_blueprint(main_bp)
