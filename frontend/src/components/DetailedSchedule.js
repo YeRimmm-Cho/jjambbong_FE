@@ -1,34 +1,23 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import TravelSpot from "./TravelSpot";
-import styles from "./DetailedSchedule.module.css"; // CSS 스타일 모듈
+import styles from "./DetailedSchedule.module.css";
 
 const DetailedSchedule = () => {
-  const [activeDay, setActiveDay] = useState(1); // 현재 활성화된 날짜
-  const [itineraryDays, setItineraryDays] = useState([]); // 여행 일정 데이터
+  const location = useLocation();
+  const rawPlaces = location.state?.places || {}; // 전달받은 places 데이터
+  const [activeDay, setActiveDay] = useState(1);
+  const [itineraryDays, setItineraryDays] = useState([]);
 
-  // JSON 데이터를 fetch로 가져오기
   useEffect(() => {
-    async function fetchItineraryData() {
-      try {
-        const response = await fetch("/mockdata/mockItinerary.json");
-        if (!response.ok) {
-          throw new Error("Failed to fetch itinerary data");
-        }
-        const data = await response.json();
-
-        // 데이터를 배열 형식으로 변환하여 상태 업데이트
-        const formattedData = Object.keys(data).map((dayKey) => ({
-          day: dayKey,
-          spots: data[dayKey],
-        }));
-        setItineraryDays(formattedData);
-      } catch (error) {
-        console.error("Error fetching itinerary data:", error);
-      }
+    if (rawPlaces) {
+      const formattedData = Object.keys(rawPlaces).map((dayKey) => ({
+        day: dayKey,
+        spots: rawPlaces[dayKey],
+      }));
+      setItineraryDays(formattedData);
     }
-
-    fetchItineraryData();
-  }, []);
+  }, [rawPlaces]);
 
   const handleTabClick = (dayIndex) => {
     setActiveDay(dayIndex);
@@ -36,7 +25,6 @@ const DetailedSchedule = () => {
 
   return (
     <div className={styles.detailedSchedule}>
-      {/* 탭 버튼 */}
       <div className={styles.tabs}>
         {itineraryDays.map((day, index) => (
           <button
@@ -50,8 +38,6 @@ const DetailedSchedule = () => {
           </button>
         ))}
       </div>
-
-      {/* 선택된 날짜의 여행 스팟 렌더링 */}
       <div className={styles.spotList}>
         {itineraryDays[activeDay - 1]?.spots.map((spot, idx) => (
           <TravelSpot key={idx} spotData={spot} />

@@ -4,41 +4,29 @@ import Dropdown from "./Dropdown";
 import TravelSpot from "./TravelSpot";
 import styles from "./TamtamPlacePreview.module.css";
 
-function TamtamPlacePreview() {
-  const [selectedDay, setSelectedDay] = useState("Day 1");
-  const [days, setDays] = useState([]);
-  const [travelSpotsByDay, setTravelSpotsByDay] = useState({});
+function TamtamPlacePreview({ places, hashTags }) {
+  const [selectedDay, setSelectedDay] = useState("Day 1"); // 기본값 설정
+  const [days, setDays] = useState(["Day 1"]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchTravelSpots() {
-      try {
-        // JSON 파일에서 데이터 가져오기 (추후 API 연결 예정)
-        const response = await fetch("/mockdata/mockItinerary.json");
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const data = await response.json();
-
-        // 날짜별 키 (Day 1, Day 2 등)를 추출
-        const dayKeys = Object.keys(data);
-        setDays(dayKeys);
-        setSelectedDay(dayKeys[0]); // 첫 번째 날짜 기본값으로 설정
-        setTravelSpotsByDay(data);
-      } catch (error) {
-        console.error("Error fetching travel spots:", error);
-      }
+    if (places && Object.keys(places).length > 0) {
+      const dayKeys = Object.keys(places); // 날짜별 키 추출
+      setDays(dayKeys); // 날짜 리스트 업데이트
+      setSelectedDay(dayKeys[0]);
+    } else {
+      setDays(["Day 1"]); // 데이터가 없으면 기본값 "Day 1" 유지
+      setSelectedDay("Day 1");
     }
-
-    fetchTravelSpots();
-  }, []);
+  }, [places]);
 
   return (
     <div className={styles.previewContainer}>
-      <div className={styles.previeTitle}>
+      <div className={styles.previewTitle}>
         <p>추천 장소 미리보기</p>
       </div>
       <div className={styles.previewSection}>
+        {/* 드롭다운과 상세보기 버튼 */}
         <div className={styles.dropdownContainer}>
           <Dropdown
             options={days}
@@ -47,15 +35,52 @@ function TamtamPlacePreview() {
           />
           <button
             className={styles.detailButton}
-            onClick={() => navigate("/detailed-itinerary")}
+            onClick={() => {
+              const savedMessages =
+                JSON.parse(sessionStorage.getItem("chatMessages")) || [];
+              const savedDateRange =
+                JSON.parse(sessionStorage.getItem("dateRange")) || [];
+              const savedCompanion =
+                sessionStorage.getItem("selectedCompanion");
+              const savedThemes =
+                JSON.parse(sessionStorage.getItem("selectedThemes")) || [];
+              navigate("/detailed-itinerary", {
+                state: {
+                  places,
+                  hashTags,
+                  savedMessages,
+                  dateRange: savedDateRange,
+                  selectedCompanion: savedCompanion,
+                  selectedThemes: savedThemes,
+                },
+              });
+            }}
           >
             여행 상세 일정 확인하기
           </button>
         </div>
+
+        {/* 장소 리스트 */}
         <div className={styles.placeList}>
-          {travelSpotsByDay[selectedDay]?.map((spot, index) => (
-            <TravelSpot key={index} spotData={spot} />
-          ))}
+          {places ? (
+            places[selectedDay]?.length > 0 ? (
+              places[selectedDay].map((spot, index) => (
+                <TravelSpot
+                  key={index}
+                  spotData={{
+                    imageUrl: spot.imageUrl || "",
+                    name: spot.name,
+                    category: spot.category,
+                    address: spot.address || "주소 정보 없음", // 기본값 처리
+                  }}
+                />
+              ))
+            ) : (
+              <p>선택한 날짜에 장소 정보가 없습니다.</p>
+            )
+          ) : (
+            <p>일정이 생성되면 장소를 보여드릴게요!</p>
+          )}
         </div>
       </div>
     </div>
