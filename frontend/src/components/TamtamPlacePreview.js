@@ -7,6 +7,7 @@ import styles from "./TamtamPlacePreview.module.css";
 function TamtamPlacePreview({ places, hashTags }) {
   const [selectedDay, setSelectedDay] = useState("Day 1"); // 기본값 설정
   const [days, setDays] = useState(["Day 1"]);
+  const [restoredHashTags, setRestoredHashTags] = useState(hashTags || []); // hashTags 복원 상태
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +20,18 @@ function TamtamPlacePreview({ places, hashTags }) {
       setSelectedDay("Day 1");
     }
   }, [places]);
+
+  useEffect(() => {
+    // hashTags가 없으면 sessionStorage에서 복원
+    if (!hashTags || hashTags.length === 0) {
+      const savedHashTags =
+        JSON.parse(sessionStorage.getItem("hashTags")) || [];
+      setRestoredHashTags(savedHashTags);
+    } else {
+      // 전달된 hashTags를 sessionStorage에 저장
+      sessionStorage.setItem("hashTags", JSON.stringify(hashTags));
+    }
+  }, [hashTags]);
 
   return (
     <div className={styles.previewContainer}>
@@ -47,7 +60,7 @@ function TamtamPlacePreview({ places, hashTags }) {
               navigate("/detailed-itinerary", {
                 state: {
                   places,
-                  hashTags,
+                  hashTags: restoredHashTags,
                   savedMessages,
                   dateRange: savedDateRange,
                   selectedCompanion: savedCompanion,

@@ -13,10 +13,14 @@ function TravelSummary({ userName = "예림" }) {
   const [sampleHighlights, setSampleHighlights] = useState([]);
 
   useEffect(() => {
+    // location에서 데이터 가져옴
     const { places, hashTags } = location.state || {};
+    const savedHashTags = JSON.parse(sessionStorage.getItem("hashTags")) || [];
+
+    const tags = hashTags?.length ? hashTags : savedHashTags;
+
     if (places) {
       const totalPlaces = Object.values(places).flat().length;
-      const tags = hashTags || [];
       const dayKeys = Object.keys(places);
       const totalDays = dayKeys.length;
 
