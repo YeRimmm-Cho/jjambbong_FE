@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Map, MapMarker, useMap } from "react-kakao-maps-sdk";
 import tamtam from "../assets/images/tamtam.svg";
 
+// PolylineComponent: 마커를 선으로 연결
 function PolylineComponent({ positions }) {
   const map = useMap();
 
@@ -31,33 +32,74 @@ function PolylineComponent({ positions }) {
 }
 
 function KakaoMap() {
-  const positions = [
-    {
-      title: "카카오",
-      latlng: { lat: 33.450705, lng: 126.570677 },
-    },
-    {
-      title: "생태연못",
-      latlng: { lat: 33.450936, lng: 126.569477 },
-    },
-    {
-      title: "텃밭",
-      latlng: { lat: 33.450879, lng: 126.56994 },
-    },
-    {
-      title: "근린공원",
-      latlng: { lat: 33.451393, lng: 126.570738 },
-    },
-  ];
+  const [positions, setPositions] = useState([]);
+
+  useEffect(() => {
+    const { kakao } = window;
+    if (!kakao || !kakao.maps || !kakao.maps.services) {
+      console.error("Kakao Maps API가 로드되지 않았습니다.");
+      return;
+    }
+
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    async function fetchItineraryData() {
+      try {
+        const response = await fetch("/mockdata/mockItinerary.json");
+        if (!response.ok) {
+          throw new Error("Failed to fetch itinerary data");
+        }
+
+        const data = await response.json();
+        const fetchedPositions = [];
+
+        for (const dayKey in data) {
+          const daySpots = data[dayKey];
+          for (const spot of daySpots) {
+            const { name, address } = spot;
+
+            await new Promise((resolve) => {
+              geocoder.addressSearch(address, (result, status) => {
+                if (status === kakao.maps.services.Status.OK) {
+                  const coordinates = {
+                    title: name,
+                    latlng: {
+                      lat: parseFloat(result[0].y),
+                      lng: parseFloat(result[0].x),
+                    },
+                  };
+                  fetchedPositions.push(coordinates);
+                } else {
+                  console.error(
+                    `Failed to fetch coordinates for ${name} (${address}):`,
+                    status
+                  );
+                }
+                resolve();
+              });
+            });
+          }
+        }
+
+        setPositions(fetchedPositions);
+      } catch (error) {
+        console.error("Error fetching itinerary data:", error);
+      }
+    }
+
+    fetchItineraryData();
+  }, []);
 
   return (
     <Map
-      center={{ lat: 33.450705, lng: 126.570677 }}
+      center={positions[0]?.latlng || { lat: 37.5665, lng: 126.978 }}
       style={{ width: "100%", height: "100%" }}
-      level={3}
+      level={9}
     >
-      <PolylineComponent positions={positions} />
+      {/* PolylineComponent: 마커를 잇는 선 */}
+      {positions.length > 1 && <PolylineComponent positions={positions} />}
 
+      {/* MapMarker: 마커 표시 */}
       {positions.map((position, index) => (
         <MapMarker
           key={`${position.title}-${index}`}
@@ -71,10 +113,10 @@ function KakaoMap() {
           }}
           title={position.title}
         >
-          {/* index가 0일 때만 InfoWindow를 표시 */}
+          {/* 첫 번째 마커에만 InfoWindow 표시 */}
           {index === 0 && (
             <div style={{ padding: "5px", color: "#000" }}>
-              {position.title}에서 여행을 시작하세요!
+              이곳에서 여행을 시작하세요!
             </div>
           )}
         </MapMarker>
