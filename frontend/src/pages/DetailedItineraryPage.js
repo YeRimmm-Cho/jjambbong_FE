@@ -9,6 +9,7 @@ import Checklist from "../components/Checklist";
 import Modal from "../components/Modal";
 import InputModal from "../components/InputModal";
 import styles from "./DetailedItineraryPage.module.css";
+import KakaoMap from "../components/KakaoMap";
 import axios from "axios";
 
 function DetailedItineraryPage() {
@@ -118,7 +119,7 @@ function DetailedItineraryPage() {
 
       {/* 오른쪽 지도 영역 */}
       <div className={styles.mapContainer}>
-        <p>지도 표시 영역 (카카오맵 API 연결 중)</p>
+        <KakaoMap />
         <button className={styles.confirmButton} onClick={handleConfirmClick}>
           일정 확정하기
         </button>

@@ -7,9 +7,21 @@ function RedirectPage() {
   const navigate = useNavigate();
   const baseUrl = "https://6596-210-94-220-228.ngrok-free.app/oauth/login"; // 배포 링크
 
-  useEffect(() => {
-    // URL에 success를 추가하여 호출
-    const urlWithSuccess = `${baseUrl}/success`;
+
+  //useEffect(() => {
+  // Spring Boot API에서 회원 정보 가져오기
+  //   axios
+  //     .get("주소 입려부분")
+  //     .then((response) => {
+  //       const userInfo = response.data;
+
+  //       // 회원 정보 저장
+  //       localStorage.setItem("userInfo", JSON.stringify(userInfo));
+
+  //useEffect(() => {
+  //  // URL에 success를 추가하여 호출
+  //  const urlWithSuccess = `${baseUrl}/success`;
+
 
     // Spring Boot API에서 회원 정보 가져오기
     axios
