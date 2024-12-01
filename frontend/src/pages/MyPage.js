@@ -196,6 +196,7 @@ function MyPage() {
       {isNicknameModalOpen && (
         <InputModal
           title="닉네임 변경"
+          description="변경할 닉네임을 입력해주세요."
           onClose={() => setIsNicknameModalOpen(false)}
           onConfirm={handleSaveNickname}
         />

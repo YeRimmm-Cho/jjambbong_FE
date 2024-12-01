@@ -28,14 +28,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/oauth2/**", "/error", "/h2-console/**").permitAll()
+                        .requestMatchers("/", "/login", "/oauth2/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 )
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("/oauth/login/success", true) //http://172.20.10.3:3000/kakaoauth
+                        .defaultSuccessUrl("https://hyunjong00.github.io/tamtam/loginSuccess", true) //http://172.20.10.3:3000/kakaoauth
                         .failureUrl("/login/error")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 );
@@ -47,9 +47,8 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-
         config.setAllowCredentials(true); // 인증 정보 포함 허용
-        config.setAllowedOrigins(List.of("http://172.20.10.3:3000")); // 프론트엔드 URL
+        config.setAllowedOrigins(List.of("https://hyunjong00.github.io/tamtam")); // 프론트엔드 URL
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용 메서드
         config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
 
@@ -67,7 +66,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://172.20.10.3:3000")); //v 프론트 url
+        config.setAllowedOrigins(List.of("https://hyunjong00.github.io/tamtam")); //v 프론트 url
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 

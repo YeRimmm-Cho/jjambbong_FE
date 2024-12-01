@@ -5,6 +5,8 @@ import iconUserProfile from "../assets/icon_userprofile.png";
 
 function RedirectPage() {
   const navigate = useNavigate();
+  const baseUrl = "https://6596-210-94-220-228.ngrok-free.app/oauth/login"; // 배포 링크
+
 
   //useEffect(() => {
   // Spring Boot API에서 회원 정보 가져오기
@@ -16,30 +18,26 @@ function RedirectPage() {
   //       // 회원 정보 저장
   //       localStorage.setItem("userInfo", JSON.stringify(userInfo));
 
-  //       // 메인 페이지로 이동
-  //       navigate("/");
-  //     })
-  //     .catch((error) => {
-  //       console.error("회원 정보 가져오기 실패:", error);
-  //     });
-  // }, [navigate]);
-  const mockUserInfo = {
-    nickname: "Hyunjong",
-    profileImage: iconUserProfile,
-  };
+  //useEffect(() => {
+  //  // URL에 success를 추가하여 호출
+  //  const urlWithSuccess = `${baseUrl}/success`;
 
-  // 회원 정보를 localStorage에 저장하고 메인 페이지로 이동
-  useEffect(() => {
-    // 회원 정보 저장
-    try {
-      localStorage.setItem("userInfo", JSON.stringify(mockUserInfo));
-      console.log("회원 정보 저장 완료");
 
-      // 저장 성공 후 메인 페이지로 이동
-      navigate("/MyPage");
-    } catch (error) {
-      console.error("회원 정보 저장 중 오류 발생:", error);
-    }
+    // Spring Boot API에서 회원 정보 가져오기
+    axios
+      .get(urlWithSuccess)
+      .then((response) => {
+        const userInfo = response.data;
+
+        // 회원 정보 저장
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+
+        // 메인 페이지로 이동
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("회원 정보 가져오기 실패:", error);
+      });
   }, [navigate]);
 
   return (
@@ -49,4 +47,5 @@ function RedirectPage() {
     </div>
   );
 }
+
 export default RedirectPage;
