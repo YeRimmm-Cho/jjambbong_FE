@@ -130,7 +130,7 @@ function NewChat() {
           })
           .catch((error) => {
             console.error("Modify API 호출 실패:", error);
-            setIsWaitingForModify(false); // 실패 시에도 상태 해제
+            setIsWaitingForModify(false); // 실패 시에 상태 해제
           });
       }
     }
@@ -240,7 +240,11 @@ function NewChat() {
         ...selectedThemes.map((theme) => `#${theme}`),
       ].filter(Boolean);
 
+      // 해시태그 상태 업데이트
       setHashTags(generatedHashTags);
+
+      // 해시태그를 sessionStorage에 저장 (페이지 전환 및 데이터 복원용)
+      sessionStorage.setItem("hashTags", JSON.stringify(generatedHashTags));
 
       // Plan 응답 버블
       addMessage(planResponse, false);
