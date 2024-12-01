@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import SidebarTabs from "../components/SidebarTabs";
 import TravelSummary from "../components/TravelSummary";
@@ -11,13 +11,22 @@ import styles from "./DetailedItineraryPage.module.css";
 import axios from "axios";
 
 function DetailedItineraryPage() {
+  const location = useLocation(); // 이전 페이지에서 상태 가져오기
+  const {
+    savedMessages = [],
+    places: initialPlaces = null,
+    hashTags = [],
+    dateRange: initialDateRange = [null, null],
+    selectedCompanion: initialCompanion = null,
+    selectedThemes: initialThemes = [],
+  } = location.state || {};
+
   const [activeTab, setActiveTab] = useState("여행 요약");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dateRange, setDateRange] = useState([
-    new Date(),
-    new Date(new Date().setDate(new Date().getDate() + 3)),
-  ]);
-  const [selectedThemes, setSelectedThemes] = useState(["자연", "휴양"]);
+  const [dateRange, setDateRange] = useState(initialDateRange);
+  const [selectedThemes, setSelectedThemes] = useState(initialThemes);
+  const [selectedCompanion, setSelectedCompanion] = useState(initialCompanion);
+  const [places, setPlaces] = useState(initialPlaces);
   const navigate = useNavigate();
 
   const tabs = [
@@ -26,6 +35,28 @@ function DetailedItineraryPage() {
     { label: "길찾기", content: <Route /> },
     { label: "체크리스트", content: <Checklist /> },
   ];
+
+  useEffect(() => {
+    // 상태를 sessionStorage에 저장
+    sessionStorage.setItem("dateRange", JSON.stringify(dateRange));
+    sessionStorage.setItem("selectedCompanion", selectedCompanion);
+    sessionStorage.setItem("selectedThemes", JSON.stringify(selectedThemes));
+    sessionStorage.setItem("places", JSON.stringify(places));
+  }, [dateRange, selectedCompanion, selectedThemes, places]);
+
+  const handleBack = () => {
+    // 이전 페이지로 이동 시 상태 전달
+    navigate(-1, {
+      state: {
+        savedMessages,
+        places,
+        hashTags,
+        dateRange,
+        selectedCompanion,
+        selectedThemes,
+      },
+    });
+  };
 
   // 모달 열기
   const handleConfirmClick = () => {
@@ -56,6 +87,9 @@ function DetailedItineraryPage() {
 
       // 서버에서 저장된 일정 다시 받아옴
       const savedItinerary = response.data;
+
+      // 세션 스토리지 초기화 (채팅 상태 초기화)
+      sessionStorage.removeItem("chatMessages");
 
       // 마이페이지로 데이터 전달
       navigate("/mypage", { state: { newItinerary: response.data } });
