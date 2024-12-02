@@ -50,6 +50,7 @@ function NewChat() {
   });
 
   const [message, setMessage] = useState("");
+  const [isInputDisabled, setIsInputDisabled] = useState(true); // 입력창 비활성화 상태
   const [isFocused, setIsFocused] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false); // 일정 생성 중 상태
   const navigate = useNavigate();
@@ -193,6 +194,20 @@ function NewChat() {
     scrollToBottom();
   }, [messages]);
 
+  // 로딩 상태 변경 시 자동 스크롤
+  useEffect(() => {
+    if (isGenerating) {
+      scrollToBottom();
+    }
+  }, [isGenerating]);
+
+  // Confirm 버튼 상태 변경 시 자동 스크롤
+  useEffect(() => {
+    if (selectedThemes.length > 0) {
+      scrollToBottom();
+    }
+  }, [selectedThemes]);
+
   // greeting API 연결
   const handleGreeting = async () => {
     if (greetingMessage) return; // 이미 메시지가 존재하면 함수 종료
@@ -252,6 +267,7 @@ function NewChat() {
       // Plan 응답 버블
       addMessage(planResponse, false);
       addMessage(followUp, false);
+      setIsInputDisabled(false); // 입력창 활성화
 
       // Modify 입력 대기 상태
       setIsWaitingForModify(true);
@@ -321,7 +337,7 @@ function NewChat() {
   };
 
   const handleSendMessage = () => {
-    if (!message.trim()) return;
+    if (message.trim() === "" || isInputDisabled) return; // 메시지가 없거나 비활성화 상태인 경우 실행 안 함
 
     addMessage(message, "user");
 
@@ -350,6 +366,7 @@ function NewChat() {
     setGreetingMessage(""); // Greeting 메시지 초기화
     setIsWaitingForModify(false);
     setIsConfirmButtonDisabled(false);
+    setIsInputDisabled(true); // 리셋 시 입력창 비활성화
     sessionStorage.clear();
   };
 
@@ -433,7 +450,11 @@ function NewChat() {
             {/* 날짜 선택 UI */}
             <div className={styles.questionStyle}>
               <div className={styles.calendarStyle}>
-                <Calendar dateRange={dateRange} onChange={setDateRange} />
+                <Calendar
+                  dateRange={dateRange}
+                  onChange={setDateRange}
+                  disabled={isConfirmButtonDisabled} // Confirm 버튼 이후 비활성화
+                />
                 <span className={styles.gptBubble}>
                   언제 여행을 떠나시나요?
                 </span>
@@ -453,7 +474,10 @@ function NewChat() {
                   <span className={styles.gptBubble}>
                     누구와 함께 여행을 떠나시나요?
                   </span>
-                  <WithWhom onCompanionSelect={handleCompanionSelect} />
+                  <WithWhom
+                    onCompanionSelect={handleCompanionSelect}
+                    disabled={isConfirmButtonDisabled}
+                  />
                 </div>
                 {selectedCompanion && (
                   <span className={styles.userBubble}>{selectedCompanion}</span>
@@ -472,6 +496,7 @@ function NewChat() {
                     onSelectionChange={(themes) => {
                       setSelectedThemes(themes);
                     }}
+                    disabled={isConfirmButtonDisabled} // Confirm 버튼 이후 비활성화
                   />
                 </div>
                 {/* 선택한 테마 표시 */}

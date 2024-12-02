@@ -1,6 +1,6 @@
 .detailedSchedule {
   width: 100%;
-  max-width: 300px;
+  max-width: 295px;
   overflow: hidden;
 }
 
@@ -14,10 +14,11 @@
 }
 
 .tabs::-webkit-scrollbar {
-  height: 4px; /* 스크롤바 두께 설정 (Chrome, Edge) */
+  height: 6px; /* 스크롤바 두께 설정 (Chrome, Edge) */
 }
 
 .tabs::-webkit-scrollbar-thumb {
+  cursor: pointer;
   background-color: #ccc; /* 스크롤바 색상 */
   border-radius: 8px;
 }
