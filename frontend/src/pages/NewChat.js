@@ -17,24 +17,156 @@ import { modifyTravelPlan } from "../api/chatApi";
 
 function NewChat() {
   const itinerary = 4;
+  // 초기 상태 복원
+  const [isGreetingAccepted, setIsGreetingAccepted] = useState(() => {
+    return JSON.parse(sessionStorage.getItem("isGreetingAccepted")) || false;
+  });
+  const [messages, setMessages] = useState(() => {
+    return JSON.parse(sessionStorage.getItem("chatMessages")) || [];
+  });
+  const [dateRange, setDateRange] = useState(() => {
+    const savedDateRange = JSON.parse(sessionStorage.getItem("dateRange"));
+    if (
+      savedDateRange &&
+      Array.isArray(savedDateRange) &&
+      savedDateRange.length === 2 &&
+      savedDateRange[0] &&
+      savedDateRange[1]
+    ) {
+      // 저장된 값이 유효한 Date 객체인지 확인
+      return [new Date(savedDateRange[0]), new Date(savedDateRange[1])];
+    }
+    return [null, null]; // 기본값
+  });
+
+  const [selectedCompanion, setSelectedCompanion] = useState(() => {
+    return sessionStorage.getItem("selectedCompanion") || null;
+  });
+  const [selectedThemes, setSelectedThemes] = useState(() => {
+    return JSON.parse(sessionStorage.getItem("selectedThemes")) || [];
+  });
+  const [places, setPlaces] = useState(() => {
+    return JSON.parse(sessionStorage.getItem("places")) || null;
+  });
+
   const [message, setMessage] = useState("");
   const [isFocused, setIsFocused] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [dateRange, setDateRange] = useState([null, null]);
-  const [selectedCompanion, setSelectedCompanion] = useState(null);
-  const [selectedThemes, setSelectedThemes] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false); // 일정 생성 중 상태
   const navigate = useNavigate();
   const chatWindowRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const [isGreetingAccepted, setIsGreetingAccepted] = useState(false); // 첫 트리거
   const [greetingMessage, setGreetingMessage] = useState(""); // 서버에서 받은 인삿말
   const [isWaitingForModify, setIsWaitingForModify] = useState(false); // Modify 대기
+  const [hashTags, setHashTags] = useState([]);
 
-  const mockUserData = {
-    profileImage: iconUserProfile,
-    nickname: "여행이 가고 싶은 예림",
-  };
+  const [userInfo, setUserInfo] = useState({
+    nickname: "", // 기본 닉네임
+    profileImage: iconUserProfile, // 기본 이미지
+  });
+
+  // 사용자 정보 가져오기
+  useEffect(() => {
+    const storedUserInfo = localStorage.getItem("userInfo");
+    if (storedUserInfo) {
+      const parsedUserInfo = JSON.parse(storedUserInfo);
+      setUserInfo(parsedUserInfo);
+    }
+  }, []);
+
+  // 상태를 sessionStorage에 저장
+  useEffect(() => {
+    sessionStorage.setItem(
+      "isGreetingAccepted",
+      JSON.stringify(isGreetingAccepted)
+    );
+    sessionStorage.setItem("chatMessages", JSON.stringify(messages));
+    sessionStorage.setItem("dateRange", JSON.stringify(dateRange));
+    sessionStorage.setItem("selectedCompanion", selectedCompanion);
+    sessionStorage.setItem("selectedThemes", JSON.stringify(selectedThemes));
+    sessionStorage.setItem("places", JSON.stringify(places));
+  }, [
+    isGreetingAccepted,
+    messages,
+    dateRange,
+    selectedCompanion,
+    selectedThemes,
+    places,
+  ]);
+
+  // Modify 상태 복원 (뒤로가기 및 초기 렌더링 시)
+  useEffect(() => {
+    const savedMessages =
+      JSON.parse(sessionStorage.getItem("chatMessages")) || [];
+    if (
+      savedMessages.length > 0 &&
+      savedMessages[savedMessages.length - 1].sender === "user"
+    ) {
+      setIsWaitingForModify(true);
+    } else {
+      setIsWaitingForModify(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const savedLastHandledMessageId = sessionStorage.getItem(
+      "lastHandledMessageId"
+    );
+
+    if (!savedLastHandledMessageId) {
+      sessionStorage.setItem("lastHandledMessageId", null);
+    }
+  }, []);
+
+  // Modify 호출 로직
+  useEffect(() => {
+    if (isWaitingForModify && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      const lastHandledMessageId = sessionStorage.getItem(
+        "lastHandledMessageId"
+      );
+
+      // 마지막 메시지가 사용자 메시지이며, 이미 처리되지 않은 경우
+      if (
+        lastMessage.sender === "user" &&
+        lastMessage.id !== lastHandledMessageId
+      ) {
+        console.log("Handling Modify for:", lastMessage.text);
+
+        handleModifyRequest(lastMessage.text)
+          .then(() => {
+            setIsWaitingForModify(false); // Modify 상태 해제
+            sessionStorage.setItem("lastHandledMessageId", lastMessage.id); // 마지막 처리 메시지 저장
+          })
+          .catch((error) => {
+            console.error("Modify API 호출 실패:", error);
+            setIsWaitingForModify(false); // 실패 시에 상태 해제
+          });
+      }
+    }
+  }, [isWaitingForModify, messages]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+
+      // 마지막 메시지가 사용자 입력인 경우 Modify 활성화
+      if (lastMessage.sender === "user") {
+        setIsWaitingForModify(true);
+      }
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    sessionStorage.setItem(
+      "isWaitingForModify",
+      JSON.stringify(isWaitingForModify)
+    );
+  }, [isWaitingForModify]);
+
+  useEffect(() => {
+    console.log("isWaitingForModify:", isWaitingForModify);
+    console.log("messages:", messages);
+  }, [isWaitingForModify, messages]);
 
   // Scroll to bottom
   const scrollToBottom = () => {
@@ -78,11 +210,13 @@ function NewChat() {
 
   // plan API 연결
   const handleConfirm = async () => {
+    const travelDays = Math.ceil(
+      (dateRange[1] - dateRange[0]) / (1000 * 60 * 60 * 24)
+    );
+
     const requestData = {
       travel_date: `${dateRange[0].toLocaleDateString()} ~ ${dateRange[1].toLocaleDateString()}`,
-      travel_days: Math.ceil(
-        (dateRange[1] - dateRange[0]) / (1000 * 60 * 60 * 24)
-      ),
+      travel_days: travelDays,
       travel_mate: selectedCompanion,
       travel_theme: selectedThemes.join(", "),
     };
@@ -90,8 +224,36 @@ function NewChat() {
     setIsGenerating(true); // 로딩 시작
 
     try {
-      const { response: planResponse, follow_up: followUp } =
-        await getTravelPlan(requestData);
+      const {
+        response: planResponse,
+        follow_up: followUp,
+        location_info,
+      } = await getTravelPlan(requestData);
+
+      // 장소 데이터 처리 및 상태 업데이트
+      if (location_info?.places) {
+        const processedPlaces = processPlaces(location_info.places);
+        setPlaces(processedPlaces);
+      }
+
+      // 해시태그 생성
+      const formatDate = (date) =>
+        `${date.getFullYear()}.${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}.${date.getDate().toString().padStart(2, "0")}`;
+
+      const generatedHashTags = [
+        `#${formatDate(dateRange[0])}부터`,
+        `#${travelDays - 1}박 ${travelDays}일`,
+        selectedCompanion ? `#${selectedCompanion}` : "",
+        ...selectedThemes.map((theme) => `#${theme}`),
+      ].filter(Boolean);
+
+      // 해시태그 상태 업데이트
+      setHashTags(generatedHashTags);
+
+      // 해시태그를 sessionStorage에 저장 (페이지 전환 및 데이터 복원용)
+      sessionStorage.setItem("hashTags", JSON.stringify(generatedHashTags));
 
       // Plan 응답 버블
       addMessage(planResponse, false);
@@ -112,15 +274,21 @@ function NewChat() {
     setIsGenerating(true); // 로딩 시작
 
     try {
-      const { response: modifyResponse, follow_up: followUp } =
-        await modifyTravelPlan(modifyRequest); // Modify API 호출
+      const {
+        response: modifyResponse,
+        follow_up: followUp,
+        location_info,
+      } = await modifyTravelPlan(modifyRequest); // Modify API 호출
+
+      // 장소 데이터 처리 및 상태 업데이트
+      if (location_info?.places) {
+        const processedPlaces = processPlaces(location_info.places);
+        setPlaces(processedPlaces);
+      }
 
       // Modify 응답 버블
       addMessage(modifyResponse, false);
       addMessage(followUp, false);
-
-      // Modify 대기 상태
-      setIsWaitingForModify(true);
     } catch (error) {
       console.error("Modify 요청 오류:", error);
       addMessage("Error: 일정 수정에 실패했습니다. 다시 시도해주세요.", false);
@@ -129,6 +297,18 @@ function NewChat() {
     }
   };
 
+  // 장소 데이터
+  const processPlaces = (rawPlaces) => {
+    const processed = {};
+    for (const [day, spots] of Object.entries(rawPlaces)) {
+      processed[day] = spots.map((spot) => ({
+        name: spot.name,
+        category: spot.category,
+        address: spot.location,
+      }));
+    }
+    return processed;
+  };
   const addMessage = (text, isUser) => {
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -142,7 +322,12 @@ function NewChat() {
     addMessage(message, "user");
 
     if (isWaitingForModify) {
-      handleModifyRequest(message); // 수정 요청 처리
+      handleModifyRequest(message)
+        .then(() => setIsWaitingForModify(false))
+        .catch((error) => {
+          console.error("Modify API 호출 실패:", error);
+          setIsWaitingForModify(false);
+        });
     }
 
     setMessage("");
@@ -153,9 +338,13 @@ function NewChat() {
     setDateRange([null, null]);
     setSelectedCompanion(null);
     setSelectedThemes([]);
+    setPlaces(null);
+    setHashTags([]);
     setIsGenerating(false); // 초기화 시 일정 생성 상태도 리셋
     setIsGreetingAccepted(false); // Greeting 초기화
     setGreetingMessage(""); // Greeting 메시지 초기화
+    setIsWaitingForModify(false);
+    sessionStorage.clear();
   };
 
   const handleProfileClick = () => {
@@ -176,7 +365,11 @@ function NewChat() {
     <div className={styles.container}>
       {/* Sidebar 영역 */}
       <Sidebar>
-        <PlacePreview itinerary={itinerary} />
+        <PlacePreview
+          places={places}
+          itinerary={itinerary}
+          hashTags={hashTags}
+        />
       </Sidebar>
 
       {/* Main Content */}
@@ -194,11 +387,11 @@ function NewChat() {
           </div>
           <div className={styles.profileContainer} onClick={handleProfileClick}>
             <img
-              src={mockUserData.profileImage}
+              src={userInfo.profileImage || iconUserProfile}
               alt="User Profile"
               className={styles.profileImage}
             />
-            <span className={styles.profileName}>{mockUserData.nickname}</span>
+            <span className={styles.profileName}>{userInfo.nickname}</span>
           </div>
         </div>
 

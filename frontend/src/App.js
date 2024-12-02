@@ -17,7 +17,7 @@ function App() {
         <Route path="/detailed-itinerary" element={<DetailedItineraryPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/new" element={<NewChat />} />
-        <Route path="/RedirectPage" element={<RedirectPage />} />
+        <Route path="/oauth2/authorization/kakao" element={<RedirectPage />} />
         <Route path="/main" element={<Main />} />
         <Route path="/*" element={<Main />} />
         <Route path="/test" element={<TestPage />} />

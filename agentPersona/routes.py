@@ -66,8 +66,8 @@ def greeting():
 def plan():
     '''사용자 입력을 받아 여행 계획을 생성'''
     data = request.json
-    # user_id = data.get("user_id") # 사용자 ID
-    user_id = 1 # 사용자 ID
+    user_id = data.get("user_id") # 사용자 ID
+    # user_id = 1 # 사용자 ID
     travel_date = data.get("travel_date")
     travel_days = data.get("travel_days")
     travel_mate = data.get("travel_mate")
@@ -117,7 +117,6 @@ def plan():
     input_data = {"travel_plan": travel_plan}
     location_response = location_chain.invoke(input_data)
     location_response = location_response.strip().strip("```json")
-    location_response = json.loads(location_response)
 
     print(travel_info)
     print(plan_response)
@@ -194,6 +193,11 @@ def plan():
     #         status=500
     #     )
 
+    location_response = json.loads(location_response)
+    print(type(plan_response))
+    print(type(travel_info))
+    print(type(location_response))
+
     plan_response_data = {"response": plan_response,
                           "follow_up": follow_up_message,
                           "user_id": user_id,
@@ -208,8 +212,8 @@ def plan():
 def modify3():
     """사용자 입력을 받아 여행 계획을 수정"""
     data = request.json
-    # user_id = data.get("user_id") # 사용자 ID
-    user_id = 1 # 사용자 ID
+    user_id = data.get("user_id") # 사용자 ID
+    # user_id = 1 # 사용자 ID
     modification_request = data.get("modify_request")
 
     # 수정 요청과 ID 확인
@@ -289,7 +293,6 @@ def modify3():
     input_data = {"travel_plan": travel_plan}
     location_response = location_chain.invoke(input_data)
     location_response = location_response.strip().strip("```json")
-    location_response = json.loads(location_response)
 
     print(modification_response)
     print(location_response)
@@ -304,6 +307,7 @@ def modify3():
     travel_info = TravelPlan.query.get(user_id).travel_info
     follow_up_message = "수정이 완료되었습니다. 추가 수정이 필요하면 말씀해주세요! 😊"
 
+    location_response = json.loads(location_response)
     # JSON 응답 생성
     modify_response_data = {
         "response": modification_response,
@@ -326,11 +330,15 @@ def save_plan():
     travel_name = data.get("travel_name")
 
     # 데이터베이스에서 여행 계획 가져오기
-    travel_plan = TravelPlan.query.get(user_id)
+    travel_plan = TravelPlan.query.filter_by(user_id=user_id).first()
 
     travel_info = travel_plan.travel_info
     plan_response = travel_plan.plan_response
     location_info = travel_plan.location_info
+
+    print(type(travel_info))
+    print(type(plan_response))
+    print(type(location_info))
 
     db.session.add(SavedPlan(
                         user_id=user_id,
@@ -357,16 +365,24 @@ def load_plan_mypage():
     if not saved_plans:
         return jsonify({"message": "저장된 여행 계획이 없습니다.", "plans": []}), 200
 
-    plans = []
-    for plan in saved_plans:
-        print(type(plan.location_info))
-        location_info = json.loads(plan.location_info)
+    print(len(saved_plans))
 
-        plan = {
-                "travel_name": plan.travel_name,
-                "hashtag": location_info.get("hash_tag")
-            }
-        plans.append(plan)
+    plans = []
+    k=0
+    while k < len(saved_plans):
+        for plan in saved_plans:
+            print(type(plan.location_info))
+            location_info = json.loads(plan.location_info)
+            print(type(location_info))
+            print(location_info)
+
+            plan = {
+                    "travel_name": plan.travel_name,
+                    "hashTag": location_info.get("hash_tag"),
+                    "createdAt": plan.created_at
+                }
+            plans.append(plan)
+            k += 1
 
     return jsonify({"message": "저장된 여행 계획을 불러왔습니다.", "plans": plans})
 

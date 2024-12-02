@@ -1,34 +1,46 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import TravelSpot from "./TravelSpot";
-import styles from "./DetailedSchedule.module.css"; // CSS 스타일 모듈
+import styles from "./DetailedSchedule.module.css";
+import { loadDetailedPlan } from "../api/savePlanApi";
 
 const DetailedSchedule = () => {
-  const [activeDay, setActiveDay] = useState(1); // 현재 활성화된 날짜
-  const [itineraryDays, setItineraryDays] = useState([]); // 여행 일정 데이터
+  const location = useLocation();
+  const { itinerary, places: chatPlaces } = location.state || {}; // 전달받은 데이터
+  const [activeDay, setActiveDay] = useState(1);
+  const [itineraryDays, setItineraryDays] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // JSON 데이터를 fetch로 가져오기
   useEffect(() => {
-    async function fetchItineraryData() {
+    const fetchItineraryData = async () => {
       try {
-        const response = await fetch("/mockdata/mockItinerary.json");
-        if (!response.ok) {
-          throw new Error("Failed to fetch itinerary data");
+        let placesData = chatPlaces; // 기본적으로 채팅 데이터를 사용
+        if (itinerary) {
+          // 저장된 일정이 있는 경우 API 호출
+          const response = await loadDetailedPlan(
+            itinerary.userId,
+            itinerary.title
+          );
+          if (response) {
+            placesData = response.places;
+          }
         }
-        const data = await response.json();
-
-        // 데이터를 배열 형식으로 변환하여 상태 업데이트
-        const formattedData = Object.keys(data).map((dayKey) => ({
-          day: dayKey,
-          spots: data[dayKey],
-        }));
-        setItineraryDays(formattedData);
+        if (placesData) {
+          const formattedData = Object.keys(placesData).map((dayKey) => ({
+            day: dayKey,
+            spots: placesData[dayKey],
+          }));
+          setItineraryDays(formattedData);
+        }
       } catch (error) {
-        console.error("Error fetching itinerary data:", error);
+        console.error("상세 일정을 불러오는 데 실패했습니다:", error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
     fetchItineraryData();
-  }, []);
+  }, [itinerary, chatPlaces]);
 
   const handleTabClick = (dayIndex) => {
     setActiveDay(dayIndex);
@@ -36,7 +48,6 @@ const DetailedSchedule = () => {
 
   return (
     <div className={styles.detailedSchedule}>
-      {/* 탭 버튼 */}
       <div className={styles.tabs}>
         {itineraryDays.map((day, index) => (
           <button
@@ -50,8 +61,6 @@ const DetailedSchedule = () => {
           </button>
         ))}
       </div>
-
-      {/* 선택된 날짜의 여행 스팟 렌더링 */}
       <div className={styles.spotList}>
         {itineraryDays[activeDay - 1]?.spots.map((spot, idx) => (
           <TravelSpot key={idx} spotData={spot} />
