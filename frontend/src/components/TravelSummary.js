@@ -15,7 +15,7 @@ function TravelSummary() {
   });
   const [sampleHighlights, setSampleHighlights] = useState([]);
   const [places, setPlaces] = useState(null);
-  const [hashTags, setHashTags] = useState([]);
+  const [formattedTags, setFormattedTags] = useState([]);
 
   // 사용자 닉네임 가져오기
   useEffect(() => {
@@ -25,6 +25,7 @@ function TravelSummary() {
     }
   }, []);
 
+  // 데이터 처리
   useEffect(() => {
     const {
       itinerary,
@@ -32,71 +33,81 @@ function TravelSummary() {
       hashTags: chatHashTags,
     } = location.state || {};
 
-    // 저장된 일정 API 호출
-    const fetchSavedItinerary = async () => {
-      try {
-        const response = await loadDetailedPlan(
-          itinerary.userId,
-          itinerary.title
-        );
-        if (response) {
-          const uniqueTags = [...new Set(response.hashTags || [])];
-          const totalPlaces = Object.values(response.places).flat().length;
-          const totalDays = Object.keys(response.places).length;
-
-          setPlaces(response.places);
-          setHashTags(uniqueTags);
-          setItinerarySummary({
-            totalPlaces,
-            tags: uniqueTags, // 중복 제거된 태그
-            totalDays,
-          });
-
-          // 하이라이트 데이터 생성
-          const highlights = Object.keys(response.places).map((dayKey) => ({
-            day: dayKey,
-            highlights: response.places[dayKey],
-          }));
-          setSampleHighlights(highlights);
-        }
-      } catch (error) {
-        console.error("저장된 일정 데이터를 불러오는 데 실패했습니다.", error);
-        alert(
-          "저장된 일정 데이터를 불러오는 데 실패했습니다. 다시 시도해주세요."
-        );
-        navigate("/mypage");
-      }
-    };
-
-    if (itinerary) {
-      // 저장된 일정 데이터가 있는 경우 API 호출
-      fetchSavedItinerary();
-    } else if (chatPlaces) {
-      // 채팅 데이터를 사용하는 경우
-      const uniqueTags = [...new Set(chatHashTags || [])];
+    if (chatPlaces && chatHashTags) {
+      // location.state에서 받은 데이터 처리
+      processHashTags(chatHashTags);
       const totalPlaces = Object.values(chatPlaces).flat().length;
       const totalDays = Object.keys(chatPlaces).length;
 
       setPlaces(chatPlaces);
-      setHashTags(uniqueTags);
       setItinerarySummary({
         totalPlaces,
-        tags: uniqueTags,
+        tags: chatHashTags,
         totalDays,
       });
 
-      // 하이라이트 데이터 생성
       const highlights = Object.keys(chatPlaces).map((dayKey) => ({
         day: dayKey,
         highlights: chatPlaces[dayKey],
       }));
       setSampleHighlights(highlights);
+    } else if (itinerary) {
+      // itinerary가 있는 경우 API 호출
+      fetchSavedItinerary(itinerary);
     } else {
-      // 데이터가 없는 경우 경고 및 채팅 페이지로 리다이렉트
+      // 데이터가 없는 경우 경고 및 리다이렉트
       alert("일정 데이터가 없습니다. 채팅을 통해 새로운 계획을 생성해주세요.");
       navigate("/new");
     }
   }, [location.state, navigate]);
+
+  // 해시태그 처리 함수
+  const processHashTags = (tags) => {
+    if (Array.isArray(tags)) {
+      // 배열 형태의 해시태그 처리
+      setFormattedTags(tags.filter((tag) => tag.startsWith("#")));
+    } else if (typeof tags === "string") {
+      // 문자열 형태의 해시태그 처리
+      const formatted = tags.split(" ").filter((tag) => tag.startsWith("#"));
+      setFormattedTags(formatted);
+    }
+  };
+
+  // API 호출 함수
+  const fetchSavedItinerary = async (itinerary) => {
+    try {
+      const response = await loadDetailedPlan(
+        itinerary.userId,
+        itinerary.title
+      );
+      if (response) {
+        const apiHashTags = response.location_info?.hash_tag || [];
+        processHashTags(apiHashTags);
+
+        const totalPlaces = Object.values(response.places).flat().length;
+        const totalDays = Object.keys(response.places).length;
+
+        setPlaces(response.places);
+        setItinerarySummary({
+          totalPlaces,
+          tags: apiHashTags,
+          totalDays,
+        });
+
+        const highlights = Object.keys(response.places).map((dayKey) => ({
+          day: dayKey,
+          highlights: response.places[dayKey],
+        }));
+        setSampleHighlights(highlights);
+      }
+    } catch (error) {
+      console.error("저장된 일정 데이터를 불러오는 데 실패했습니다.", error);
+      alert(
+        "저장된 일정 데이터를 불러오는 데 실패했습니다. 다시 시도해주세요."
+      );
+      navigate("/mypage");
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -110,7 +121,7 @@ function TravelSummary() {
           총 <b>{itinerarySummary.totalPlaces}</b>개의 여행지/음식점/카페
         </p>
         <div className={styles.tagsContainer}>
-          {hashTags.map((tag, index) => (
+          {formattedTags.map((tag, index) => (
             <span key={index} className={styles.tag}>
               {tag}
             </span>

@@ -21,15 +21,17 @@ function TamtamPlacePreview({ places, hashTags }) {
     }
   }, [places]);
 
+  // 해시태그 처리 로직 정리
   useEffect(() => {
-    // hashTags가 없으면 sessionStorage에서 복원
-    if (!hashTags || hashTags.length === 0) {
+    if (hashTags && hashTags.length > 0) {
+      // 전달된 해시태그가 있는 경우
+      setRestoredHashTags(hashTags);
+      sessionStorage.setItem("hashTags", JSON.stringify(hashTags));
+    } else {
+      // 전달된 해시태그가 없을 경우 sessionStorage에서 복원
       const savedHashTags =
         JSON.parse(sessionStorage.getItem("hashTags")) || [];
       setRestoredHashTags(savedHashTags);
-    } else {
-      // 전달된 hashTags를 sessionStorage에 저장
-      sessionStorage.setItem("hashTags", JSON.stringify(hashTags));
     }
   }, [hashTags]);
 
