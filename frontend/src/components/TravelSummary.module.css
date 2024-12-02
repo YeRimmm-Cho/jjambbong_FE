@@ -25,7 +25,7 @@
 
 .itinerarySummary {
   background-color: #e9f5db;
-  padding: 10px;
+  padding: 10px 35px;
   font-size: 15px;
   margin-bottom: 5px;
 }
@@ -55,4 +55,17 @@
   justify-content: flex-start;
   align-items: flex-start;
   padding: 0;
+}
+
+.tagsContainer {
+  padding: 10px 0px 15px 0px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  color: #8d8d8d;
+  font-size: 14px;
+  margin: 0;
 }

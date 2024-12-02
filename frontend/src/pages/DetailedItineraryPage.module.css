@@ -14,25 +14,25 @@
 }
 
 .mapContainer {
-  flex: 1; /* 남은 공간 지도 영역에 할당 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #eeeeee;
+  position: relative; /* 버튼을 맵 위에 올리기 위해 상대 위치 설정 */
+  width: 100%;
+  height: 100%;
 }
 
 .confirmButton {
-  position: absolute;
-  bottom: 35px;
-  right: 40px;
-  padding: 10px 20px;
+  position: absolute; /* 맵 위에 버튼을 배치 */
+  bottom: 20px;
+  right: 20px;
+  z-index: 10; /* 맵보다 위에 표시되도록 설정 */
   background-color: #ffa94f;
   color: white;
   border: none;
   border-radius: 8px;
+  padding: 10px 20px;
   font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
 }
 

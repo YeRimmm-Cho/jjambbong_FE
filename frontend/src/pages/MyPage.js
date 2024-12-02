@@ -11,6 +11,13 @@ import SearchBar from "../components/SearchBar";
 import MyItinerary from "../components/MyItinerary";
 
 function MyPage() {
+  const handleLogout = () => {
+    // localStorage 데이터 삭제
+    localStorage.clear();
+    // 로그아웃 후 페이지 이동
+    window.location.href = "/";
+  };
+
   const navigate = useNavigate();
 
   // 사용자 정보 상태
@@ -110,7 +117,9 @@ function MyPage() {
             메인 페이지
           </span>
           <span>|</span>
-          <span className={styles.link}>로그아웃</span>
+          <span className={styles.link} onClick={handleLogout}>
+            로그아웃
+          </span>
         </div>
       </div>
       <div className={styles.profileContainer}>
@@ -187,6 +196,7 @@ function MyPage() {
       {isNicknameModalOpen && (
         <InputModal
           title="닉네임 변경"
+          description="변경할 닉네임을 입력해주세요."
           onClose={() => setIsNicknameModalOpen(false)}
           onConfirm={handleSaveNickname}
         />
