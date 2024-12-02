@@ -8,7 +8,8 @@ import axios from "axios";
 function KakaoLoginPage() {
   const API_KAKAO_URL = process.env.REACT_APP_API_KAKAO_URL;
 
-  const url = "{API_KAKAO_URL}/oauth2/authorization/kakao"; // 배포 링크
+  const url =
+    "http://ec2-43-203-239-48.ap-northeast-2.compute.amazonaws.com:8080/oauth2/authorization/kakao"; // 배포 링크
 
   const onClick = () => {
     window.location.href = url;

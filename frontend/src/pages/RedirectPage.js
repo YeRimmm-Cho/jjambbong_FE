@@ -6,7 +6,8 @@ import iconUserProfile from "../assets/icon_userprofile.png";
 function RedirectPage() {
   const navigate = useNavigate();
   const API_KAKAO_URL = process.env.REACT_APP_API_KAKAO_URL;
-  const baseUrl = "/oauth/login"; // 배포 링크
+  const baseUrl =
+    "http://ec2-43-203-239-48.ap-northeast-2.compute.amazonaws.com:8080/oauth/login"; // 배포 링크
 
   //useEffect(() => {
   // Spring Boot API에서 회원 정보 가져오기

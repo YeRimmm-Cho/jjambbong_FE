@@ -58,6 +58,7 @@ function NewChat() {
   const [greetingMessage, setGreetingMessage] = useState(""); // 서버에서 받은 인삿말
   const [isWaitingForModify, setIsWaitingForModify] = useState(false); // Modify 대기
   const [hashTags, setHashTags] = useState([]);
+  const [isConfirmButtonDisabled, setIsConfirmButtonDisabled] = useState(false);
 
   const [userInfo, setUserInfo] = useState({
     nickname: "", // 기본 닉네임
@@ -187,6 +188,7 @@ function NewChat() {
       }
     };
   }, []);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -210,6 +212,9 @@ function NewChat() {
 
   // plan API 연결
   const handleConfirm = async () => {
+    if (isConfirmButtonDisabled) return; // 버튼이 비활성화된 경우 실행 차단
+
+    setIsConfirmButtonDisabled(true); // 버튼 비활성화
     const travelDays = Math.ceil(
       (dateRange[1] - dateRange[0]) / (1000 * 60 * 60 * 24)
     );
@@ -235,25 +240,14 @@ function NewChat() {
         const processedPlaces = processPlaces(location_info.places);
         setPlaces(processedPlaces);
       }
-
-      // 해시태그 생성
-      const formatDate = (date) =>
-        `${date.getFullYear()}.${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}.${date.getDate().toString().padStart(2, "0")}`;
-
-      const generatedHashTags = [
-        `#${formatDate(dateRange[0])}부터`,
-        `#${travelDays - 1}박 ${travelDays}일`,
-        selectedCompanion ? `#${selectedCompanion}` : "",
-        ...selectedThemes.map((theme) => `#${theme}`),
-      ].filter(Boolean);
-
-      // 해시태그 상태 업데이트
-      setHashTags(generatedHashTags);
-
-      // 해시태그를 sessionStorage에 저장 (페이지 전환 및 데이터 복원용)
-      sessionStorage.setItem("hashTags", JSON.stringify(generatedHashTags));
+      // API에서 받은 해시태그 데이터 저장
+      if (location_info?.hash_tag) {
+        setHashTags(location_info.hash_tag);
+        sessionStorage.setItem(
+          "hashTags",
+          JSON.stringify(location_info.hash_tag)
+        );
+      }
 
       // Plan 응답 버블
       addMessage(planResponse, false);
@@ -264,6 +258,7 @@ function NewChat() {
     } catch (error) {
       console.error("Plan 요청 오류:", error);
       addMessage("Error: 일정 생성에 실패했습니다. 다시 시도해주세요.", false);
+      setIsConfirmButtonDisabled(false); // 실패 시 버튼 다시 활성화
     } finally {
       setIsGenerating(false); // 로딩 상태 종료
     }
@@ -284,6 +279,15 @@ function NewChat() {
       if (location_info?.places) {
         const processedPlaces = processPlaces(location_info.places);
         setPlaces(processedPlaces);
+      }
+
+      // API에서 받은 해시태그 데이터 저장
+      if (location_info?.hash_tag) {
+        setHashTags(location_info.hash_tag);
+        sessionStorage.setItem(
+          "hashTags",
+          JSON.stringify(location_info.hash_tag)
+        );
       }
 
       // Modify 응답 버블
@@ -331,6 +335,7 @@ function NewChat() {
     }
 
     setMessage("");
+    setTimeout(scrollToBottom, 0);
   };
 
   const handleReset = () => {
@@ -344,6 +349,7 @@ function NewChat() {
     setIsGreetingAccepted(false); // Greeting 초기화
     setGreetingMessage(""); // Greeting 메시지 초기화
     setIsWaitingForModify(false);
+    setIsConfirmButtonDisabled(false);
     sessionStorage.clear();
   };
 
@@ -485,6 +491,7 @@ function NewChat() {
                 <button
                   className={styles.confirmButton}
                   onClick={handleConfirm}
+                  disabled={isConfirmButtonDisabled}
                 >
                   이 정보를 바탕으로 탐탐이에게 일정 추천받기
                 </button>
