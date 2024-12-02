@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import SidebarTabs from "../components/SidebarTabs";
 import TravelSummary from "../components/TravelSummary";
@@ -7,17 +7,30 @@ import DetailedSchedule from "../components/DetailedSchedule";
 import Route from "../components/Route";
 import Checklist from "../components/Checklist";
 import Modal from "../components/Modal";
+import InputModal from "../components/InputModal";
 import styles from "./DetailedItineraryPage.module.css";
+import KakaoMap from "../components/KakaoMap";
 import axios from "axios";
 
 function DetailedItineraryPage() {
+  const location = useLocation(); // 이전 페이지에서 상태 가져오기
+  const {
+    savedMessages = [],
+    places: initialPlaces = null,
+    hashTags = [],
+    dateRange: initialDateRange = [null, null],
+    selectedCompanion: initialCompanion = null,
+    selectedThemes: initialThemes = [],
+  } = location.state || {};
+
   const [activeTab, setActiveTab] = useState("여행 요약");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dateRange, setDateRange] = useState([
-    new Date(),
-    new Date(new Date().setDate(new Date().getDate() + 3)),
-  ]);
-  const [selectedThemes, setSelectedThemes] = useState(["자연", "휴양"]);
+  const [isInputModalOpen, setIsInputModalOpen] = useState(false);
+  const [dateRange, setDateRange] = useState(initialDateRange);
+  const [selectedThemes, setSelectedThemes] = useState(initialThemes);
+  const [selectedCompanion, setSelectedCompanion] = useState(initialCompanion);
+  const [places, setPlaces] = useState(initialPlaces);
+  const [travelName, setTravelName] = useState(""); // 일정 제목 저장
   const navigate = useNavigate();
 
   const tabs = [
@@ -27,41 +40,67 @@ function DetailedItineraryPage() {
     { label: "체크리스트", content: <Checklist /> },
   ];
 
-  // 모달 열기
+  useEffect(() => {
+    // 상태를 sessionStorage에 저장
+    sessionStorage.setItem("dateRange", JSON.stringify(dateRange));
+    sessionStorage.setItem("selectedCompanion", selectedCompanion);
+    sessionStorage.setItem("selectedThemes", JSON.stringify(selectedThemes));
+    sessionStorage.setItem("places", JSON.stringify(places));
+  }, [dateRange, selectedCompanion, selectedThemes, places]);
+
+  const handleBack = () => {
+    // 이전 페이지로 이동 시 상태 전달
+    navigate(-1, {
+      state: {
+        savedMessages,
+        places,
+        hashTags,
+        dateRange,
+        selectedCompanion,
+        selectedThemes,
+      },
+    });
+  };
+
+  // 일정 확정 모달 열기
   const handleConfirmClick = () => {
     setIsModalOpen(true);
   };
 
-  // 모달 닫기 (X 버튼용)
+  // 일정 확정 모달 닫기
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
 
-  // 일정 확정 (확인 버튼용)
-  const handleConfirm = async () => {
-    setIsModalOpen(false); // 모달 닫기
+  // 제목 입력 모달 열기
+  const handleOpenInputModal = () => {
+    setIsModalOpen(false); // 일정 확정 모달 닫기
+    setIsInputModalOpen(true); // 제목 입력 모달 열기
+  };
 
-    // 카드 형식으로 저장할 일정 데이터
+  // 제목 입력 모달 닫기
+  const handleInputModalClose = () => {
+    setIsInputModalOpen(false);
+  };
+
+  // 제목 입력 확인
+  const handleInputModalConfirm = async (title) => {
+    setTravelName(title); // 제목 저장
+    setIsInputModalOpen(false); // 제목 입력 모달 닫기
+
     const itineraryData = {
-      title: `여행 일정 - ${dateRange[0].toLocaleDateString()} ~ ${dateRange[1].toLocaleDateString()}`,
-      imageUrl: "https://example.com/your-image.jpg", // 이미지 URL
-      date: `${dateRange[0].toLocaleDateString()} ~ ${dateRange[1].toLocaleDateString()}`,
-      tags: selectedThemes.join(", "), // 선택한 테마
-      userId: "current_user_id", // 현재 로그인한 사용자의 ID
+      title,
+      date: `${dateRange[0]?.toLocaleDateString()} ~ ${dateRange[1]?.toLocaleDateString()}`,
+      tags: selectedThemes.join(", "),
+      userId: "current_user_id",
     };
 
     try {
-      // 서버에 일정 데이터 전송
       const response = await axios.post("URL", itineraryData);
-
-      // 서버에서 저장된 일정 다시 받아옴
-      const savedItinerary = response.data;
-
-      // 마이페이지로 데이터 전달
       navigate("/mypage", { state: { newItinerary: response.data } });
     } catch (error) {
       console.error("일정 저장 오류:", error);
-      alert("일정을 저장하는데 오류가 발생했습니다.");
+      alert("일정을 저장하는 데 문제가 발생했습니다.");
     }
   };
 
@@ -80,7 +119,7 @@ function DetailedItineraryPage() {
 
       {/* 오른쪽 지도 영역 */}
       <div className={styles.mapContainer}>
-        <p>지도 표시 영역 (카카오맵 API 연결 중)</p>
+        <KakaoMap />
         <button className={styles.confirmButton} onClick={handleConfirmClick}>
           일정 확정하기
         </button>
@@ -92,7 +131,18 @@ function DetailedItineraryPage() {
           title="일정 확정"
           message="일정이 확정되면 마이페이지로 이동됩니다. 일정을 확정하시겠습니까?"
           onClose={handleModalClose}
-          onConfirm={handleConfirm}
+          onConfirm={handleOpenInputModal}
+        />
+      )}
+
+      {/* 제목 입력 모달 */}
+      {isInputModalOpen && (
+        <InputModal
+          title="일정 제목 입력"
+          description="확정할 일정의 제목을 입력해주세요."
+          placeholder="ex) 제주도 가족여행"
+          onClose={handleInputModalClose}
+          onConfirm={handleInputModalConfirm}
         />
       )}
     </div>
