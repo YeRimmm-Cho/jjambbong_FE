@@ -28,6 +28,7 @@
 .logoContainer {
   display: flex;
   flex-direction: row-reverse;
+  cursor: pointer;
   gap: 10px;
 }
 

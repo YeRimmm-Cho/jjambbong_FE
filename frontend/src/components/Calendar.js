@@ -1,9 +1,11 @@
-import CalendarComponent from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import './Calendar.module.css';
+import CalendarComponent from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import "./Calendar.module.css";
 
-function Calendar({ dateRange, onChange }) {
+function Calendar({ dateRange, onChange, disabled }) {
   const handleDateChange = (range) => {
+    if (disabled) return; // 비활성화 상태면 선택 방지
+
     if (range && range.length === 2) {
       const [start, end] = range;
       const dayLimit = (end - start) / (1000 * 60 * 60 * 24);
@@ -20,7 +22,11 @@ function Calendar({ dateRange, onChange }) {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        cursor: disabled ? "not-allowed" : "pointer",
+      }}
+    >
       <CalendarComponent
         onChange={handleDateChange}
         selectRange={true}
