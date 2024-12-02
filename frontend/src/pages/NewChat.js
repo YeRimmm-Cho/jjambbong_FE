@@ -59,10 +59,19 @@ function NewChat() {
   const [isWaitingForModify, setIsWaitingForModify] = useState(false); // Modify 대기
   const [hashTags, setHashTags] = useState([]);
 
-  const mockUserData = {
-    profileImage: iconUserProfile,
-    nickname: "여행이 가고 싶은 예림",
-  };
+  const [userInfo, setUserInfo] = useState({
+    nickname: "", // 기본 닉네임
+    profileImage: iconUserProfile, // 기본 이미지
+  });
+
+  // 사용자 정보 가져오기
+  useEffect(() => {
+    const storedUserInfo = localStorage.getItem("userInfo");
+    if (storedUserInfo) {
+      const parsedUserInfo = JSON.parse(storedUserInfo);
+      setUserInfo(parsedUserInfo);
+    }
+  }, []);
 
   // 상태를 sessionStorage에 저장
   useEffect(() => {
@@ -378,11 +387,11 @@ function NewChat() {
           </div>
           <div className={styles.profileContainer} onClick={handleProfileClick}>
             <img
-              src={mockUserData.profileImage}
+              src={userInfo.profileImage || iconUserProfile}
               alt="User Profile"
               className={styles.profileImage}
             />
-            <span className={styles.profileName}>{mockUserData.nickname}</span>
+            <span className={styles.profileName}>{userInfo.nickname}</span>
           </div>
         </div>
 
