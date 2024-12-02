@@ -9,6 +9,7 @@ import styles from "./MyPage.module.css";
 import InputModal from "../components/InputModal";
 import SearchBar from "../components/SearchBar";
 import MyItinerary from "../components/MyItinerary";
+import { loadTravelPlans } from "../api/savePlanApi";
 
 function MyPage() {
   const navigate = useNavigate();
@@ -18,22 +19,43 @@ function MyPage() {
   const [nickname, setNickname] = useState("닉네임 없음");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
 
-  const [itineraries] = useState([]);
+  const [itineraries, setItineraries] = useState([]);
   const [filteredItineraries, setFilteredItineraries] = useState([]);
 
   // SearchBar
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("latest");
 
-  // 컴포넌트 마운트 시 localStorage에서 사용자 정보 불러오기
   useEffect(() => {
     const storedUserInfo = localStorage.getItem("userInfo");
 
     if (storedUserInfo) {
       const userInfo = JSON.parse(storedUserInfo);
-      setProfileImage(userInfo.profileImage || iconUserProfile); // 기본 프로필 이미지 설정
+      setProfileImage(userInfo.profileImage || iconUserProfile);
       setNickname(userInfo.nickname || "닉네임 없음");
+      //setUserId(userInfo.id || "default_user_id");
     }
+
+    // 여행 계획 불러오기 API 호출
+    const fetchItineraries = async () => {
+      try {
+        const userId = "default_user_id"; // TODO: 로그인 성공하면 id도 로컬스토리지에서 (userInfo.id)
+        const response = await loadTravelPlans(userId);
+        if (response?.plans) {
+          const formattedPlans = response.plans.map((plan, index) => ({
+            id: index, // 임시 ID 생성
+            title: plan.travel_name,
+            tags: plan.hashtag,
+            date: "생성 날짜 필요",
+          }));
+          setItineraries(formattedPlans);
+        }
+      } catch (error) {
+        console.error("일정 불러오기 실패:", error);
+      }
+    };
+
+    fetchItineraries();
   }, []);
 
   // 일정 필터링
@@ -165,6 +187,11 @@ function MyPage() {
         <div className={styles.itineraryList}>
           {filteredItineraries.map((itinerary) => (
             <MyItinerary key={itinerary.id} itinerary={itinerary} />
+            // <MyItinerary
+            //   key={itinerary.id}
+            //   itinerary={itinerary}
+            //   userId={userId}
+            // />
           ))}
         </div>
       ) : (
