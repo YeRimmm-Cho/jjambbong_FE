@@ -9,6 +9,7 @@ import Checklist from "../components/Checklist";
 import Modal from "../components/Modal";
 import InputModal from "../components/InputModal";
 import styles from "./DetailedItineraryPage.module.css";
+import { saveTravelPlan, loadDetailedPlan } from "../api/savePlanApi";
 import KakaoMap from "../components/KakaoMap";
 import axios from "axios";
 
@@ -85,22 +86,20 @@ function DetailedItineraryPage() {
 
   // 제목 입력 확인
   const handleInputModalConfirm = async (title) => {
-    setTravelName(title); // 제목 저장
-    setIsInputModalOpen(false); // 제목 입력 모달 닫기
-
-    const itineraryData = {
-      title,
-      date: `${dateRange[0]?.toLocaleDateString()} ~ ${dateRange[1]?.toLocaleDateString()}`,
-      tags: selectedThemes.join(", "),
-      userId: "current_user_id",
-    };
-
     try {
-      const response = await axios.post("URL", itineraryData);
-      navigate("/mypage", { state: { newItinerary: response.data } });
+      setIsInputModalOpen(false); // 모달 닫기
+
+      // 사용자 정보 가져오기
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      const userId = userInfo?.userId || "default_user_id"; // 사용자 ID 설정
+
+      // API 요청
+      const response = await saveTravelPlan(userId, title); // 여행 이름만 전달
+      alert(response.message); // 성공 메시지 표시
+      navigate("/mypage"); // 저장 완료 후 마이페이지로 이동
     } catch (error) {
       console.error("일정 저장 오류:", error);
-      alert("일정을 저장하는 데 문제가 발생했습니다.");
+      alert(error.message || "일정을 저장하는 데 문제가 발생했습니다.");
     }
   };
 
