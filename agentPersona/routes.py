@@ -194,6 +194,10 @@ def plan():
     #     )
 
     location_response = json.loads(location_response)
+    print(type(plan_response))
+    print(type(travel_info))
+    print(type(location_response))
+
     plan_response_data = {"response": plan_response,
                           "follow_up": follow_up_message,
                           "user_id": user_id,
@@ -326,11 +330,15 @@ def save_plan():
     travel_name = data.get("travel_name")
 
     # 데이터베이스에서 여행 계획 가져오기
-    travel_plan = TravelPlan.query.get(user_id)
+    travel_plan = TravelPlan.query.filter_by(user_id=user_id).first()
 
     travel_info = travel_plan.travel_info
     plan_response = travel_plan.plan_response
     location_info = travel_plan.location_info
+
+    print(type(travel_info))
+    print(type(plan_response))
+    print(type(location_info))
 
     db.session.add(SavedPlan(
                         user_id=user_id,
@@ -357,16 +365,24 @@ def load_plan_mypage():
     if not saved_plans:
         return jsonify({"message": "저장된 여행 계획이 없습니다.", "plans": []}), 200
 
-    plans = []
-    for plan in saved_plans:
-        print(type(plan.location_info))
-        location_info = json.loads(plan.location_info)
+    print(len(saved_plans))
 
-        plan = {
-                "travel_name": plan.travel_name,
-                "hashtag": location_info.get("hash_tag")
-            }
-        plans.append(plan)
+    plans = []
+    k=0
+    while k < len(saved_plans):
+        for plan in saved_plans:
+            print(type(plan.location_info))
+            location_info = json.loads(plan.location_info)
+            print(type(location_info))
+            print(location_info)
+
+            plan = {
+                    "travel_name": plan.travel_name,
+                    "hashTag": location_info.get("hash_tag"),
+                    "createdAt": plan.created_at
+                }
+            plans.append(plan)
+            k += 1
 
     return jsonify({"message": "저장된 여행 계획을 불러왔습니다.", "plans": plans})
 
