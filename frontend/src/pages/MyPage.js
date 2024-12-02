@@ -12,6 +12,13 @@ import MyItinerary from "../components/MyItinerary";
 import { loadTravelPlans } from "../api/savePlanApi";
 
 function MyPage() {
+  const handleLogout = () => {
+    // localStorage 데이터 삭제
+    localStorage.clear();
+    // 로그아웃 후 페이지 이동
+    window.location.href = "/";
+  };
+
   const navigate = useNavigate();
 
   // 사용자 정보 상태
@@ -46,7 +53,7 @@ function MyPage() {
             id: index, // 임시 ID 생성
             title: plan.travel_name,
             tags: plan.hashtag,
-            date: "생성 날짜 필요",
+            date: "생성 날짜 필요", //TODO: 프론트에서 하기
           }));
           setItineraries(formattedPlans);
         }
@@ -132,7 +139,9 @@ function MyPage() {
             메인 페이지
           </span>
           <span>|</span>
-          <span className={styles.link}>로그아웃</span>
+          <span className={styles.link} onClick={handleLogout}>
+            로그아웃
+          </span>
         </div>
       </div>
       <div className={styles.profileContainer}>
