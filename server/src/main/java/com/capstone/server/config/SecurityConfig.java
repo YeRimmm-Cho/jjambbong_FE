@@ -52,6 +52,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("https://tamtam2.shop", "http://localhost:3000", "https://HyunJong00.github.io", "https://hyunjong00.github.io/JJAMBBONG/")); // 프론트엔드 URL
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용 메서드
         config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
+        config.setExposedHeaders(List.of("Authorization")); // 필요 시 노출할 헤더 추가
 
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
