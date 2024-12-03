@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 )
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("https://tamtam2.shop/oauth2/loginSuccess", true) //http://172.20.10.3:3000/kakaoauth
+                        .defaultSuccessUrl("/oauth2/loginSuccess", true) //http://172.20.10.3:3000/kakaoauth
                         .failureUrl("/login/error")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 );
