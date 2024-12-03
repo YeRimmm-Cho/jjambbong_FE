@@ -28,9 +28,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/", "/login", "/oauth2/authorize", "/error", "/oauth2/loginSuccess").permitAll() // 인증 불필요 경로
-                    .requestMatchers().authenticated() // 인증 필요 경로
-                    .anyRequest().authenticated()
+                        .requestMatchers("/", "/login", "/oauth2/**", "/error").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
@@ -52,7 +51,6 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("https://tamtam2.shop", "http://localhost:3000", "https://HyunJong00.github.io", "https://hyunjong00.github.io/JJAMBBONG/")); // 프론트엔드 URL
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용 메서드
         config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
-        config.setExposedHeaders(List.of("Authorization")); // 필요 시 노출할 헤더 추가
 
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
@@ -71,7 +69,6 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("https://tamtam2.shop", "http://localhost:3000", "https://HyunJong00.github.io", "https://hyunjong00.github.io/JJAMBBONG/")); //v 프론트 url
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("Authorization")); // 필요 시 노출할 헤더 추가
 
         source.registerCorsConfiguration("/**", config);
         return source;
