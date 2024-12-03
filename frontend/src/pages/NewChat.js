@@ -8,7 +8,6 @@ import Thema from "../components/Thema";
 import styles from "./NewChat.module.css";
 import iconSend from "../assets/icon_send.png";
 import iconGptProfile from "../assets/icon_gptprofile.png";
-import iconUserProfile from "../assets/icon_userprofile.png";
 import iconClear from "../assets/icon_clear.png";
 import { v4 as uuidv4 } from "uuid";
 import { getGreetingMessage } from "../api/chatApi";
@@ -60,6 +59,7 @@ function NewChat() {
   const [isWaitingForModify, setIsWaitingForModify] = useState(false); // Modify 대기
   const [hashTags, setHashTags] = useState([]);
   const [isConfirmButtonDisabled, setIsConfirmButtonDisabled] = useState(false);
+  const iconUserProfile = "/icon_userprofile.png";
 
   const [userInfo, setUserInfo] = useState({
     nickname: "", // 기본 닉네임
@@ -413,6 +413,9 @@ function NewChat() {
               src={userInfo.profileImage || iconUserProfile}
               alt="User Profile"
               className={styles.profileImage}
+              onError={(e) => {
+                e.target.src = iconUserProfile; // 이미지 로드 실패 시 기본 이미지 사용
+              }}
             />
             <span className={styles.profileName}>{userInfo.nickname}</span>
           </div>

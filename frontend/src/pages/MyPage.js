@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as Logo } from "../assets/logo.svg";
 import cameraIcon from "../assets/icon_camera.png";
-import iconUserProfile from "../assets/icon_userprofile.png"; // 기본 프로필 이미지
 import iconEdit from "../assets/icon_edit.png"; // 닉네임 변경 아이콘
 import iconNoItinerary from "../assets/icon_noItinerary.png"; // 일정 생성 아직 안 했을 때
 import styles from "./MyPage.module.css";
@@ -22,6 +21,7 @@ function MyPage() {
   const navigate = useNavigate();
 
   // 사용자 정보 상태
+  const iconUserProfile = "/icon_userprofile.png";
   const [profileImage, setProfileImage] = useState(iconUserProfile);
   const [nickname, setNickname] = useState("닉네임 없음");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
@@ -150,9 +150,12 @@ function MyPage() {
           onClick={handleClickProfileImage}
         >
           <img
-            src={profileImage}
+            src={profileImage || iconUserProfile}
             alt="Profile"
             className={styles.profileImage}
+            onError={(e) => {
+              e.target.src = iconUserProfile; // 로드 실패 시 기본 이미지로 대체
+            }}
           />
           <img
             src={cameraIcon}
