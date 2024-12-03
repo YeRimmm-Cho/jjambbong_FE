@@ -25,7 +25,7 @@ repositories {
 
 dependencies {
 	// for cookie
-	implementation 'org.springframework.session:spring-session-core
+	implementation 'org.springframework.session:spring-session-core'
 	
 	// Spring Boot Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
