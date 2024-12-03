@@ -66,8 +66,8 @@ def greeting():
 def plan():
     '''사용자 입력을 받아 여행 계획을 생성'''
     data = request.json
-    user_id = data.get("user_id") # 사용자 ID
-    # user_id = 1 # 사용자 ID
+    # user_id = data.get("user_id") # 사용자 ID
+    user_id = 1 # 사용자 ID
     travel_date = data.get("travel_date")
     travel_days = data.get("travel_days")
     travel_mate = data.get("travel_mate")
@@ -212,8 +212,8 @@ def plan():
 def modify3():
     """사용자 입력을 받아 여행 계획을 수정"""
     data = request.json
-    user_id = data.get("user_id") # 사용자 ID
-    # user_id = 1 # 사용자 ID
+    # user_id = data.get("user_id") # 사용자 ID
+    user_id = 1 # 사용자 ID
     modification_request = data.get("modify_request")
 
     # 수정 요청과 ID 확인
