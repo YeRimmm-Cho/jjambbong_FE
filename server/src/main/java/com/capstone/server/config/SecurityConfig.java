@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/oauth2/**", "/error").permitAll()
+                        .requestMatchers("/", "/login", "/oauth2/**", "/error", "/oauth2/loginSuccess").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
