@@ -1,4 +1,4 @@
-package com.capstone.server.config;
+`package com.capstone.server.config;
 
 import com.capstone.server.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -24,21 +25,37 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/oauth2/authorize", "/error").permitAll() // 인증 불필요 경로
-                        .requestMatchers("/oauth2/loginSuccess").authenticated() // 인증 필요 경로
-                        .anyRequest().authenticated() // 나머지 요청은 인증 필요
+                    .requestMatchers("/", "/login", "/oauth2/authorize", "/error").permitAll() // 인증 불필요 경로
+                    .requestMatchers("/oauth2/loginSuccess").authenticated() // 인증 필요 경로
+                    .anyRequest().authenticated()
                 )
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin())) // H2 콘솔 등 프레임 설정
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                )
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("https://tamtam2.shop/oauth2/loginSuccess", false) // OAuth2 성공 후 리디렉션 경로
-                        .failureUrl("/login/error") // OAuth2 실패 경로
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)) // 사용자 정보 처리 서비스
+                        .defaultSuccessUrl("http://localhost:3000/oauth2/loginSuccess", false) //http://172.20.10.3:3000/kakaoauth
+                        .failureUrl("/login/error")
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true); // 인증 정보 포함 허용
+        config.setAllowedOrigins(List.of("https://tamtam2.shop", "http://localhost:3000", "https://HyunJong00.github.io", "https://hyunjong00.github.io/JJAMBBONG/")); // 프론트엔드 URL
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용 메서드
+        config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
+        config.setExposedHeaders(List.of("Authorization")); // 필요 시 노출할 헤더 추가
+
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
     @Bean
@@ -50,18 +67,12 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowCredentials(true); // 인증 정보 포함 허용
-        config.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "https://tamtam2.shop",
-                "https://HyunJong00.github.io",
-                "https://hyunjong00.github.io/JJAMBBONG/"
-        )); // 허용할 프론트엔드 도메인
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
-        config.setAllowedHeaders(List.of("*")); // 모든 요청 헤더 허용
-        config.setExposedHeaders(List.of("Authorization")); // 필요 시 노출할 헤더 추가
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://HyunJong00.github.io", "https://hyunjong00.github.io/JJAMBBONG/")); //v 프론트 url
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
 
-        source.registerCorsConfiguration("/**", config); // 모든 경로에 CORS 설정 적용
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }
