@@ -41,7 +41,7 @@ llm = OpenAI(
 main_bp = Blueprint("main", __name__)
 
 # 5: 라우트 생성
-@main_bp.route("/api/greeting", methods=["POST"])
+@main_bp.route("/greeting", methods=["POST"])
 def greeting():
     '''에이전트가 인사말을 건넴'''
     data = request.json
@@ -62,7 +62,7 @@ def greeting():
         content_type="application/json; charset=utf-8"
     )
 
-@main_bp.route("/api/plan", methods=["POST"])
+@main_bp.route("/plan", methods=["POST"])
 def plan():
     '''사용자 입력을 받아 여행 계획을 생성'''
     data = request.json
@@ -208,7 +208,7 @@ def plan():
         content_type="application/json; charset=utf-8"
     )
 
-@main_bp.route("/api/modify", methods=["POST"])
+@main_bp.route("/modify", methods=["POST"])
 def modify3():
     """사용자 입력을 받아 여행 계획을 수정"""
     data = request.json
@@ -322,7 +322,7 @@ def modify3():
         content_type="application/json; charset=utf-8"
     )
 
-@main_bp.route("/api/saveplan", methods=["POST"])
+@main_bp.route("/saveplan", methods=["POST"])
 def save_plan():
     '''여행 계획을 저장'''
     data = request.json
@@ -354,7 +354,7 @@ def save_plan():
 
     return jsonify({"message": message})
 
-@main_bp.route("/api/loadplan_mypage", methods=["POST"])
+@main_bp.route("/loadplan_mypage", methods=["POST"])
 def load_plan_mypage():
     '''저장된 여행 계획을 불러오기'''
     data = request.json
@@ -386,7 +386,7 @@ def load_plan_mypage():
 
     return jsonify({"message": "저장된 여행 계획을 불러왔습니다.", "plans": plans})
 
-@main_bp.route("/api/loadplan", methods=["POST"])
+@main_bp.route("/loadplan", methods=["POST"])
 def load_plan():
     '''저장된 여행 계획을 불러오기'''
     data = request.json
