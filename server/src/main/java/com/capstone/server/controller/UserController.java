@@ -25,7 +25,7 @@ public class UserController {
     /**
      * 로그인 성공 후 사용자 정보를 반환하는 엔드포인트
      */
-    @GetMapping("/login/success")
+    @GetMapping("/loginSuccess")
     public ResponseEntity<?> loginSuccess(Authentication authentication) {
         try {
             // OAuth2 사용자 정보 추출
