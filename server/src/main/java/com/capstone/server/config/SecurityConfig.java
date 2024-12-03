@@ -10,6 +10,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+
 
 import java.util.List;
 
@@ -25,22 +29,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/oauth2/**", "/error").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .headers(headers -> headers
-                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
-                )
-                .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("http://localhost:3000/oauth2/loginSuccess", false) //http://172.20.10.3:3000/kakaoauth
-                        .failureUrl("/login/error")
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                );
-
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/", "/login", "/oauth/**", "/error").permitAll()
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+            .oauth2Login(oauth -> oauth
+                .defaultSuccessUrl("http://localhost:3000/oauth2/loginSuccess", true)
+                .failureUrl("/login/error")
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+            );
+    
         return http.build();
+    }
+
+    @Bean
+    public CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
+        cookieSerializer.setSameSite("None"); // SameSite=None 설정
+        cookieSerializer.setUseSecureCookie(true); // HTTPS 요청에서만 쿠키 전송
+        return cookieSerializer;
     }
 
     @Bean
