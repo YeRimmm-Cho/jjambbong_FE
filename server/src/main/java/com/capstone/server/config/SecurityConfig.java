@@ -10,6 +10,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.springframework.session.web.http.CookieSerializer;
 
 import java.util.List;
 
