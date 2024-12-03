@@ -28,17 +28,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/oauth2/**", "/error", "/oauth2/loginSuccess").permitAll()
+                        .requestMatchers("/", "/login", "/oauth2/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 )
-                .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 필요한 경우 세션 생성
-                )
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("http://localhost:3000/oauth2/loginSuccess", true) //http://172.20.10.3:3000/kakaoauth
+                        .defaultSuccessUrl("http://localhost:3000/oauth2/loginSuccess", false) //http://172.20.10.3:3000/kakaoauth
                         .failureUrl("/login/error")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 );
@@ -69,7 +66,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("https://tamtam2.shop", "http://localhost:3000", "https://HyunJong00.github.io", "https://hyunjong00.github.io/JJAMBBONG/")); //v 프론트 url
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://HyunJong00.github.io", "https://hyunjong00.github.io/JJAMBBONG/")); //v 프론트 url
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 
