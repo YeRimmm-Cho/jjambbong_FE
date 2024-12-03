@@ -34,8 +34,11 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 )
+                .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 필요한 경우 세션 생성
+                )
                 .oauth2Login(oauth -> oauth
-                        .defaultSuccessUrl("http://localhost:3000/oauth2/loginSuccess", false) //http://172.20.10.3:3000/kakaoauth
+                        .defaultSuccessUrl("http://localhost:3000/oauth2/loginSuccess", true) //http://172.20.10.3:3000/kakaoauth
                         .failureUrl("/login/error")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                 );
