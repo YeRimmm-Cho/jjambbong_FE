@@ -1,0 +1,137 @@
+.loginPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(90deg, #ffe0b2, #ffe593);
+  position: relative;
+  overflow: hidden;
+}
+
+.backgroundAirplane {
+  position: absolute;
+  top: 50%; /* 화면 중앙에 위치 */
+  left: 50%;
+  transform: translate(-50%, -50%); /* 가운데 정렬 */
+  width: 1300px; /* 비행기 크기 */
+  height: auto;
+  z-index: 0; /* 배경에 위치 */
+}
+
+.logoContainer {
+  position: absolute;
+  top: 5px;
+  left: 50px;
+  margin-top: -30px;
+  display: flex;
+  align-items: center;
+  z-index: 10; /* 비행기 위로 */
+  cursor: pointer;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.logoTitle {
+  font-family: "LogoFont";
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.loginContainer {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  height: 450px;
+  width: 450px;
+  z-index: 10;
+}
+
+.loginContainer h1 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-top: -5px;
+}
+
+.loginContainer p {
+  font-size: 14px;
+  color: gray;
+  margin-bottom: 40px;
+}
+
+.loginForm {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin-bottom: 5px;
+}
+
+.errorMessage {
+  color: red;
+  font-size: 12px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.loginBtn {
+  width: 100%;
+  padding: 12px;
+  background-color: #ffa94f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 55px;
+  text-align: center;
+}
+
+.loginBtn:hover {
+  background-color: #fb8c00;
+}
+
+.signupLink {
+  margin-top: 20px;
+  font-size: 14px;
+  color: gray;
+  text-align: right; /* 오른쪽 정렬 */
+  width: 100%;
+}
+
+.signupLinkText {
+  color: #ffa94f;
+  text-decoration: none;
+}
+
+.signupLinkText:hover {
+  text-decoration: underline;
+}

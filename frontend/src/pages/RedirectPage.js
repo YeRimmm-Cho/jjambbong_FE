@@ -6,8 +6,7 @@ import iconUserProfile from "../assets/icon_userprofile.png";
 function RedirectPage() {
   const navigate = useNavigate();
   const API_KAKAO_URL = process.env.REACT_APP_API_KAKAO_URL;
-  const baseUrl =
-    "http://ec2-43-203-239-48.ap-northeast-2.compute.amazonaws.com:8080/oauth/login"; // 배포 링크
+  const baseUrl = `${API_KAKAO_URL}/oauth/login`; // 배포 링크
 
   //useEffect(() => {
   // Spring Boot API에서 회원 정보 가져오기
@@ -25,8 +24,9 @@ function RedirectPage() {
 
     // Spring Boot API에서 회원 정보 가져오기
     axios
-      .get(urlWithSuccess)
+      .get(urlWithSuccess, { withCredentials: true })
       .then((response) => {
+        console.log("서버 응답 데이터:", response.data); // 디버깅
         const userInfo = response.data;
 
         // 회원 정보 저장
@@ -37,7 +37,10 @@ function RedirectPage() {
         navigate("/");
       })
       .catch((error) => {
-        console.error("회원 정보 가져오기 실패:", error);
+        console.error(
+          "회원 정보 가져오기 실패:",
+          error.response || error.message
+        );
       });
   }, [navigate]);
 

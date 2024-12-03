@@ -9,13 +9,22 @@ import InputModal from "../components/InputModal";
 import SearchBar from "../components/SearchBar";
 import MyItinerary from "../components/MyItinerary";
 import { loadTravelPlans } from "../api/savePlanApi";
+import { logout } from "../api/userApi";
 
 function MyPage() {
-  const handleLogout = () => {
-    // localStorage 데이터 삭제
-    localStorage.clear();
-    // 로그아웃 후 페이지 이동
-    window.location.href = "/";
+  const handleLogout = async () => {
+    try {
+      // 로그아웃 API 호출
+      await logout();
+      // 로컬스토리지 데이터 삭제
+      localStorage.clear();
+      alert("로그아웃되었습니다.");
+      // 로그아웃 후 로그인 페이지로 이동
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("로그아웃에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   const navigate = useNavigate();
@@ -32,6 +41,10 @@ function MyPage() {
   // SearchBar
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("latest");
+
+  const handleLogoClick = () => {
+    navigate("/"); // 메인 페이지 경로로 이동
+  };
 
   useEffect(() => {
     const storedUserInfo = localStorage.getItem("userInfo");
@@ -130,7 +143,7 @@ function MyPage() {
   return (
     <div className={styles.myPage}>
       <div className={styles.header}>
-        <div className={styles.logoContainer}>
+        <div className={styles.logoContainer} onClick={handleLogoClick}>
           <h2 className={styles.logotitle}>탐라, 탐나</h2>
           <Logo className={styles.logo} />
         </div>

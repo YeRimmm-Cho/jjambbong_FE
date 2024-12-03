@@ -71,7 +71,7 @@ function Main() {
         <a href="/mypage" className={styles.button}>
           마이페이지
         </a>
-        <a href="/kakaoLogin" className={styles.button}>
+        <a href="/login" className={styles.button}>
           로그인하기
         </a>
       </div>
