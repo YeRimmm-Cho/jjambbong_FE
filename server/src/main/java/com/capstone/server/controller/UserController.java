@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/oauth")
+@RequestMapping("/oauth2")
 public class UserController {
 
     private final UserRepository userRepository;
