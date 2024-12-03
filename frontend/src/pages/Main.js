@@ -4,10 +4,10 @@ import styles from "./Main.module.css";
 import { ReactComponent as Logo } from "../assets/logo.svg";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
-import iconUserProfile from "../assets/icon_userprofile.png";
 
 function Main() {
   const navigate = useNavigate();
+  const iconUserProfile = "/icon_userprofile.png";
   const [userInfo, setUserInfo] = useState({
     nickname: "", // 기본 닉네임
     profileImage: iconUserProfile, // 기본 이미지
@@ -54,6 +54,9 @@ function Main() {
             src={userInfo.profileImage || iconUserProfile}
             alt="User Profile"
             className={styles.profileImage}
+            onError={(e) => {
+              e.target.src = iconUserProfile; // 로드 실패 시 기본 이미지로 대체
+            }}
           />
           <span className={styles.profileName}>
             {userInfo.nickname || "로그인이 필요합니다"}
@@ -68,7 +71,7 @@ function Main() {
         <a href="/mypage" className={styles.button}>
           마이페이지
         </a>
-        <a href="/kakaoLogin" className={styles.button}>
+        <a href="/login" className={styles.button}>
           로그인하기
         </a>
       </div>

@@ -24,4 +24,6 @@ public class User {
 
     private String profileImageUrl;  // 프로필 이미지 URL을 저장할 필드 추가
 
+    private String password;
+
 }

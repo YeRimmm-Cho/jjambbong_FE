@@ -8,7 +8,6 @@ import Thema from "../components/Thema";
 import styles from "./NewChat.module.css";
 import iconSend from "../assets/icon_send.png";
 import iconGptProfile from "../assets/icon_gptprofile.png";
-import iconUserProfile from "../assets/icon_userprofile.png";
 import iconClear from "../assets/icon_clear.png";
 import { v4 as uuidv4 } from "uuid";
 import { getGreetingMessage } from "../api/chatApi";
@@ -50,6 +49,7 @@ function NewChat() {
   });
 
   const [message, setMessage] = useState("");
+  const [isInputDisabled, setIsInputDisabled] = useState(true); // 입력창 비활성화 상태
   const [isFocused, setIsFocused] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false); // 일정 생성 중 상태
   const navigate = useNavigate();
@@ -58,6 +58,8 @@ function NewChat() {
   const [greetingMessage, setGreetingMessage] = useState(""); // 서버에서 받은 인삿말
   const [isWaitingForModify, setIsWaitingForModify] = useState(false); // Modify 대기
   const [hashTags, setHashTags] = useState([]);
+  const [isConfirmButtonDisabled, setIsConfirmButtonDisabled] = useState(false);
+  const iconUserProfile = "/icon_userprofile.png";
 
   const [userInfo, setUserInfo] = useState({
     nickname: "", // 기본 닉네임
@@ -187,9 +189,24 @@ function NewChat() {
       }
     };
   }, []);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // 로딩 상태 변경 시 자동 스크롤
+  useEffect(() => {
+    if (isGenerating) {
+      scrollToBottom();
+    }
+  }, [isGenerating]);
+
+  // Confirm 버튼 상태 변경 시 자동 스크롤
+  useEffect(() => {
+    if (selectedThemes.length > 0) {
+      scrollToBottom();
+    }
+  }, [selectedThemes]);
 
   // greeting API 연결
   const handleGreeting = async () => {
@@ -210,6 +227,9 @@ function NewChat() {
 
   // plan API 연결
   const handleConfirm = async () => {
+    if (isConfirmButtonDisabled) return; // 버튼이 비활성화된 경우 실행 차단
+
+    setIsConfirmButtonDisabled(true); // 버튼 비활성화
     const travelDays = Math.ceil(
       (dateRange[1] - dateRange[0]) / (1000 * 60 * 60 * 24)
     );
@@ -235,35 +255,26 @@ function NewChat() {
         const processedPlaces = processPlaces(location_info.places);
         setPlaces(processedPlaces);
       }
-
-      // 해시태그 생성
-      const formatDate = (date) =>
-        `${date.getFullYear()}.${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}.${date.getDate().toString().padStart(2, "0")}`;
-
-      const generatedHashTags = [
-        `#${formatDate(dateRange[0])}부터`,
-        `#${travelDays - 1}박 ${travelDays}일`,
-        selectedCompanion ? `#${selectedCompanion}` : "",
-        ...selectedThemes.map((theme) => `#${theme}`),
-      ].filter(Boolean);
-
-      // 해시태그 상태 업데이트
-      setHashTags(generatedHashTags);
-
-      // 해시태그를 sessionStorage에 저장 (페이지 전환 및 데이터 복원용)
-      sessionStorage.setItem("hashTags", JSON.stringify(generatedHashTags));
+      // API에서 받은 해시태그 데이터 저장
+      if (location_info?.hash_tag) {
+        setHashTags(location_info.hash_tag);
+        sessionStorage.setItem(
+          "hashTags",
+          JSON.stringify(location_info.hash_tag)
+        );
+      }
 
       // Plan 응답 버블
       addMessage(planResponse, false);
       addMessage(followUp, false);
+      setIsInputDisabled(false); // 입력창 활성화
 
       // Modify 입력 대기 상태
       setIsWaitingForModify(true);
     } catch (error) {
       console.error("Plan 요청 오류:", error);
       addMessage("Error: 일정 생성에 실패했습니다. 다시 시도해주세요.", false);
+      setIsConfirmButtonDisabled(false); // 실패 시 버튼 다시 활성화
     } finally {
       setIsGenerating(false); // 로딩 상태 종료
     }
@@ -284,6 +295,15 @@ function NewChat() {
       if (location_info?.places) {
         const processedPlaces = processPlaces(location_info.places);
         setPlaces(processedPlaces);
+      }
+
+      // API에서 받은 해시태그 데이터 저장
+      if (location_info?.hash_tag) {
+        setHashTags(location_info.hash_tag);
+        sessionStorage.setItem(
+          "hashTags",
+          JSON.stringify(location_info.hash_tag)
+        );
       }
 
       // Modify 응답 버블
@@ -317,7 +337,7 @@ function NewChat() {
   };
 
   const handleSendMessage = () => {
-    if (!message.trim()) return;
+    if (message.trim() === "" || isInputDisabled) return; // 메시지가 없거나 비활성화 상태인 경우 실행 안 함
 
     addMessage(message, "user");
 
@@ -331,6 +351,7 @@ function NewChat() {
     }
 
     setMessage("");
+    setTimeout(scrollToBottom, 0);
   };
 
   const handleReset = () => {
@@ -344,6 +365,8 @@ function NewChat() {
     setIsGreetingAccepted(false); // Greeting 초기화
     setGreetingMessage(""); // Greeting 메시지 초기화
     setIsWaitingForModify(false);
+    setIsConfirmButtonDisabled(false);
+    setIsInputDisabled(true); // 리셋 시 입력창 비활성화
     sessionStorage.clear();
   };
 
@@ -390,6 +413,9 @@ function NewChat() {
               src={userInfo.profileImage || iconUserProfile}
               alt="User Profile"
               className={styles.profileImage}
+              onError={(e) => {
+                e.target.src = iconUserProfile; // 이미지 로드 실패 시 기본 이미지 사용
+              }}
             />
             <span className={styles.profileName}>{userInfo.nickname}</span>
           </div>
@@ -427,7 +453,11 @@ function NewChat() {
             {/* 날짜 선택 UI */}
             <div className={styles.questionStyle}>
               <div className={styles.calendarStyle}>
-                <Calendar dateRange={dateRange} onChange={setDateRange} />
+                <Calendar
+                  dateRange={dateRange}
+                  onChange={setDateRange}
+                  disabled={isConfirmButtonDisabled} // Confirm 버튼 이후 비활성화
+                />
                 <span className={styles.gptBubble}>
                   언제 여행을 떠나시나요?
                 </span>
@@ -447,7 +477,10 @@ function NewChat() {
                   <span className={styles.gptBubble}>
                     누구와 함께 여행을 떠나시나요?
                   </span>
-                  <WithWhom onCompanionSelect={handleCompanionSelect} />
+                  <WithWhom
+                    onCompanionSelect={handleCompanionSelect}
+                    disabled={isConfirmButtonDisabled}
+                  />
                 </div>
                 {selectedCompanion && (
                   <span className={styles.userBubble}>{selectedCompanion}</span>
@@ -466,6 +499,7 @@ function NewChat() {
                     onSelectionChange={(themes) => {
                       setSelectedThemes(themes);
                     }}
+                    disabled={isConfirmButtonDisabled} // Confirm 버튼 이후 비활성화
                   />
                 </div>
                 {/* 선택한 테마 표시 */}
@@ -485,6 +519,7 @@ function NewChat() {
                 <button
                   className={styles.confirmButton}
                   onClick={handleConfirm}
+                  disabled={isConfirmButtonDisabled}
                 >
                   이 정보를 바탕으로 탐탐이에게 일정 추천받기
                 </button>
