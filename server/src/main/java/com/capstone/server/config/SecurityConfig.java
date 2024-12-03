@@ -1,4 +1,4 @@
-`package com.capstone.server.config;
+package com.capstone.server.config;
 
 import com.capstone.server.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
