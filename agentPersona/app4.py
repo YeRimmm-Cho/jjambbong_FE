@@ -32,7 +32,7 @@ with app.app_context():
     db.Model.metadata.reflect(bind=db.engine)  # Spring Boot에서 관리하는 테이블 메타데이터 반영
 
 # Blueprint 등록
-app.register_blueprint(main_bp)
+app.register_blueprint(main_bp, url_prefix="/api")
 
 # langsmith 변경
 os.environ['LANGCHAIN_PROJECT'] = 'agentPersona'
