@@ -68,7 +68,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000", "https://HyunJong00.github.io", "https://hyunjong00.github.io/JJAMBBONG/")); //v 프론트 url
+        config.setAllowedOrigins(List.of("https://tamtam2.shop", "http://localhost:3000", "https://HyunJong00.github.io", "https://hyunjong00.github.io/JJAMBBONG/")); //v 프론트 url
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 
