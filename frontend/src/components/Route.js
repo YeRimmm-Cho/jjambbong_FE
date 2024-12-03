@@ -14,24 +14,23 @@ const Route = () => {
       console.log("Kakao Maps API 로드 성공");
     }
 
-    // 여행 데이터 로드
-    async function fetchItineraryData() {
+    // sessionStorage에서 여행 데이터 로드
+    const fetchItineraryData = () => {
       try {
-        const response = await fetch("/mockdata/mockItinerary.json");
-        if (!response.ok) {
-          throw new Error("Failed to fetch itinerary data");
+        const storedData = JSON.parse(sessionStorage.getItem("places"));
+        if (storedData) {
+          const formattedData = Object.keys(storedData).map((dayKey) => ({
+            day: dayKey,
+            spots: storedData[dayKey],
+          }));
+          setItineraryDays(formattedData);
+        } else {
+          console.error("No itinerary data found in sessionStorage.");
         }
-        const data = await response.json();
-
-        const formattedData = Object.keys(data).map((dayKey) => ({
-          day: dayKey,
-          spots: data[dayKey],
-        }));
-        setItineraryDays(formattedData);
       } catch (error) {
-        console.error("Error fetching itinerary data:", error);
+        console.error("Error parsing itinerary data:", error);
       }
-    }
+    };
 
     fetchItineraryData();
   }, []);
@@ -42,27 +41,49 @@ const Route = () => {
   };
 
   // 주소를 좌표로 변환
-  const getCoordinates = async (address) => {
-    console.log("주소 요청 중:", address); // 요청 디버깅
+  const getCoordinates = async (address, name) => {
     return new Promise((resolve, reject) => {
       const geocoder = new window.kakao.maps.services.Geocoder();
 
+      // 1. 주소 검색
       geocoder.addressSearch(address, (result, status) => {
-        console.log("addressSearch 결과:", result, status); // 결과 디버깅
-
-        if (status === window.kakao.maps.services.Status.OK) {
+        if (
+          status === window.kakao.maps.services.Status.OK &&
+          result.length > 0
+        ) {
           const coordinates = {
             lat: parseFloat(result[0].y),
             lng: parseFloat(result[0].x),
           };
-          console.log("좌표 변환 성공:", coordinates); // 성공 디버깅
+          console.log("주소 검색 성공:", coordinates);
           setCoordinatesLog((prev) => [...prev, { address, coordinates }]);
           resolve(coordinates);
         } else {
-          console.error("좌표 변환 실패:", address, status); // 실패 디버깅
-          reject(
-            new Error("Failed to find coordinates for address: " + address)
-          );
+          console.error("주소 검색 실패:", address, status);
+
+          // 2. 주소 검색 실패 시 name으로 키워드 검색
+          const places = new window.kakao.maps.services.Places();
+          places.keywordSearch(name, (results, keywordStatus) => {
+            if (
+              keywordStatus === window.kakao.maps.services.Status.OK &&
+              results.length > 0
+            ) {
+              const coordinates = {
+                lat: parseFloat(results[0].y),
+                lng: parseFloat(results[0].x),
+              };
+              console.log("키워드 검색 성공 (name):", coordinates);
+              setCoordinatesLog((prev) => [...prev, { name, coordinates }]);
+              resolve(coordinates);
+            } else {
+              console.error("키워드 검색 실패:", name, keywordStatus);
+              reject(
+                new Error(
+                  "Failed to find coordinates for address or name: " + address
+                )
+              );
+            }
+          });
         }
       });
     });
@@ -77,10 +98,11 @@ const Route = () => {
     return pairs;
   };
 
+  // Kakao 지도 길찾기 링크 생성
   const createKakaoMapLink = async (start, end) => {
     try {
-      const startCoords = await getCoordinates(start.address);
-      const endCoords = await getCoordinates(end.address);
+      const startCoords = await getCoordinates(start.address, start.name);
+      const endCoords = await getCoordinates(end.address, end.name);
 
       const baseUrl = "https://map.kakao.com/link";
       const fromInfo = `from/${encodeURIComponent(start.name)},${startCoords.lat},${startCoords.lng}`;
@@ -125,11 +147,6 @@ const Route = () => {
                   {/* 출발지 정보 */}
                   <div className={styles.spotInfo}>
                     <div className={styles.imageContainer}>
-                      <img
-                        src={start.imageUrl}
-                        alt={start.name}
-                        className={styles.spotImage}
-                      />
                       <span className={styles.imageLabel}>{start.name}</span>
                     </div>
                   </div>
@@ -141,11 +158,6 @@ const Route = () => {
                   <div className={styles.spotInfo}>
                     <div className={styles.imageContainer}>
                       <span className={styles.imageLabel}>{end.name}</span>
-                      <img
-                        src={end.imageUrl}
-                        alt={end.name}
-                        className={styles.spotImage}
-                      />
                     </div>
                   </div>
                 </div>
