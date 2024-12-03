@@ -28,8 +28,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/", "/login", "/oauth2/authorize", "/error").permitAll() // 인증 불필요 경로
-                    .requestMatchers("/oauth2/loginSuccess").authenticated() // 인증 필요 경로
+                    .requestMatchers("/", "/login", "/oauth2/authorize", "/error", "/oauth2/loginSuccess").permitAll() // 인증 불필요 경로
+                    .requestMatchers().authenticated() // 인증 필요 경로
                     .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
