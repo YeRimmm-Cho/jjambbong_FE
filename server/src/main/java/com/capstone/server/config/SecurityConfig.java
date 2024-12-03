@@ -42,9 +42,14 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true); // 인증 정보 포함 허용
-        config.setAllowedOrigins(List.of("https://tamtam2.shop", "http://localhost:3000")); // 허용할 프론트 URL
+        config.setAllowedOrigins(List.of(
+                "https://tamtam2.shop",         // 프론트 배포 주소
+                "http://localhost:3000",        // 로컬 개발용 주소
+                "https://hyunjong00.github.io/tamtam" // 다른 프론트 배포 주소 추가
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용 메서드
         config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
+        config.setExposedHeaders(List.of("Authorization")); // 클라이언트에서 접근 가능한 헤더
 
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
@@ -60,9 +65,14 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000", "https://tamtam2.shop"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "https://tamtam2.shop",
+                "https://hyunjong00.github.io/tamtam" // 추가된 프론트 배포 주소
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization")); // 필요 시 클라이언트에서 접근 가능한 헤더 추가
 
         source.registerCorsConfiguration("/**", config);
         return source;
