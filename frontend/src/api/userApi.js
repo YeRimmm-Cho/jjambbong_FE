@@ -19,7 +19,7 @@ export const signup = async (email, nickname, password, confirmPassword) => {
 // Login API (로그인)
 export const login = async (email, password) => {
   try {
-    const response = await apiClient.post("/api/auth/login", {
+    const response = await apiClient.post("/auth/login", {
       email,
       password,
     });
@@ -41,7 +41,7 @@ export const login = async (email, password) => {
 // 로그아웃
 export const logout = async () => {
   try {
-    const response = await apiClient.post("/api/auth/logout");
+    const response = await apiClient.post("/auth/logout");
     return response.data; // 로그아웃 응답 데이터 반환
   } catch (error) {
     console.error("Logout API Error:", error.response?.data || error.message);
