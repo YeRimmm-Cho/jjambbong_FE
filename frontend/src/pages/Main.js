@@ -4,10 +4,11 @@ import styles from "./Main.module.css";
 import { ReactComponent as Logo } from "../assets/logo.svg";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Main() {
   const navigate = useNavigate();
-  const iconUserProfile = "/icon_userprofile.png";
+  const iconUserProfile = "../assets/icon_userprofile.png";
   const [userInfo, setUserInfo] = useState({
     nickname: "", // 기본 닉네임
     profileImage: iconUserProfile, // 기본 이미지
@@ -21,10 +22,12 @@ function Main() {
       setUserInfo(parsedUserInfo);
     }
   }, []);
-
+  const handleLogoClick = () => {
+    navigate("/");
+  };
   const handleProfileClick = () => {
     if (!userInfo.nickname) {
-      navigate("/kakaoLogin"); // 닉네임이 없으면 로그인 페이지로 이동
+      navigate("login"); // 닉네임이 없으면 로그인 페이지로 이동
     } else {
       navigate("/mypage"); // 닉네임이 있으면 마이페이지로 이동
     }
@@ -42,7 +45,7 @@ function Main() {
   return (
     <div className={styles.screen}>
       <div className={styles.Header}>
-        <div className={styles.logoContainer}>
+        <div className={styles.logoContainer} onClick={handleLogoClick}>
           <Logo className={styles.logo} />
           <h2 className={styles.logotitle}>탐라, 탐나</h2>
         </div>
@@ -65,15 +68,15 @@ function Main() {
       </div>
 
       <div className={styles.mainButtons}>
-        <a href="/new" className={styles.button}>
+        <Link to="/new" className={styles.button}>
           여행 일정 생성하기
-        </a>
-        <a href="/mypage" className={styles.button}>
+        </Link>
+        <Link to="/mypage" className={styles.button}>
           마이페이지
-        </a>
-        <a href="/login" className={styles.button}>
+        </Link>
+        <Link to="/login" className={styles.button}>
           로그인하기
-        </a>
+        </Link>
       </div>
 
       {/* YouTube 동영상 */}
