@@ -19,10 +19,8 @@ function TravelSummary() {
 
   // 사용자 닉네임 가져오기
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    if (userInfo && typeof userInfo.nickname === "string") {
-      setUserName(userInfo.nickname);
-    }
+    const nickname = localStorage.getItem("nickname") || "사용자";
+    setUserName(nickname);
   }, []);
 
   // 데이터 처리
