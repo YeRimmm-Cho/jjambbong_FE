@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // OPTIONS 요청 허용
-                        .requestMatchers("/api/auth/**").permitAll() // 인증 필요 없는 엔드포인트
+                        .requestMatchers("/auth/**").permitAll() // 인증 필요 없는 엔드포인트
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 );
 
