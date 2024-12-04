@@ -45,7 +45,7 @@ public class SecurityConfig {
                 "http://localhost:3000", // 로컬 개발 환경
                 "localhost:3000",
                 "https://tamtam2.shop",  // 배포 환경
-                "https://hyunjong00.github.io/tamtam"
+                "https://hyunjong00.github.io/JJAMBBONG"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
