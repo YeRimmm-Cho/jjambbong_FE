@@ -32,6 +32,10 @@ function DetailedItineraryPage() {
   const [selectedCompanion, setSelectedCompanion] = useState(initialCompanion);
   const [places, setPlaces] = useState(initialPlaces);
   const [travelName, setTravelName] = useState(""); // 일정 제목 저장
+  const [userInfo, setUserInfo] = useState({
+    userId: "default_user_id",
+    nickname: "닉네임 없음",
+  });
   const navigate = useNavigate();
 
   const tabs = [
@@ -40,6 +44,14 @@ function DetailedItineraryPage() {
     { label: "길찾기", content: <Route /> },
     { label: "체크리스트", content: <Checklist /> },
   ];
+
+  // 사용자 정보 가져오기
+  useEffect(() => {
+    const userId = localStorage.getItem("userId") || "default_user_id";
+    const nickname = localStorage.getItem("nickname") || "닉네임 없음";
+
+    setUserInfo({ userId, nickname });
+  }, []);
 
   useEffect(() => {
     // 상태를 sessionStorage에 저장
@@ -90,8 +102,7 @@ function DetailedItineraryPage() {
       setIsInputModalOpen(false); // 모달 닫기
 
       // 사용자 정보 가져오기
-      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-      const userId = userInfo?.userId || "default_user_id"; // 사용자 ID 설정
+      const { userId } = userInfo;
 
       // API 요청
       const response = await saveTravelPlan(userId, title); // 여행 이름만 전달
