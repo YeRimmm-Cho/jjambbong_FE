@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class UserController {
 
     private final UserRepository userRepository;
@@ -71,5 +71,16 @@ public class UserController {
         }
         blacklistService.addTokenToBlacklist(token);
         return ResponseEntity.ok(Map.of("message", "Logout successful!"));
+    }
+
+    // OPTIONS 요청 처리 (특정 경로에 대해서만)
+    @RequestMapping(method = RequestMethod.OPTIONS, value = "/signup")
+    public ResponseEntity<?> handleSignupOptions() {
+        return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS, value = "/login")
+    public ResponseEntity<?> handleLoginOptions() {
+        return ResponseEntity.ok().build();
     }
 }

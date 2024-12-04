@@ -66,13 +66,12 @@ function NewChat() {
     profileImage: iconUserProfile, // 기본 이미지
   });
 
-  // 사용자 정보 가져오기
+  // 사용자 정보 로드
   useEffect(() => {
-    const storedUserInfo = localStorage.getItem("userInfo");
-    if (storedUserInfo) {
-      const parsedUserInfo = JSON.parse(storedUserInfo);
-      setUserInfo(parsedUserInfo);
-    }
+    const nickname = localStorage.getItem("nickname") || "닉네임 없음";
+    const profileImage =
+      localStorage.getItem("profileImage") || "/icon_userprofile.png";
+    setUserInfo({ nickname, profileImage });
   }, []);
 
   // 상태를 sessionStorage에 저장
