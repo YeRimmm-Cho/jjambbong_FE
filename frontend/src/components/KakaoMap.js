@@ -43,18 +43,19 @@ function KakaoMap() {
 
     const geocoder = new kakao.maps.services.Geocoder();
 
-    async function fetchItineraryData() {
+    async function fetchItineraryFromSessionStorage() {
       try {
-        const response = await fetch("/mockdata/mockItinerary.json");
-        if (!response.ok) {
-          throw new Error("Failed to fetch itinerary data");
+        const storedData = sessionStorage.getItem("places");
+        if (!storedData) {
+          console.error("세션 스토리지에 'places' 키가 없습니다.");
+          return;
         }
 
-        const data = await response.json();
+        const parsedData = JSON.parse(storedData);
         const fetchedPositions = [];
 
-        for (const dayKey in data) {
-          const daySpots = data[dayKey];
+        for (const dayKey in parsedData) {
+          const daySpots = parsedData[dayKey];
           for (const spot of daySpots) {
             const { name, address } = spot;
 
@@ -83,11 +84,11 @@ function KakaoMap() {
 
         setPositions(fetchedPositions);
       } catch (error) {
-        console.error("Error fetching itinerary data:", error);
+        console.error("Error fetching itinerary from session storage:", error);
       }
     }
 
-    fetchItineraryData();
+    fetchItineraryFromSessionStorage();
   }, []);
 
   return (

@@ -9,7 +9,7 @@ function Sidebar({ children }) {
   return (
     <div className={styles.sidebar}>
       <div className={styles.header}>
-        <div className={styles.logoContainer}>
+        <div className={styles.logoContainer} onClick={() => navigate("/")}>
           <Logo className={styles.logo} />
           <h2 className={styles.logotitle}>탐라, 탐나</h2>
         </div>

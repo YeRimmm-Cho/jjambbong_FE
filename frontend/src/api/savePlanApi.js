@@ -64,23 +64,32 @@ export const loadTravelPlans = async (userId) => {
  * @returns {Promise<Object>} API 응답 객체
  */
 
-// loaddetailplan API
 export const loadDetailedPlan = async (userId, travelName) => {
   try {
-    const url = `${API_BASE_URL}/loadplan`; // API 엔드포인트
-    const response = await axios.post(url, {
-      user_id: userId,
-      travel_name: travelName,
-    });
-    console.log("Response Data:", response.data);
+    const url = `${API_BASE_URL}/loadplan`; // API endpoint
+
+    const response = await axios.post(
+      url,
+      { user_id: userId, travel_name: travelName },
+      {
+        headers: {
+          "Content-Type": "application/json", // 명시적으로 JSON 설정
+        },
+      }
+    );
+
+    console.log("Response Data:", response.data); // 디버깅용
     return response.data;
   } catch (error) {
     console.error(
       "Load Detailed Plan API Error:",
       error.response?.data || error.message
     );
-    throw new Error(
-      error.response?.data?.message || "상세 여행 계획 불러오기에 실패했습니다."
-    );
+
+    const errorMessage =
+      error.response?.data?.message ||
+      "상세 여행 계획 불러오기에 실패했습니다.";
+
+    throw new Error(errorMessage);
   }
 };

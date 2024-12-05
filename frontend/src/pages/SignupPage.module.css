@@ -1,0 +1,144 @@
+.signupPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(90deg, #ffe0b2, #ffe593);
+  position: relative;
+  overflow: hidden;
+}
+
+.backgroundAirplane {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1300px;
+  height: auto;
+  z-index: 0;
+}
+
+.logoContainer {
+  position: absolute;
+  top: 5px;
+  left: 50px;
+  margin-top: -30px;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.logoTitle {
+  font-family: "LogoFont";
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.signupContainer {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  width: 450px;
+  max-width: 450px;
+  height: 600px;
+  z-index: 10;
+}
+
+.signupContainer h1 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-top: -5px;
+}
+
+.signupContainer p {
+  font-size: 14px;
+  color: gray;
+  margin-bottom: 40px;
+}
+
+.signupForm {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.formRow {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+  flex: 1;
+  width: 100%;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.errorMessage {
+  color: red;
+  font-size: 12px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+.signupBtn {
+  width: 100%;
+  padding: 12px;
+  background-color: #ffa94f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+  text-align: center;
+  margin-top: 35px;
+}
+
+.signupBtn:hover {
+  background-color: #fb8c00;
+}
+
+.loginLink {
+  margin-top: 20px;
+  font-size: 14px;
+  color: gray;
+  text-align: right;
+  width: 100%;
+}
+
+.loginLinkText {
+  color: #ffa94f;
+  text-decoration: none;
+}
+
+.loginLinkText:hover {
+  text-decoration: underline;
+}
