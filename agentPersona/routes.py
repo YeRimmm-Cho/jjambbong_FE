@@ -218,7 +218,7 @@ def modify3():
     """사용자 입력을 받아 여행 계획을 수정"""
     data = request.json
     user_id = data.get("user_id") # 사용자 ID
-    # user_id = 1 사용자 ID
+    # user_id = 1 # 사용자 ID
     modification_request = data.get("modify_request")
 
     # 수정 요청과 ID 확인
