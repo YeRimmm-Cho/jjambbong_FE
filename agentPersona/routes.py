@@ -393,7 +393,7 @@ def load_plan():
     user_id = data.get("user_id")
     travel_name = data.get("travel_name")
 
-    saved_plan = SavedPlan.query.filter_by(user_id=user_id, travel_name=travel_name).first()
+    saved_plan = SavedPlan.query.filter(user_id=user_id, travel_name=travel_name).first()
 
     if not saved_plan:
         return jsonify({"message": "저장된 여행 계획이 없습니다."}), 404
