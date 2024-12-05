@@ -1,70 +1,65 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import TravelSpot from "./TravelSpot";
 import styles from "./DetailedSchedule.module.css";
 import { loadDetailedPlan } from "../api/savePlanApi";
 
 const DetailedSchedule = () => {
-  const location = useLocation();
-  const { itinerary, places: chatPlaces } = location.state || {}; // 전달받은 데이터
-  const [activeDay, setActiveDay] = useState(1);
-  const [itineraryDays, setItineraryDays] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { id } = useParams(); // URL 매개변수에서 ID 가져오기
+  const location = useLocation(); // 전달받은 데이터 확인
+  const { places: chatPlaces } = location.state || {}; // 채팅에서 전달된 데이터 (있을 경우)
+
+  const [activeDay, setActiveDay] = useState(1); // 현재 활성화된 탭
+  const [itineraryDays, setItineraryDays] = useState([]); // 일정 데이터
 
   useEffect(() => {
     const fetchItineraryData = async () => {
-      try {
-        let placesData = chatPlaces; // 기본적으로 채팅 데이터를 사용
-        if (itinerary) {
-          // 저장된 일정이 있는 경우 API 호출
-          const response = await loadDetailedPlan(
-            itinerary.userId,
-            itinerary.title
-          );
-          if (response) {
-            placesData = response.places;
-          }
-        }
-        if (placesData) {
-          const formattedData = Object.keys(placesData).map((dayKey) => ({
-            day: dayKey,
-            spots: placesData[dayKey],
-          }));
-          setItineraryDays(formattedData);
-        }
-      } catch (error) {
-        console.error("상세 일정을 불러오는 데 실패했습니다:", error);
-      } finally {
-        setLoading(false);
+      let placesData = chatPlaces;
+
+      if (!chatPlaces) {
+        const response = await loadDetailedPlan(id);
+        placesData = response?.plan?.places;
       }
+
+      // 데이터 포맷 변경
+      const formattedData = Object.entries(placesData).map(
+        ([dayKey, spots]) => ({
+          day: dayKey,
+          spots: Array.isArray(spots) ? spots : [], // spots가 배열이 아닌 경우 빈 배열로 초기화
+        })
+      );
+
+      setItineraryDays(formattedData);
     };
 
     fetchItineraryData();
-  }, [itinerary, chatPlaces]);
+  }, [chatPlaces, id]); // chatPlaces 또는 id 변경 시 실행
 
+  // 탭 클릭 핸들러
   const handleTabClick = (dayIndex) => {
     setActiveDay(dayIndex);
   };
 
   return (
     <div className={styles.detailedSchedule}>
+      {/* 일정 탭 */}
       <div className={styles.tabs}>
         {itineraryDays.map((day, index) => (
           <button
             key={index}
-            className={`${styles.tabButton} ${
-              activeDay === index + 1 ? styles.active : ""
-            }`}
+            className={`${styles.tabButton} ${activeDay === index + 1 ? styles.active : ""}`}
             onClick={() => handleTabClick(index + 1)}
           >
             {index + 1}일차
           </button>
         ))}
       </div>
+
+      {/* 일정 데이터 렌더링 */}
       <div className={styles.spotList}>
         {itineraryDays[activeDay - 1]?.spots.map((spot, idx) => (
           <TravelSpot key={idx} spotData={spot} />
-        )) || <p>데이터를 불러오는 중입니다...</p>}
+        )) || <p>일정을 불러오는 중입니다...</p>}
       </div>
     </div>
   );
