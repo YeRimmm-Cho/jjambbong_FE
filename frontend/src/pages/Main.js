@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 function Main() {
   const navigate = useNavigate();
-  const iconUserProfile = "../assets/icon_userprofile.png";
+  const iconUserProfile = "../assets/images/icon_userprifile.png";
   const [userInfo, setUserInfo] = useState({
     nickname: "", // 기본 닉네임
     profileImage: iconUserProfile, // 기본 이미지
@@ -107,7 +107,6 @@ function Main() {
         </Link>
         <Link to="/mypage" className={styles.button}>
           마이페이지
-
         </Link>
         {!isLoggedIn ? (
           <Link to="/login" className={styles.button}>
@@ -118,7 +117,6 @@ function Main() {
             로그아웃
           </button>
         )}
-
       </div>
 
       {/* YouTube 동영상 */}
