@@ -4,30 +4,50 @@ import styles from "./Main.module.css";
 import { ReactComponent as Logo } from "../assets/logo.svg";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
-import iconUserProfile from "../assets/icon_userprofile.png";
+import { Link } from "react-router-dom";
 
 function Main() {
   const navigate = useNavigate();
+  const iconUserProfile = "../assets/icon_userprofile.png";
   const [userInfo, setUserInfo] = useState({
     nickname: "", // 기본 닉네임
     profileImage: iconUserProfile, // 기본 이미지
   });
 
-  // localStorage에서 사용자 정보를 가져옵니다.
+  // localStorage에서 사용자 정보 가져오기
   useEffect(() => {
-    const storedUserInfo = localStorage.getItem("userInfo");
-    if (storedUserInfo) {
-      const parsedUserInfo = JSON.parse(storedUserInfo);
-      setUserInfo(parsedUserInfo);
+    const nickname = localStorage.getItem("nickname");
+    const profileImage =
+      localStorage.getItem("profileImage") || iconUserProfile;
+    if (nickname) {
+      setUserInfo({
+        nickname,
+        profileImage,
+      });
     }
   }, []);
 
+  const handleLogoClick = () => {
+    navigate("/");
+  };
+  const isLoggedIn = !!localStorage.getItem("token");
+  const [players, setPlayers] = useState([]); // YouTube player 객체 관리
+
   const handleProfileClick = () => {
     if (!userInfo.nickname) {
-      navigate("/kakaoLogin"); // 닉네임이 없으면 로그인 페이지로 이동
+      navigate("login"); // 닉네임이 없으면 로그인 페이지로 이동
     } else {
       navigate("/mypage"); // 닉네임이 있으면 마이페이지로 이동
     }
+  };
+
+  const handleLogout = () => {
+    // 로컬스토리지 초기화 및 페이지 이동
+    localStorage.clear();
+    sessionStorage.clear(); // 세션스토리지 초기화
+    setUserInfo({ nickname: "", profileImage: iconUserProfile });
+    setPlayers([]); // YouTube player 객체 정리
+    navigate("/login");
   };
 
   const option = {
@@ -39,10 +59,27 @@ function Main() {
     },
   };
 
+  const handlePlayerReady = (event) => {
+    setPlayers((prev) => [...prev, event.target]); // YouTube player 객체 저장
+  };
+
+  useEffect(() => {
+    // 컴포넌트 언마운트 시 플레이어 정리
+    return () => {
+      players.forEach((player) => {
+        try {
+          player.destroy();
+        } catch (err) {
+          console.error("Failed to destroy player:", err);
+        }
+      });
+    };
+  }, [players]);
+
   return (
     <div className={styles.screen}>
       <div className={styles.Header}>
-        <div className={styles.logoContainer}>
+        <div className={styles.logoContainer} onClick={handleLogoClick}>
           <Logo className={styles.logo} />
           <h2 className={styles.logotitle}>탐라, 탐나</h2>
         </div>
@@ -54,6 +91,9 @@ function Main() {
             src={userInfo.profileImage || iconUserProfile}
             alt="User Profile"
             className={styles.profileImage}
+            onError={(e) => {
+              e.target.src = iconUserProfile; // 로드 실패 시 기본 이미지로 대체
+            }}
           />
           <span className={styles.profileName}>
             {userInfo.nickname || "로그인이 필요합니다"}
@@ -62,15 +102,23 @@ function Main() {
       </div>
 
       <div className={styles.mainButtons}>
-        <a href="/new" className={styles.button}>
+        <Link to="/new" className={styles.button}>
           여행 일정 생성하기
-        </a>
-        <a href="/mypage" className={styles.button}>
+        </Link>
+        <Link to="/mypage" className={styles.button}>
           마이페이지
-        </a>
-        <a href="/kakaoLogin" className={styles.button}>
-          로그인하기
-        </a>
+
+        </Link>
+        {!isLoggedIn ? (
+          <Link to="/login" className={styles.button}>
+            로그인하기
+          </Link>
+        ) : (
+          <button className={styles.button} onClick={handleLogout}>
+            로그아웃
+          </button>
+        )}
+
       </div>
 
       {/* YouTube 동영상 */}

@@ -1,5 +1,7 @@
 .detailedSchedule {
   width: 100%;
+  max-width: 295px;
+  overflow: hidden;
 }
 
 .tabs {
@@ -8,8 +10,17 @@
   padding: 10px 15px;
   margin-bottom: 10px;
   justify-content: flex-start;
-  overflow-x: auto; /* 수평 스크롤 허용 */
-  white-space: nowrap; /* 줄바꿈 방지 */
+  overflow-x: auto !important; /* 수평 스크롤 허용 */
+}
+
+.tabs::-webkit-scrollbar {
+  height: 6px; /* 스크롤바 두께 설정 (Chrome, Edge) */
+}
+
+.tabs::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  background-color: #ccc; /* 스크롤바 색상 */
+  border-radius: 8px;
 }
 
 .tabButton {
@@ -19,7 +30,10 @@
   background-color: #fff;
   cursor: pointer;
   border-radius: 8px;
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
 }
 
 .tabButton.active {

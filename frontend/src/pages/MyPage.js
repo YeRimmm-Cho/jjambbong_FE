@@ -2,38 +2,87 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as Logo } from "../assets/logo.svg";
 import cameraIcon from "../assets/icon_camera.png";
-import iconUserProfile from "../assets/icon_userprofile.png"; // 기본 프로필 이미지
 import iconEdit from "../assets/icon_edit.png"; // 닉네임 변경 아이콘
 import iconNoItinerary from "../assets/icon_noItinerary.png"; // 일정 생성 아직 안 했을 때
 import styles from "./MyPage.module.css";
 import InputModal from "../components/InputModal";
 import SearchBar from "../components/SearchBar";
 import MyItinerary from "../components/MyItinerary";
+import { loadTravelPlans } from "../api/savePlanApi";
+import { logout } from "../api/userApi";
 
 function MyPage() {
+  const handleLogout = async () => {
+    try {
+      // 로그아웃 API 호출
+      await logout();
+      // 로컬스토리지 데이터 삭제
+      sessionStorage.clear(); // 세션스토리지 초기화
+      localStorage.clear();
+      alert("로그아웃되었습니다.");
+      // 로그아웃 후 로그인 페이지로 이동
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("로그아웃에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
   const navigate = useNavigate();
 
   // 사용자 정보 상태
+  const iconUserProfile = "/icon_userprofile.png";
   const [profileImage, setProfileImage] = useState(iconUserProfile);
   const [nickname, setNickname] = useState("닉네임 없음");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
 
-  const [itineraries] = useState([]);
+  const [itineraries, setItineraries] = useState([]);
   const [filteredItineraries, setFilteredItineraries] = useState([]);
 
   // SearchBar
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("latest");
 
-  // 컴포넌트 마운트 시 localStorage에서 사용자 정보 불러오기
-  useEffect(() => {
-    const storedUserInfo = localStorage.getItem("userInfo");
+  const handleLogoClick = () => {
+    navigate("/"); // 메인 페이지 경로로 이동
+  };
 
-    if (storedUserInfo) {
-      const userInfo = JSON.parse(storedUserInfo);
-      setProfileImage(userInfo.profileImage || iconUserProfile); // 기본 프로필 이미지 설정
-      setNickname(userInfo.nickname || "닉네임 없음");
-    }
+  // 사용자 정보 로드
+  useEffect(() => {
+    const storedNickname = localStorage.getItem("nickname") || "닉네임 없음";
+    const storedProfileImage =
+      localStorage.getItem("profileImage") || iconUserProfile;
+
+    setNickname(storedNickname);
+    setProfileImage(storedProfileImage);
+  }, []);
+
+  // 여행 계획 불러오기
+  useEffect(() => {
+    const fetchItineraries = async () => {
+      try {
+        const userId = localStorage.getItem("userId"); // 로그인 시 저장된 userId 사용
+        if (!userId) {
+          console.error("User ID not found in localStorage.");
+          return;
+        }
+
+        const response = await loadTravelPlans(userId);
+        if (response?.plans) {
+          const formattedPlans = response.plans.map((plan, index) => ({
+            id: index, // 임시 ID 생성
+            title: plan.travel_name,
+            tags: plan.hashTag,
+            date: new Date(plan.createdAt).toLocaleDateString(), // 서버의 createdAt 사용
+          }));
+          setItineraries(formattedPlans);
+        }
+      } catch (error) {
+        console.error("일정 불러오기 실패:", error);
+      }
+    };
+
+    fetchItineraries();
   }, []);
 
   // 일정 필터링
@@ -65,12 +114,8 @@ function MyPage() {
       const imageUrl = URL.createObjectURL(file);
       setProfileImage(imageUrl);
 
-      // 프로필 이미지 업데이트를 localStorage에 반영
-      const updatedUserInfo = {
-        nickname,
-        profileImage: imageUrl,
-      };
-      localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+      // 로컬스토리지에 업데이트
+      localStorage.setItem("profileImage", imageUrl);
     }
   };
 
@@ -86,12 +131,8 @@ function MyPage() {
     setNickname(newNickname);
     setIsNicknameModalOpen(false);
 
-    // 닉네임 업데이트를 localStorage에 반영
-    const updatedUserInfo = {
-      nickname: newNickname,
-      profileImage,
-    };
-    localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+    // 닉네임을 로컬스토리지에 저장
+    localStorage.setItem("nickname", newNickname);
   };
 
   const handleMeetTamtamClick = () => {
@@ -101,7 +142,7 @@ function MyPage() {
   return (
     <div className={styles.myPage}>
       <div className={styles.header}>
-        <div className={styles.logoContainer}>
+        <div className={styles.logoContainer} onClick={handleLogoClick}>
           <h2 className={styles.logotitle}>탐라, 탐나</h2>
           <Logo className={styles.logo} />
         </div>
@@ -110,7 +151,9 @@ function MyPage() {
             메인 페이지
           </span>
           <span>|</span>
-          <span className={styles.link}>로그아웃</span>
+          <span className={styles.link} onClick={handleLogout}>
+            로그아웃
+          </span>
         </div>
       </div>
       <div className={styles.profileContainer}>
@@ -119,9 +162,12 @@ function MyPage() {
           onClick={handleClickProfileImage}
         >
           <img
-            src={profileImage}
+            src={profileImage || iconUserProfile}
             alt="Profile"
             className={styles.profileImage}
+            onError={(e) => {
+              e.target.src = iconUserProfile; // 로드 실패 시 기본 이미지로 대체
+            }}
           />
           <img
             src={cameraIcon}
@@ -164,7 +210,11 @@ function MyPage() {
       {filteredItineraries.length > 0 ? (
         <div className={styles.itineraryList}>
           {filteredItineraries.map((itinerary) => (
-            <MyItinerary key={itinerary.id} itinerary={itinerary} />
+            <MyItinerary
+              key={itinerary.id}
+              itinerary={itinerary}
+              userId={localStorage.getItem("userId")}
+            />
           ))}
         </div>
       ) : (
@@ -187,6 +237,7 @@ function MyPage() {
       {isNicknameModalOpen && (
         <InputModal
           title="닉네임 변경"
+          description="변경할 닉네임을 입력해주세요."
           onClose={() => setIsNicknameModalOpen(false)}
           onConfirm={handleSaveNickname}
         />

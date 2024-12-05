@@ -3,10 +3,12 @@ import styles from "./KakaoLoginPage.module.css";
 import tamtam from "../assets/images/tamtam.svg";
 import kakaoIcon from "../assets/images/kakao_logo.svg";
 import Footer from "../components/Footer";
+import axios from "axios";
 
 function KakaoLoginPage() {
-  const url =
-    "https://6596-210-94-220-228.ngrok-free.app/oauth2/authorization/kakao"; // 배포 링크
+  const API_KAKAO_URL = process.env.REACT_APP_API_KAKAO_URL;
+
+  const url = `${API_KAKAO_URL}/oauth2/authorization/kakao`; // 배포 링크
 
   const onClick = () => {
     window.location.href = url;

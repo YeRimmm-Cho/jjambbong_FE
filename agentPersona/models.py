@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from db import db
 
 class TravelPlan(db.Model):
@@ -19,6 +21,7 @@ class SavedPlan(db.Model):
     travel_info = db.Column(db.Text, nullable=True)
     plan_response = db.Column(db.Text, nullable=True)
     location_info = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)  # 생성 시간 추가
     # hash_tag = db.Column(db.Text, nullable=True)
 
     # user = db.relationship('User', backref=db.backref('saved_plans', lazy=True))
