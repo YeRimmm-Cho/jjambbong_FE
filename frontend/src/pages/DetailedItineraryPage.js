@@ -85,27 +85,40 @@ function DetailedItineraryPage() {
     setIsModalOpen(false);
   };
 
-  // 제목 입력 모달 열기
   const handleOpenInputModal = () => {
-    setIsModalOpen(false); // 일정 확정 모달 닫기
+    setIsModalOpen(false); // 확인 모달 닫기
     setIsInputModalOpen(true); // 제목 입력 모달 열기
   };
 
-  // 제목 입력 모달 닫기
   const handleInputModalClose = () => {
-    setIsInputModalOpen(false);
+    setIsInputModalOpen(false); // 제목 입력 모달 닫기
   };
 
-  // 제목 입력 확인
+  // 제목 입력 모달 열기
   const handleInputModalConfirm = async (title) => {
     try {
+      if (!title.trim()) {
+        alert("일정 제목을 입력해주세요.");
+        return;
+      }
+
       setIsInputModalOpen(false); // 모달 닫기
 
       // 사용자 정보 가져오기
       const { userId } = userInfo;
 
+      // 서버로 전송할 데이터 준비
+      const payload = {
+        user_id: userId,
+        travel_name: title,
+      };
+
       // API 요청
-      const response = await saveTravelPlan(userId, title); // 여행 이름만 전달
+      const response = await saveTravelPlan(
+        payload.user_id,
+        payload.travel_name
+      );
+
       alert(response.message); // 성공 메시지 표시
       navigate("/mypage"); // 저장 완료 후 마이페이지로 이동
     } catch (error) {
