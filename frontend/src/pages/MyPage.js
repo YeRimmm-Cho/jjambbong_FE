@@ -10,6 +10,7 @@ import SearchBar from "../components/SearchBar";
 import MyItinerary from "../components/MyItinerary";
 import { loadTravelPlans } from "../api/savePlanApi";
 import { logout } from "../api/userApi";
+import iconUserProfile from "../assets/icon_userprofile.png";
 
 function MyPage() {
   const handleLogout = async () => {
@@ -31,7 +32,6 @@ function MyPage() {
   const navigate = useNavigate();
 
   // 사용자 정보 상태
-  const iconUserProfile = "/icon_userprofile.png";
   const [profileImage, setProfileImage] = useState(iconUserProfile);
   const [nickname, setNickname] = useState("닉네임 없음");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
@@ -50,11 +50,8 @@ function MyPage() {
   // 사용자 정보 로드
   useEffect(() => {
     const storedNickname = localStorage.getItem("nickname") || "닉네임 없음";
-    const storedProfileImage =
-      localStorage.getItem("profileImage") || iconUserProfile;
-
     setNickname(storedNickname);
-    setProfileImage(storedProfileImage);
+    setProfileImage(iconUserProfile); // 항상 기본 이미지 사용
   }, []);
 
   // 여행 계획 불러오기

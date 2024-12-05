@@ -5,10 +5,10 @@ import { ReactComponent as Logo } from "../assets/logo.svg";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import iconUserProfile from "../assets/icon_userprofile.png";
 
 function Main() {
   const navigate = useNavigate();
-  const iconUserProfile = "../assets/icon_userprofile.png";
   const [userInfo, setUserInfo] = useState({
     nickname: "", // 기본 닉네임
     profileImage: iconUserProfile, // 기본 이미지
@@ -16,15 +16,11 @@ function Main() {
 
   // localStorage에서 사용자 정보 가져오기
   useEffect(() => {
-    const nickname = localStorage.getItem("nickname");
-    const profileImage =
-      localStorage.getItem("profileImage") || iconUserProfile;
-    if (nickname) {
-      setUserInfo({
-        nickname,
-        profileImage,
-      });
-    }
+    const nickname = localStorage.getItem("nickname") || "로그인이 필요합니다"; // 닉네임 가져오기
+    setUserInfo({
+      nickname, // 닉네임 유지
+      profileImage: iconUserProfile, // 항상 기본 이미지 사용
+    });
   }, []);
 
   const handleLogoClick = () => {
@@ -107,7 +103,6 @@ function Main() {
         </Link>
         <Link to="/mypage" className={styles.button}>
           마이페이지
-
         </Link>
         {!isLoggedIn ? (
           <Link to="/login" className={styles.button}>
@@ -118,7 +113,6 @@ function Main() {
             로그아웃
           </button>
         )}
-
       </div>
 
       {/* YouTube 동영상 */}
