@@ -395,11 +395,16 @@ def load_plan():
     user_id = data.get("user_id")
     travel_name = data.get("travel_name")
 
+    print(user_id)
+    print(travel_name)
+
     if not isinstance(user_id, (int, str)):
         return jsonify({"message": "user_id는 정수 또는 문자열이어야 합니다."}), 400
 
     if not isinstance(travel_name, str):
         return jsonify({"message": "travel_name은 문자열이어야 합니다."}), 400
+
+    
 
     # SQLAlchemy 쿼리
     saved_plan = SavedPlan.query.filter(
