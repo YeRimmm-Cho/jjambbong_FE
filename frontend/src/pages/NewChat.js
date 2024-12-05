@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getGreetingMessage } from "../api/chatApi";
 import { getTravelPlan } from "../api/chatApi";
 import { modifyTravelPlan } from "../api/chatApi";
+import iconUserProfile from "../assets/icon_userprofile.png";
 
 function NewChat() {
   const itinerary = 4;
@@ -59,7 +60,6 @@ function NewChat() {
   const [isWaitingForModify, setIsWaitingForModify] = useState(false); // Modify 대기
   const [hashTags, setHashTags] = useState([]);
   const [isConfirmButtonDisabled, setIsConfirmButtonDisabled] = useState(false);
-  const iconUserProfile = "/icon_userprofile.png";
 
   const [userInfo, setUserInfo] = useState({
     userInfo: "", // 기본 user_id
@@ -71,9 +71,13 @@ function NewChat() {
   useEffect(() => {
     const userId = localStorage.getItem("userId") || "default_user_id";
     const nickname = localStorage.getItem("nickname") || "닉네임 없음";
-    const profileImage =
-      localStorage.getItem("profileImage") || "/icon_userprofile.png";
-    setUserInfo({ userId, nickname, profileImage });
+
+    // 상태 업데이트
+    setUserInfo({
+      userId,
+      nickname,
+      profileImage: iconUserProfile,
+    });
   }, []);
 
   // 상태를 sessionStorage에 저장
@@ -287,9 +291,9 @@ function NewChat() {
     setIsGenerating(true); // 로딩 시작
 
     const modifyRrequest = {
-        user_id: userInfo.userId,
-        modify_request: modifyRequest,
-    }
+      user_id: userInfo.userId,
+      modify_request: modifyRequest,
+    };
 
     try {
       const {
