@@ -17,6 +17,7 @@ function MyPage() {
       // 로그아웃 API 호출
       await logout();
       // 로컬스토리지 데이터 삭제
+      sessionStorage.clear(); // 세션스토리지 초기화
       localStorage.clear();
       alert("로그아웃되었습니다.");
       // 로그아웃 후 로그인 페이지로 이동
@@ -46,27 +47,33 @@ function MyPage() {
     navigate("/"); // 메인 페이지 경로로 이동
   };
 
+  // 사용자 정보 로드
   useEffect(() => {
-    const storedUserInfo = localStorage.getItem("userInfo");
+    const storedNickname = localStorage.getItem("nickname") || "닉네임 없음";
+    const storedProfileImage =
+      localStorage.getItem("profileImage") || iconUserProfile;
 
-    if (storedUserInfo) {
-      const userInfo = JSON.parse(storedUserInfo);
-      setProfileImage(userInfo.profileImage || iconUserProfile);
-      setNickname(userInfo.nickname || "닉네임 없음");
-      //setUserId(userInfo.id || "default_user_id");
-    }
+    setNickname(storedNickname);
+    setProfileImage(storedProfileImage);
+  }, []);
 
-    // 여행 계획 불러오기 API 호출
+  // 여행 계획 불러오기
+  useEffect(() => {
     const fetchItineraries = async () => {
       try {
-        const userId = "default_user_id"; // TODO: 로그인 성공하면 id도 로컬스토리지에서 (userInfo.id)
+        const userId = localStorage.getItem("userId"); // 로그인 시 저장된 userId 사용
+        if (!userId) {
+          console.error("User ID not found in localStorage.");
+          return;
+        }
+
         const response = await loadTravelPlans(userId);
         if (response?.plans) {
           const formattedPlans = response.plans.map((plan, index) => ({
             id: index, // 임시 ID 생성
             title: plan.travel_name,
-            tags: plan.hashtag,
-            date: "생성 날짜 필요", //TODO: 프론트에서 하기
+            tags: plan.hashTag,
+            date: new Date(plan.createdAt).toLocaleDateString(), // 서버의 createdAt 사용
           }));
           setItineraries(formattedPlans);
         }
@@ -107,12 +114,8 @@ function MyPage() {
       const imageUrl = URL.createObjectURL(file);
       setProfileImage(imageUrl);
 
-      // 프로필 이미지 업데이트를 localStorage에 반영
-      const updatedUserInfo = {
-        nickname,
-        profileImage: imageUrl,
-      };
-      localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+      // 로컬스토리지에 업데이트
+      localStorage.setItem("profileImage", imageUrl);
     }
   };
 
@@ -128,12 +131,8 @@ function MyPage() {
     setNickname(newNickname);
     setIsNicknameModalOpen(false);
 
-    // 닉네임 업데이트를 localStorage에 반영
-    const updatedUserInfo = {
-      nickname: newNickname,
-      profileImage,
-    };
-    localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+    // 닉네임을 로컬스토리지에 저장
+    localStorage.setItem("nickname", newNickname);
   };
 
   const handleMeetTamtamClick = () => {
@@ -211,12 +210,11 @@ function MyPage() {
       {filteredItineraries.length > 0 ? (
         <div className={styles.itineraryList}>
           {filteredItineraries.map((itinerary) => (
-            <MyItinerary key={itinerary.id} itinerary={itinerary} />
-            // <MyItinerary
-            //   key={itinerary.id}
-            //   itinerary={itinerary}
-            //   userId={userId}
-            // />
+            <MyItinerary
+              key={itinerary.id}
+              itinerary={itinerary}
+              userId={localStorage.getItem("userId")}
+            />
           ))}
         </div>
       ) : (
