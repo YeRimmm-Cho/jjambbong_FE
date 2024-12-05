@@ -388,21 +388,32 @@ def load_plan_mypage():
 
 @main_bp.route("/loadplan", methods=["POST"])
 def load_plan():
-    '''저장된 여행 계획을 불러오기'''
+    """저장된 여행 계획을 불러오기"""
     data = request.json
+
+    # 데이터 검증 및 타입 확인
     user_id = data.get("user_id")
     travel_name = data.get("travel_name")
 
+    if not isinstance(user_id, (int, str)):
+        return jsonify({"message": "user_id는 정수 또는 문자열이어야 합니다."}), 400
+
+    if not isinstance(travel_name, str):
+        return jsonify({"message": "travel_name은 문자열이어야 합니다."}), 400
+
+    # SQLAlchemy 쿼리
     saved_plan = SavedPlan.query.filter(
-    SavedPlan.user_id == user_id, SavedPlan.travel_name == travel_name
+        SavedPlan.user_id == user_id, SavedPlan.travel_name == travel_name
     ).first()
 
     if not saved_plan:
         return jsonify({"message": "저장된 여행 계획이 없습니다."}), 404
 
+    # JSON 데이터 변환
     location_info = json.loads(saved_plan.location_info)
 
     return jsonify({"message": "저장된 여행 계획을 불러왔습니다.", "plan": location_info})
+
 
 #
 # # @main_bp.route("/final", methods=["POST"])
