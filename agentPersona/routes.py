@@ -379,6 +379,7 @@ def load_plan_mypage():
     while k < len(saved_plans):
         for plan in saved_plans:
             print(type(plan.location_info))
+            # location_info = plan.location_info
             location_info = json.loads(plan.location_info)
             print(type(location_info))
             print(location_info)
@@ -410,8 +411,6 @@ def load_plan():
 
     if not isinstance(travel_name, str):
         return jsonify({"message": "travel_name은 문자열이어야 합니다."}), 400
-
-    
 
     # SQLAlchemy 쿼리
     saved_plan = SavedPlan.query.filter(
