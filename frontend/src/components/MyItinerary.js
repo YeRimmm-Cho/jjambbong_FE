@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./MyItinerary.module.css";
 import { useNavigate } from "react-router-dom";
 import { loadDetailedPlan } from "../api/savePlanApi";
+import exampleImage from "../assets/img_example.jpg"; // 이미지 import
 
 function MyItinerary({ itinerary }) {
   const navigate = useNavigate();
@@ -22,21 +23,16 @@ function MyItinerary({ itinerary }) {
         return;
       }
 
-      // API 요청 데이터 확인
       const requestData = {
-        user_id: currentUserId, // API에서 요구하는 키 이름
-        travel_name: itinerary.title, // 여행 제목
+        user_id: currentUserId,
+        travel_name: itinerary.title,
       };
-      console.log("요청 데이터:", requestData);
 
-      // API 호출
       const detailResponse = await loadDetailedPlan(
         requestData.user_id,
         requestData.travel_name
       );
-      console.log("상세 계획 데이터:", detailResponse);
 
-      // 응답 데이터 처리
       if (detailResponse?.plan?.places) {
         const places = detailResponse.plan.places;
         const formattedPlaces = Object.entries(places).map(([day, spots]) => ({
@@ -44,9 +40,6 @@ function MyItinerary({ itinerary }) {
           spots,
         }));
 
-        console.log("Navigate 데이터:", { itinerary, places: formattedPlaces });
-
-        // 상세 페이지로 이동
         navigate(`/detailed-itinerary`, {
           state: {
             itinerary,
@@ -65,9 +58,12 @@ function MyItinerary({ itinerary }) {
   return (
     <div className={styles.card} onClick={handleCardClick}>
       <img
-        src="/mockdata/img_example.jpg"
+        src={exampleImage} // 이미지 경로를 import로 설정
         alt="대표 이미지"
         className={styles.image}
+        onError={(e) => {
+          e.target.src = exampleImage; // 로드 실패 시 기본 이미지 대체
+        }}
       />
       <div className={styles.content}>
         <h3 className={styles.title}>{itinerary.title}</h3>
