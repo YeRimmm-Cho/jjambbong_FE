@@ -62,16 +62,18 @@ function NewChat() {
   const iconUserProfile = "/icon_userprofile.png";
 
   const [userInfo, setUserInfo] = useState({
+    userInfo: "", // 기본 user_id
     nickname: "", // 기본 닉네임
     profileImage: iconUserProfile, // 기본 이미지
   });
 
   // 사용자 정보 로드
   useEffect(() => {
+    const userId = localStorage.getItem("userId") || "default_user_id";
     const nickname = localStorage.getItem("nickname") || "닉네임 없음";
     const profileImage =
       localStorage.getItem("profileImage") || "/icon_userprofile.png";
-    setUserInfo({ nickname, profileImage });
+    setUserInfo({ userId, nickname, profileImage });
   }, []);
 
   // 상태를 sessionStorage에 저장
@@ -234,6 +236,7 @@ function NewChat() {
     );
 
     const requestData = {
+      user_id: userInfo.userId,
       travel_date: `${dateRange[0].toLocaleDateString()} ~ ${dateRange[1].toLocaleDateString()}`,
       travel_days: travelDays,
       travel_mate: selectedCompanion,
@@ -283,12 +286,17 @@ function NewChat() {
   const handleModifyRequest = async (modifyRequest) => {
     setIsGenerating(true); // 로딩 시작
 
+    const modifyRrequest = {
+        user_id: userInfo.userId,
+        modify_request: modifyRequest,
+    }
+
     try {
       const {
         response: modifyResponse,
         follow_up: followUp,
         location_info,
-      } = await modifyTravelPlan(modifyRequest); // Modify API 호출
+      } = await modifyTravelPlan(modifyRrequest); // Modify API 호출
 
       // 장소 데이터 처리 및 상태 업데이트
       if (location_info?.places) {
