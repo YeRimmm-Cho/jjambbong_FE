@@ -67,7 +67,7 @@ def plan():
     '''사용자 입력을 받아 여행 계획을 생성'''
     data = request.json
     user_id = data.get("user_id") # 사용자 ID
-    # user_id = 1 # 사용자 ID
+    # user_id = 1  사용자 ID
     travel_date = data.get("travel_date")
     travel_days = data.get("travel_days")
     travel_mate = data.get("travel_mate")
@@ -121,19 +121,24 @@ def plan():
     print(travel_info)
     print(plan_response)
     print(location_response)
+    location_response = json.loads(location_response)
 
-    # 여행 계획 테이블에 세션 컨셉으로 저장
-    if TravelPlan.query.get(user_id):
-        existing_plan = TravelPlan.query.get(user_id)
-        existing_plan.travel_info = json.dumps(travel_info)
+    existing_plan = TravelPlan.query.filter_by(user_id=user_id).first()  # user_id를 기준으로 조회
+
+
+    if existing_plan:
+        # 기존 데이터가 있으면 업데이트
+        existing_plan.travel_info = json.dumps(travel_info, ensure_ascii=False)
         existing_plan.plan_response = plan_response
-        existing_plan.location_info = location_response
+        existing_plan.location_info = json.dumps(location_response, ensure_ascii=False)
     else:
-        db.session.add(TravelPlan(user_id=user_id,
-                                  travel_info=json.dumps(travel_info),
-                                  plan_response=plan_response,
-                                  location_info=json.dumps(location_response))
-                     )
+        # 기존 데이터가 없으면 새로 추가
+        db.session.add(TravelPlan(
+            user_id=user_id,
+            travel_info=json.dumps(travel_info, ensure_ascii=False),
+            plan_response=plan_response,
+            location_info=json.dumps(location_response, ensure_ascii=False)
+        ))
 
     db.session.commit()
     follow_up_message = "여행 계획이 생성되었습니다. 수정하고 싶은 부분이 있으면 말씀해주세요! 😊"
@@ -193,7 +198,7 @@ def plan():
     #         status=500
     #     )
 
-    location_response = json.loads(location_response)
+    # location_response = json.loads(location_response)
     print(type(plan_response))
     print(type(travel_info))
     print(type(location_response))
@@ -262,16 +267,16 @@ def modify3():
     print(f"Condition not met. Cleaned Intent Value: '{intent_cleaned}'")
 
     # 데이터베이스에서 여행 계획 가져오기
-    travel_plan = TravelPlan.query.get(user_id)  # 특정 ID에 해당하는 행 가져오기
+    existing_plan = TravelPlan.query.filter_by(user_id=user_id).first()
 
-    if not travel_plan:
+    if not existing_plan:
         return jsonify({"error": "No travel plan found with the provided ID"}), 404
 
     output_parser = StrOutputParser()
     modify_chain = modify_prompt | plan_model | output_parser
 
     input_data = {
-        "current_plan": travel_plan.plan_response,
+        "current_plan": existing_plan.plan_response,
         "modification_request": modification_request
     }
 
@@ -297,7 +302,9 @@ def modify3():
     print(modification_response)
     print(location_response)
 
-    existing_plan = TravelPlan.query.get(user_id)
+    location_response = json.loads(location_response)
+
+    existing_plan = TravelPlan.query.filter_by(user_id=user_id).first()
 
     existing_plan.plan_response = modification_response
     existing_plan.location_info = location_response
@@ -307,7 +314,7 @@ def modify3():
     travel_info = TravelPlan.query.get(user_id).travel_info
     follow_up_message = "수정이 완료되었습니다. 추가 수정이 필요하면 말씀해주세요! 😊"
 
-    location_response = json.loads(location_response)
+    # location_response = json.loads(location_response)
     # JSON 응답 생성
     modify_response_data = {
         "response": modification_response,

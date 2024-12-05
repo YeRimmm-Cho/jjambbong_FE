@@ -1,4 +1,5 @@
 import axios from "axios";
+import {useEffect, useState} from "react";
 
 // 환경 변수에서 Base URL 가져오기
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -32,9 +33,7 @@ export const getTravelPlan = async (requestData) => {
 // Modify API
 export const modifyTravelPlan = async (modifyRequest) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/modify`, {
-      modify_request: modifyRequest,
-    });
+    const response = await axios.post(`${API_BASE_URL}/modify`, modifyRequest);
     return response.data;
   } catch (error) {
     console.error("Modify API Error:", error.response?.data || error.message);
