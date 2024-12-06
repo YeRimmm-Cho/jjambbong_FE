@@ -8,15 +8,22 @@ function TravelSpot({ spotData }) {
 
   return (
     <div className={styles.spotContainer}>
+      {/* 이미지 표시 */}
       <img
         src={imageUrl || "https://via.placeholder.com/150"} // 이미지가 없으면 기본 이미지
-        alt={name}
+        alt={name || "Travel Spot"} // 대체 텍스트
         className={styles.image}
       />
+
+      {/* 장소 설명 */}
       <div className={styles.description}>
-        <span className={styles.name}>{name}</span>
-        <span className={styles.category}>{category}</span>
-        <span className={styles.address}>{address}</span>
+        <span className={styles.name}>{name || "Unknown Spot"}</span>
+        <span className={styles.category}>
+          {category || "Category Unavailable"}
+        </span>
+        <span className={styles.address}>
+          {address || "Address Unavailable"}
+        </span>
       </div>
     </div>
   );

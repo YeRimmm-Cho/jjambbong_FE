@@ -21,7 +21,10 @@ const Route = () => {
         if (storedData) {
           const formattedData = Object.keys(storedData).map((dayKey) => ({
             day: dayKey,
-            spots: storedData[dayKey],
+            spots: storedData[dayKey].map((spot) => ({
+              ...spot,
+              imageUrl: spot.imageUrl || "https://via.placeholder.com/150", // 기본 이미지 설정
+            })),
           }));
           setItineraryDays(formattedData);
         } else {
@@ -144,19 +147,24 @@ const Route = () => {
                     window.open(kakaoLink, "_blank");
                   }}
                 >
-                  {/* 출발지 정보 */}
                   <div className={styles.spotInfo}>
                     <div className={styles.imageContainer}>
+                      <img
+                        src={start.imageUrl}
+                        alt={start.name || "출발지"}
+                        className={styles.spotImage}
+                      />
                       <span className={styles.imageLabel}>{start.name}</span>
                     </div>
                   </div>
-
-                  {/* 화살표 표시 */}
                   <div className={styles.arrow}>→</div>
-
-                  {/* 도착지 정보 */}
                   <div className={styles.spotInfo}>
                     <div className={styles.imageContainer}>
+                      <img
+                        src={end.imageUrl}
+                        alt={end.name || "도착지"}
+                        className={styles.spotImage}
+                      />
                       <span className={styles.imageLabel}>{end.name}</span>
                     </div>
                   </div>
