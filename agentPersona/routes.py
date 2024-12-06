@@ -5,14 +5,16 @@ from pyexpat.errors import messages
 from tamtam.template2 import location_template
 from models import TravelPlan, SavedPlan
 from tamtam.openAi import call_openai_gpt, plan_model, get_place_details
-# from tamtam.template import final_template
+from tamtam.template import final_location_prompt
 from tamtam.template2 import (agent_prompt, plan_prompt,
                               modify_prompt, final_template,
                               location_prompt)
 from langchain.chains import LLMChain
 from langchain_core.output_parsers import StrOutputParser
 from langchain.llms import OpenAI
-from db import db, retriever, search_theme_in_pinecone
+from db import db, retriever, search_theme_in_pinecone, index, pinecone
+from math import radians, cos, sin, sqrt, atan2
+from sentence_transformers import SentenceTransformer
 import os
 import json
 
@@ -30,6 +32,95 @@ llm = OpenAI(
     frequency_penalty=0,      # 반복 사용 억제
     presence_penalty=0        # 새 주제 생성 유도
 )
+# 임베딩 모델 로드
+model = SentenceTransformer('all-MiniLM-L6-v2')
+print("Pinecone Index Info:", index.describe_index_stats())
+
+# Pinecone 인덱스 설정
+index_name = "tamtam2"
+index = pinecone.Index(index_name)  # Pinecone 인덱스를 직접 정의
+
+# # 거리 계산 함수
+# def calculate_distance(lat1, lon1, lat2, lon2):
+#     R = 6371.0  # 지구 반지름 (km)
+#     dlat = radians(lat2 - lat1)
+#     dlon = radians(lon2 - lon1)
+#     a = sin(dlat / 2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2)**2
+#     c = 2 * atan2(sqrt(a), sqrt(1 - a))
+#     return R * c
+
+# Pinecone에서 카테고리 기반 검색 함수 (거리 계산 제외)
+def search_pinecone(query_text, top_k=25, category_filter=None):
+    query_vector = model.encode(query_text).tolist()
+    results = index.query(vector=query_vector, top_k=top_k, include_metadata=True)
+
+    filtered_results = []
+    for match in results["matches"]:
+        metadata = match["metadata"]
+
+        # 부분 일치 허용 (예: "관광지" 포함)
+        if category_filter and category_filter not in metadata.get("category", ""):
+            continue
+
+        filtered_results.append(match)
+
+    return filtered_results
+
+# Pinecone에서 카테고리 기반 검색 함수 (거리 계산 제외)
+def search_pinecone(query_text, top_k=25, category_filter=None):
+    query_vector = model.encode(query_text).tolist()
+    results = index.query(vector=query_vector, top_k=top_k, include_metadata=True)
+
+    filtered_results = []
+    for match in results["matches"]:
+        metadata = match["metadata"]
+
+        # 부분 일치 허용 (예: "관광지" 포함)
+        if category_filter and category_filter not in metadata.get("category", ""):
+            continue
+
+        filtered_results.append(match)
+
+    return filtered_results
+
+# 장소를 날짜별로 동적으로 배치
+def distribute_results_by_days(results, travel_days):
+    """
+    검색 결과를 날짜별로 분배하는 함수
+    """
+    if not results or travel_days <= 0:
+        return {}
+
+    places_per_day = max(len(results) // travel_days, 1)  # 각 날짜에 최소 1개 장소 배치
+    distributed_results = {}
+    for i in range(travel_days):
+        start_index = i * places_per_day
+        end_index = start_index + places_per_day
+        distributed_results[f"day{i+1}"] = results[start_index:end_index]
+
+    # 남은 장소를 순차적으로 추가
+    leftover = results[travel_days * places_per_day:]
+    for i, place in enumerate(leftover):
+        distributed_results[f"day{(i % travel_days) + 1}"].append(place)
+
+    return distributed_results
+
+def remove_duplicates(results):
+    """
+    검색 결과에서 중복된 장소 제거
+    """
+    seen = set()
+    unique_results = []
+    for result in results:
+        identifier = result["metadata"]["name"]  # 중복 판별 기준 (이름)
+        if identifier not in seen:
+            seen.add(identifier)
+            unique_results.append(result)
+    return unique_results
+
+
+
+
 
 # 4: 체인 생성
 # greeting_chain = LLMChain(llm=llm, prompt=greeting_template)
@@ -64,36 +155,112 @@ def greeting():
 
 @main_bp.route("/plan", methods=["POST"])
 def plan():
-    '''사용자 입력을 받아 여행 계획을 생성'''
     data = request.json
-    user_id = data.get("user_id") # 사용자 ID
-    # user_id = 1  사용자 ID
+    user_id = data.get("user_id")
     travel_date = data.get("travel_date")
-    travel_days = data.get("travel_days")
+    travel_days = int(data.get("travel_days", 1))
     travel_mate = data.get("travel_mate")
     travel_theme = data.get("travel_theme")
 
-    # Pinecone에서 테마 관련 정보 검색
-    search_results = search_theme_in_pinecone(travel_theme)
-    theme_context = "\n".join([
-        f"Q: {result['question']}\nA: {result['restaurants']}"
-        for result in search_results
-    ])
+    JEJU_AIRPORT_LAT = 33.5113
+    JEJU_AIRPORT_LON = 126.4982
+    user_lat = data.get("latitude", JEJU_AIRPORT_LAT)
+    user_lon = data.get("longitude", JEJU_AIRPORT_LON)
 
-    output_parser = StrOutputParser()
-    plan_chain = plan_prompt | plan_model | output_parser
+    if not all([user_id, travel_date, travel_days, travel_mate, travel_theme]):
+        return jsonify({"error": "All input fields are required"}), 400
 
-    input_data = {
-        "travel_date": travel_date,
-        "travel_days": travel_days,
-        "travel_mate": travel_mate,
-        "travel_theme": travel_theme,
-        "theme_context": theme_context
-    }
-    # 여행 계획 생성
-    plan_response = plan_chain.invoke(input_data)
+    try:
+        # 카테고리별 검색 결과 가져오기
+        tourist_spots = search_pinecone(
+            query_text=f"제주도 {travel_theme} 관련 관광지 추천",
+            top_k=30,  # 더 많은 결과
+            category_filter="관광지"
+        )
+        restaurants = search_pinecone(
+            query_text=f"제주도 {travel_theme} 관련 맛집 추천",
+            top_k=30,
+            category_filter="restaurants"
+        )
+        cafes = search_pinecone(
+            query_text=f"제주도 {travel_theme} 관련 카페 추천",
+            top_k=20,
+            category_filter="cafe"
+        )
 
-    # 사용자 입력 정보 json
+        # 중복 제거 및 결과 합치기
+        all_results = remove_duplicates(tourist_spots + restaurants + cafes)
+
+        # 날짜별로 장소 분배
+        distributed_results = distribute_results_by_days(all_results, travel_days)
+
+        # 프론트엔드에 전달할 JSON 구조 생성
+        location_response = {
+            "places": {
+                day: [
+                    {
+                        "name": place["metadata"]["name"],
+                        "address": place["metadata"]["address"],
+                        "latitude": place["metadata"]["latitude"],
+                        "longitude": place["metadata"]["longitude"],
+                        "category": place["metadata"]["category"],
+                        "rating": place["metadata"].get("rating", "N/A"),
+                        # "review": place["metadata"].get("review", "N/A")
+                    } for place in places
+                ] for day, places in distributed_results.items()
+            },
+            "hash_tag": "#자연 #힐링 #제주도 #맛집"
+        }
+
+
+        # 텍스트로 변환 (LangChain 사용 준비)
+        theme_context = "\n".join([
+            f"- {result['metadata']['name']} ({result['metadata']['category']}, 평점: {result['metadata']['rating']}, 주소: {result['metadata']['address']})"
+            for result in all_results
+        ])
+
+        # LangChain을 사용한 여행 계획 생성
+        plan_chain = plan_prompt | plan_model | StrOutputParser()
+        input_data = {
+            "travel_date": travel_date,
+            "travel_days": travel_days,
+            "travel_mate": travel_mate,
+            "travel_theme": travel_theme,
+            "theme_context": theme_context
+        }
+        plan_response = plan_chain.invoke(input_data)
+
+        # DB에 저장
+        travel_info = {
+            "travel_date": travel_date,
+            "travel_days": travel_days,
+            "travel_mate": travel_mate,
+            "travel_theme": travel_theme
+        }
+
+        existing_plan = TravelPlan.query.filter_by(user_id=user_id).first()
+        if existing_plan:
+            existing_plan.travel_info = json.dumps(travel_info, ensure_ascii=False)
+            existing_plan.plan_response = plan_response
+            existing_plan.location_info = json.dumps(location_response, ensure_ascii=False)
+        else:
+            db.session.add(TravelPlan(
+                user_id=user_id,
+                travel_info=json.dumps(travel_info, ensure_ascii=False),
+                plan_response=plan_response,
+                location_info=json.dumps(location_response, ensure_ascii=False)
+            ))
+        db.session.commit()
+
+        return jsonify({
+            "response": plan_response,
+            "location_info": location_response
+        })
+    except Exception as e:
+        return jsonify({"error": f"Error occurred: {str(e)}"}), 500
+
+
+    # DB에 저장
     travel_info = {
         "travel_date": travel_date,
         "travel_days": travel_days,
@@ -101,117 +268,39 @@ def plan():
         "travel_theme": travel_theme
     }
 
-    # 장소 정보 추출
-    travel_plan = plan_response
-
-    if not travel_plan:
-        return Response(
-            json.dumps({"error": "travel_plan is required"}, ensure_ascii=False),
-            content_type="application/json; charset=utf-8",
-            status=400
-        )
-
-    output_parser = StrOutputParser()
-    location_chain = location_prompt | plan_model | output_parser
-
-    input_data = {"travel_plan": travel_plan}
-    location_response = location_chain.invoke(input_data)
-    location_response = location_response.strip().strip("```json")
-
-    print(travel_info)
-    print(plan_response)
-    print(location_response)
-    location_response = json.loads(location_response)
-
-    existing_plan = TravelPlan.query.filter_by(user_id=user_id).first()  # user_id를 기준으로 조회
-
-
+    existing_plan = TravelPlan.query.filter_by(user_id=user_id).first()
     if existing_plan:
-        # 기존 데이터가 있으면 업데이트
         existing_plan.travel_info = json.dumps(travel_info, ensure_ascii=False)
         existing_plan.plan_response = plan_response
         existing_plan.location_info = json.dumps(location_response, ensure_ascii=False)
     else:
-        # 기존 데이터가 없으면 새로 추가
         db.session.add(TravelPlan(
             user_id=user_id,
             travel_info=json.dumps(travel_info, ensure_ascii=False),
             plan_response=plan_response,
             location_info=json.dumps(location_response, ensure_ascii=False)
         ))
-
     db.session.commit()
+
+    # 응답 반환
     follow_up_message = "여행 계획이 생성되었습니다. 수정하고 싶은 부분이 있으면 말씀해주세요! 😊"
-
-    # """location 추가"""
-    # travel_plan = plan_response
-    #
-    # if not travel_plan:
-    #     return Response(
-    #         json.dumps({"error": "travel_plan is required"}, ensure_ascii=False),
-    #         content_type="application/json; charset=utf-8",
-    #         status=400
-    #     )
-    #
-    # try:
-    #     # LangChain 사용
-    #     output_parser = StrOutputParser()
-
-    #     location_chain = location_prompt | plan_model | output_parser
-    #
-    #     input_data = {"travel_plan": travel_plan}
-    #     gpt_response = location_chain.invoke(input_data)
-    #
-    #     # GPT 응답에서 JSON만 추출
-    #     try:
-    #         # GPT 응답 파싱
-    #         start_index = gpt_response.find("{")
-    #         end_index = gpt_response.rfind("}") + 1
-    #         json_data = gpt_response[start_index:end_index]
-    #         extracted_places = json.loads(json_data)["places"]
-    #     except (ValueError, KeyError, TypeError) as e:
-    #         return Response(
-    #             json.dumps({"error": f"Failed to parse GPT response: {str(e)}"}, ensure_ascii=False),
-    #             content_type="application/json; charset=utf-8",
-    #             status=500
-    #         )
-    #
-    #     # Google Maps API 호출로 상세 정보 보완
-    #     detailed_places = {}
-    #     for day, places in extracted_places.items():
-    #         detailed_places[day] = [
-    #             get_place_details(place["name"]) for place in places
-    #         ]
-    #
-    #     plan_response_data = {"response": plan_response,
-    #                           "follow_up": follow_up_message,
-    #                           "travel_info": data,
-    #                           "places": detailed_places}
-    #     return Response(
-    #         json.dumps(plan_response_data, ensure_ascii=False),
-    #         content_type="application/json; charset=utf-8"
-    #     )
-    # except Exception as e:
-    #     return Response(
-    #         json.dumps({"error": str(e)}, ensure_ascii=False),
-    #         content_type="application/json; charset=utf-8",
-    #         status=500
-    #     )
-
-    # location_response = json.loads(location_response)
-    print(type(plan_response))
-    print(type(travel_info))
-    print(type(location_response))
-
-    plan_response_data = {"response": plan_response,
-                          "follow_up": follow_up_message,
-                          "user_id": user_id,
-                          "travel_info": travel_info,
-                          "location_info": location_response}
+    plan_response_data = {
+        "response": plan_response,
+        "follow_up": follow_up_message,
+        "user_id": user_id,
+        "travel_info": travel_info,
+        "location_info": location_response
+    }
     return Response(
         json.dumps(plan_response_data, ensure_ascii=False),
         content_type="application/json; charset=utf-8"
     )
+
+
+
+
+
+
 
 @main_bp.route("/modify", methods=["POST"])
 def modify3():
