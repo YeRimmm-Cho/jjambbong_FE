@@ -11,45 +11,52 @@ function Main() {
   const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useState({
-    nickname: "", // 기본 닉네임
-    profileImage: iconUserProfile, // 기본 이미지
+    nickname: "",
+    profileImage: iconUserProfile,
   });
 
-  // localStorage에서 사용자 정보 가져오기
   useEffect(() => {
-    const nickname = localStorage.getItem("nickname") || "로그인이 필요합니다"; // 닉네임 가져오기
-    setUserInfo({
-      nickname, // 닉네임 유지
-      profileImage: iconUserProfile, // 항상 기본 이미지 사용
+    const nickname = localStorage.getItem("nickname") || "로그인이 필요합니다";
+    const profileImage =
+      localStorage.getItem("profileImage") || iconUserProfile;
+
+    setUserInfo((prevState) => {
+      if (
+        prevState.nickname === nickname &&
+        prevState.profileImage === profileImage
+      ) {
+        return prevState;
+      }
+      return { nickname, profileImage };
     });
   }, []);
 
   const handleLogoClick = () => {
     navigate("/");
   };
+
   const isLoggedIn = !!localStorage.getItem("token");
-  const [players, setPlayers] = useState([]); // YouTube player 객체 관리
+  const [players, setPlayers] = useState([]);
 
   const handleProfileClick = () => {
     if (!userInfo.nickname) {
-      navigate("login"); // 닉네임이 없으면 로그인 페이지로 이동
+      navigate("login");
     } else {
-      navigate("/mypage"); // 닉네임이 있으면 마이페이지로 이동
+      navigate("/mypage");
     }
   };
 
   const handleLogout = () => {
-    // 로컬스토리지 초기화 및 페이지 이동
     localStorage.clear();
-    sessionStorage.clear(); // 세션스토리지 초기화
+    sessionStorage.clear();
     setUserInfo({ nickname: "", profileImage: iconUserProfile });
-    setPlayers([]); // YouTube player 객체 정리
+    setPlayers([]);
     navigate("/login");
   };
 
   const option = {
-    height: "270", // 높이
-    width: "480", // 너비
+    height: "270",
+    width: "480",
     playerVars: {
       autoplay: 0,
       mute: 1,
@@ -57,21 +64,31 @@ function Main() {
   };
 
   const handlePlayerReady = (event) => {
-    setPlayers((prev) => [...prev, event.target]); // YouTube player 객체 저장
+    setPlayers((prev) => {
+      if (!prev.includes(event.target)) {
+        return [...prev, event.target];
+      }
+      return prev;
+    });
+  };
+
+  const handlePlayerError = (event) => {
+    console.error("YouTube player error:", event.data);
   };
 
   useEffect(() => {
-    // 컴포넌트 언마운트 시 플레이어 정리
     return () => {
       players.forEach((player) => {
-        try {
-          player.destroy();
-        } catch (err) {
-          console.error("Failed to destroy player:", err);
+        if (player && typeof player.destroy === "function") {
+          try {
+            player.destroy();
+          } catch (err) {
+            console.error("Failed to destroy player:", err);
+          }
         }
       });
     };
-  }, [players]);
+  }, []);
 
   return (
     <div className={styles.screen}>
@@ -80,16 +97,14 @@ function Main() {
           <Logo className={styles.logo} />
           <h2 className={styles.logotitle}>탐라, 탐나</h2>
         </div>
-        <div
-          className={styles.profileContainer}
-          onClick={handleProfileClick} // 프로필 클릭 시 이동
-        >
+        <div className={styles.profileContainer} onClick={handleProfileClick}>
           <img
             src={userInfo.profileImage || iconUserProfile}
             alt="User Profile"
             className={styles.profileImage}
             onError={(e) => {
-              e.target.src = iconUserProfile; // 로드 실패 시 기본 이미지로 대체
+              e.target.onerror = null;
+              e.target.src = iconUserProfile;
             }}
           />
           <span className={styles.profileName}>
@@ -116,22 +131,27 @@ function Main() {
         )}
       </div>
 
-      {/* YouTube 동영상 */}
       <div className={styles.youtubeContainer}>
         <YouTube
-          videoId="ZVmmP0CgpUg" // YouTube 동영상 ID
+          videoId="ZVmmP0CgpUg"
           opts={option}
           className={styles.youtube}
+          onReady={handlePlayerReady}
+          onError={handlePlayerError}
         />
         <YouTube
-          videoId="S39KiBTpIaM" // YouTube 동영상 ID
+          videoId="S39KiBTpIaM"
           opts={option}
           className={styles.youtube}
+          onReady={handlePlayerReady}
+          onError={handlePlayerError}
         />
         <YouTube
-          videoId="M87B-PM2JNs" // YouTube 동영상 ID
+          videoId="M87B-PM2JNs"
           opts={option}
           className={styles.youtube}
+          onReady={handlePlayerReady}
+          onError={handlePlayerError}
         />
       </div>
 
