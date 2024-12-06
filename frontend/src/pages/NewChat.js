@@ -14,6 +14,7 @@ import { getGreetingMessage } from "../api/chatApi";
 import { getTravelPlan } from "../api/chatApi";
 import { modifyTravelPlan } from "../api/chatApi";
 import iconUserProfile from "../assets/icon_userprofile.png";
+import ReactMarkdown from "react-markdown";
 
 function NewChat() {
   const itinerary = 4;
@@ -574,7 +575,8 @@ function NewChat() {
                     msg.sender === "user" ? styles.userBubble : styles.gptBubble
                   }
                 >
-                  {msg.text}
+                  {/*마크다운 메시지 렌더링 */}
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
                 </div>
               </div>
             ))}
