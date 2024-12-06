@@ -2,17 +2,49 @@ import React from "react";
 import styles from "./MyItinerary.module.css";
 import { useNavigate } from "react-router-dom";
 import { loadDetailedPlan } from "../api/savePlanApi";
+import exampleImage from "../assets/img_example.jpg"; // 이미지 import
 
-function MyItinerary({ itinerary, userId }) {
+function MyItinerary({ itinerary }) {
   const navigate = useNavigate();
 
-  // 카드 클릭 시 상세 일정 페이지 형태로 보임
+  // localStorage에서 userId 가져오기
+  const currentUserId = localStorage.getItem("userId");
+
+  // 카드 클릭 시 상세 일정 페이지로 이동
   const handleCardClick = async () => {
     try {
-      const detailResponse = await loadDetailedPlan(userId, itinerary.title); // 상세 계획 불러오기
-      if (detailResponse) {
-        navigate(`/itinerary/${itinerary.id}`, {
-          state: { detail: detailResponse, itinerary }, // 데이터 전달
+      if (!currentUserId) {
+        alert("사용자 ID가 없습니다. 로그인이 필요합니다.");
+        return;
+      }
+
+      if (!itinerary?.title) {
+        alert("여행 이름이 누락되었습니다.");
+        return;
+      }
+
+      const requestData = {
+        user_id: currentUserId,
+        travel_name: itinerary.title,
+      };
+
+      const detailResponse = await loadDetailedPlan(
+        requestData.user_id,
+        requestData.travel_name
+      );
+
+      if (detailResponse?.plan?.places) {
+        const places = detailResponse.plan.places;
+        const formattedPlaces = Object.entries(places).map(([day, spots]) => ({
+          day,
+          spots,
+        }));
+
+        navigate(`/detailed-itinerary`, {
+          state: {
+            itinerary,
+            places: formattedPlaces,
+          },
         });
       } else {
         alert("상세 정보를 가져올 수 없습니다.");
@@ -25,11 +57,13 @@ function MyItinerary({ itinerary, userId }) {
 
   return (
     <div className={styles.card} onClick={handleCardClick}>
-      {/* 일단 기본 이미지 표시 */}
       <img
-        src="/mockdata/img_example.jpg"
+        src={exampleImage} // 이미지 경로를 import로 설정
         alt="대표 이미지"
         className={styles.image}
+        onError={(e) => {
+          e.target.src = exampleImage; // 로드 실패 시 기본 이미지 대체
+        }}
       />
       <div className={styles.content}>
         <h3 className={styles.title}>{itinerary.title}</h3>

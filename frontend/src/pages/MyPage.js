@@ -10,6 +10,7 @@ import SearchBar from "../components/SearchBar";
 import MyItinerary from "../components/MyItinerary";
 import { loadTravelPlans } from "../api/savePlanApi";
 import { logout } from "../api/userApi";
+import iconUserProfile from "../assets/icon_userprofile.png";
 
 function MyPage() {
   const handleLogout = async () => {
@@ -31,7 +32,6 @@ function MyPage() {
   const navigate = useNavigate();
 
   // 사용자 정보 상태
-  const iconUserProfile = "/icon_userprofile.png";
   const [profileImage, setProfileImage] = useState(iconUserProfile);
   const [nickname, setNickname] = useState("닉네임 없음");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
@@ -47,16 +47,15 @@ function MyPage() {
     navigate("/"); // 메인 페이지 경로로 이동
   };
 
+  // 사용자 정보 로드
   useEffect(() => {
-    // 사용자 정보 로드
     const storedNickname = localStorage.getItem("nickname") || "닉네임 없음";
-    const storedProfileImage =
-      localStorage.getItem("profileImage") || iconUserProfile;
-
     setNickname(storedNickname);
-    setProfileImage(storedProfileImage);
+    setProfileImage(iconUserProfile); // 항상 기본 이미지 사용
+  }, []);
 
-    // 여행 계획 불러오기 API 호출
+  // 여행 계획 불러오기
+  useEffect(() => {
     const fetchItineraries = async () => {
       try {
         const userId = localStorage.getItem("userId"); // 로그인 시 저장된 userId 사용
@@ -70,8 +69,8 @@ function MyPage() {
           const formattedPlans = response.plans.map((plan, index) => ({
             id: index, // 임시 ID 생성
             title: plan.travel_name,
-            tags: plan.hashtag,
-            date: plan.created_at || "생성 날짜 필요", // 서버에서 날짜 제공 시 사용
+            tags: plan.hashTag,
+            date: new Date(plan.createdAt).toLocaleDateString(), // 서버의 createdAt 사용
           }));
           setItineraries(formattedPlans);
         }
@@ -208,12 +207,11 @@ function MyPage() {
       {filteredItineraries.length > 0 ? (
         <div className={styles.itineraryList}>
           {filteredItineraries.map((itinerary) => (
-            <MyItinerary key={itinerary.id} itinerary={itinerary} />
-            // <MyItinerary
-            //   key={itinerary.id}
-            //   itinerary={itinerary}
-            //   userId={userId}
-            // />
+            <MyItinerary
+              key={itinerary.id}
+              itinerary={itinerary}
+              userId={localStorage.getItem("userId")}
+            />
           ))}
         </div>
       ) : (
