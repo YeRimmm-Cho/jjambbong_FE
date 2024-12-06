@@ -23,8 +23,10 @@ function Main() {
       setUserInfo({
         nickname,
         profileImage,
+        userId,
       });
     }
+    const userId = localStorage.getItem("userId");
   }, []);
 
   const handleLogoClick = () => {
