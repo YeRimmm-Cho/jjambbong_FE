@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import YouTube from "react-youtube";
 import styles from "./Main.module.css";
 import { ReactComponent as Logo } from "../assets/logo.svg";
@@ -9,26 +9,19 @@ import iconUserProfile from "../assets/icon_userprofile.png";
 
 function Main() {
   const navigate = useNavigate();
-
   const [userInfo, setUserInfo] = useState({
     nickname: "",
     profileImage: iconUserProfile,
   });
+  const playersRef = useRef([]); // YouTube player 객체를 관리하는 ref
 
+  // 사용자 정보 로드
   useEffect(() => {
     const nickname = localStorage.getItem("nickname") || "로그인이 필요합니다";
     const profileImage =
       localStorage.getItem("profileImage") || iconUserProfile;
 
-    setUserInfo((prevState) => {
-      if (
-        prevState.nickname === nickname &&
-        prevState.profileImage === profileImage
-      ) {
-        return prevState;
-      }
-      return { nickname, profileImage };
-    });
+    setUserInfo({ nickname, profileImage });
   }, []);
 
   const handleLogoClick = () => {
@@ -36,21 +29,16 @@ function Main() {
   };
 
   const isLoggedIn = !!localStorage.getItem("token");
-  const [players, setPlayers] = useState([]);
 
   const handleProfileClick = () => {
-    if (!userInfo.nickname) {
-      navigate("login");
-    } else {
-      navigate("/mypage");
-    }
+    navigate(isLoggedIn ? "/mypage" : "/login");
   };
 
   const handleLogout = () => {
     localStorage.clear();
     sessionStorage.clear();
     setUserInfo({ nickname: "", profileImage: iconUserProfile });
-    setPlayers([]);
+    playersRef.current = []; // YouTube player 객체 초기화
     navigate("/login");
   };
 
@@ -64,12 +52,10 @@ function Main() {
   };
 
   const handlePlayerReady = (event) => {
-    setPlayers((prev) => {
-      if (!prev.includes(event.target)) {
-        return [...prev, event.target];
-      }
-      return prev;
-    });
+    const player = event.target;
+    if (!playersRef.current.includes(player)) {
+      playersRef.current.push(player); // 중복 추가 방지
+    }
   };
 
   const handlePlayerError = (event) => {
@@ -78,7 +64,8 @@ function Main() {
 
   useEffect(() => {
     return () => {
-      players.forEach((player) => {
+      // 컴포넌트 언마운트 시 모든 플레이어 제거
+      playersRef.current.forEach((player) => {
         if (player && typeof player.destroy === "function") {
           try {
             player.destroy();
@@ -87,11 +74,13 @@ function Main() {
           }
         }
       });
+      playersRef.current = []; // 참조 초기화
     };
   }, []);
 
   return (
     <div className={styles.screen}>
+      {/* Header Section */}
       <div className={styles.Header}>
         <div className={styles.logoContainer} onClick={handleLogoClick}>
           <Logo className={styles.logo} />
@@ -99,12 +88,11 @@ function Main() {
         </div>
         <div className={styles.profileContainer} onClick={handleProfileClick}>
           <img
-            src={userInfo.profileImage || iconUserProfile}
+            src={userInfo.profileImage}
             alt="User Profile"
             className={styles.profileImage}
             onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = iconUserProfile;
+              e.target.src = iconUserProfile; // 로드 실패 시 기본 이미지로 대체
             }}
           />
           <span className={styles.profileName}>
@@ -113,6 +101,7 @@ function Main() {
         </div>
       </div>
 
+      {/* Main Buttons Section */}
       <div className={styles.mainButtons}>
         <Link to="/new" className={styles.button}>
           여행 일정 생성하기
@@ -131,6 +120,7 @@ function Main() {
         )}
       </div>
 
+      {/* YouTube Player Section */}
       <div className={styles.youtubeContainer}>
         <YouTube
           videoId="ZVmmP0CgpUg"
