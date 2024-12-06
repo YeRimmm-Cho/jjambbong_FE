@@ -182,6 +182,8 @@ location_template = '''
             그 장소에 대한 도로명 주소와, 그 장소의 분류를 반환하고,
             그리고 여행을 가장 잘 설명할 수 있는 해시태그를 너가 만들어서 
             아래의 JSON 형식으로 반환해야 해.
+            해시태그가 영어면 안돼. 한글로 해야해.
+            #JejuTravel #CultureExperiences #DeliciousFood 이런 식으로 하면 안돼.
 
             # JSON 형식
             {{

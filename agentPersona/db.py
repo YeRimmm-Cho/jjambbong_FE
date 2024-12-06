@@ -18,7 +18,7 @@ pinecone = Pinecone(
     api_key=pinecone_api_key,
     environment="us-east-1"
 )
-index_name = "restaurants"
+index_name = "tamtam"
 embeddings = OpenAIEmbeddings(
     model="text-embedding-ada-002"
 )
