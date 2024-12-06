@@ -20,7 +20,7 @@ pinecone = Pinecone(
 )
 index_name = "restaurants"
 embeddings = OpenAIEmbeddings(
-    model="text-embedding-ada-002"
+    model="all-MiniLM-L6-v2"
 )
 vectorstore = PineconeVectorStore(
     index_name=index_name,
