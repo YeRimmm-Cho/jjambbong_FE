@@ -105,13 +105,14 @@ function NewChat() {
   useEffect(() => {
     const savedMessages =
       JSON.parse(sessionStorage.getItem("chatMessages")) || [];
-    if (
-      savedMessages.length > 0 &&
-      savedMessages[savedMessages.length - 1].sender === "user"
-    ) {
-      setIsWaitingForModify(true);
+    if (savedMessages.length > 0) {
+      const lastMessage = savedMessages[savedMessages.length - 1];
+
+      setIsWaitingForModify(lastMessage.sender === "user"); // Modify 상태 복원
+      setIsInputDisabled(false); // 항상 입력창 활성화
     } else {
       setIsWaitingForModify(false);
+      setIsInputDisabled(true); // 메시지가 없으면 입력창 비활성화
     }
   }, []);
 
@@ -136,7 +137,8 @@ function NewChat() {
       // 마지막 메시지가 사용자 메시지이며, 이미 처리되지 않은 경우
       if (
         lastMessage.sender === "user" &&
-        lastMessage.id !== lastHandledMessageId
+        lastMessage.id !== lastHandledMessageId &&
+        !isGenerating // 요청 중인 상태에서 중복 요청 방지
       ) {
         console.log("Handling Modify for:", lastMessage.text);
 
