@@ -303,15 +303,20 @@ def modify3():
     print(location_response)
 
     location_response = json.loads(location_response)
+    print(location_response)
 
     existing_plan = TravelPlan.query.filter_by(user_id=user_id).first()
 
+    print(type(modification_response))
+    print(type(location_response))
+
     existing_plan.plan_response = modification_response
-    existing_plan.location_info = location_response
+    existing_plan.location_info = json.dumps(location_response, ensure_ascii=False)
 
     db.session.commit()
 
-    travel_info = TravelPlan.query.get(user_id).travel_info
+    travel_plan = TravelPlan.query.filter_by(user_id=user_id).first()  # user_id를 기준으로 조회
+    travel_info = travel_plan.travel_info
     follow_up_message = "수정이 완료되었습니다. 추가 수정이 필요하면 말씀해주세요! 😊"
 
     # location_response = json.loads(location_response)
