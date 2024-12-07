@@ -15,8 +15,38 @@ import { getTravelPlan } from "../api/chatApi";
 import { modifyTravelPlan } from "../api/chatApi";
 import iconUserProfile from "../assets/icon_userprofile.png";
 import ReactMarkdown from "react-markdown";
+import GooglePlacesImageUpdater from "../api/GooglePlacesImageFetcher";
 
 function NewChat() {
+  const [forceRender, setForceRender] = useState(false); // 렌더링 트리거 상태
+
+  const handleUpdateImages = async () => {
+    if (updaterRef.current) {
+      await updaterRef.current.updateSessionStorageWithImages(); // 비동기 작업 완료
+    }
+    // sessionStorage 데이터를 다시 상태로 업데이트
+    const updatedPlaces = sessionStorage.getItem("places");
+    if (updatedPlaces) {
+      setPlaces(JSON.parse(updatedPlaces));
+    }
+  };
+  useEffect(() => {
+    const syncPlacesFromSessionStorage = () => {
+      const storedPlaces = sessionStorage.getItem("places");
+      if (storedPlaces) {
+        setPlaces(JSON.parse(storedPlaces));
+      }
+    };
+
+    // 변화가 있을 때 동기화
+    window.addEventListener("storage", syncPlacesFromSessionStorage);
+
+    return () => {
+      // 이벤트 리스너 정리
+      window.removeEventListener("storage", syncPlacesFromSessionStorage);
+    };
+  }, []);
+
   const itinerary = 4;
   // 초기 상태 복원
   const [isGreetingAccepted, setIsGreetingAccepted] = useState(() => {
@@ -47,7 +77,9 @@ function NewChat() {
     return JSON.parse(sessionStorage.getItem("selectedThemes")) || [];
   });
   const [places, setPlaces] = useState(() => {
-    return JSON.parse(sessionStorage.getItem("places")) || null;
+    // 초기 상태를 sessionStorage에서 로드
+    const storedPlaces = sessionStorage.getItem("places");
+    return storedPlaces ? JSON.parse(storedPlaces) : [];
   });
 
   const [message, setMessage] = useState("");
@@ -262,13 +294,14 @@ function NewChat() {
       if (location_info?.places) {
         const processedPlaces = processPlaces(location_info.places);
 
-        // 세션 스토리지에 장소 데이터 저장
-        sessionStorage.setItem("places", JSON.stringify(processedPlaces));
 
-        // GooglePlacesImageUpdater 호출
-        if (updaterRef.current) {
-          await updaterRef.current.updateSessionStorageWithImages();
-        }
+        setPlaces((prevPlaces) => {
+          const mergedPlaces = { ...prevPlaces, ...processedPlaces };
+          sessionStorage.setItem("places", JSON.stringify(mergedPlaces));
+          console.log("Merged places saved to sessionStorage:", mergedPlaces);
+          return mergedPlaces;
+        });
+
       }
 
       if (location_info?.hash_tag) {
@@ -342,6 +375,7 @@ function NewChat() {
         name: spot.name,
         category: spot.category,
         address: spot.location,
+        imageUrl: spot.imageUrl,
       }));
     }
     return processed;
@@ -618,6 +652,16 @@ function NewChat() {
             className={styles.sendIcon}
             onClick={handleSendMessage}
           />
+          <button
+            onClick={handleUpdateImages}
+            style={{
+              opacity: 0,
+              pointerEvents: "auto", // 클릭 가능 유지
+            }}
+          >
+            Update Images
+          </button>
+          <GooglePlacesImageUpdater ref={updaterRef} />
         </div>
       </div>
     </div>
