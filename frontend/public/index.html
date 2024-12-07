@@ -28,6 +28,10 @@
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=d076d725330186203489084dfa5800a9&libraries=services"
     ></script>
+<script
+  async
+  src={`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_API_GOOGLE_KEY}&libraries=places&callback=initMap`}
+></script>
     <title>탐라, 탐나</title>
   </head>
   <body>

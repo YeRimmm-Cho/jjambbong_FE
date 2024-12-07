@@ -33,6 +33,7 @@ function PolylineComponent({ positions }) {
 
 function KakaoMap() {
   const [positions, setPositions] = useState([]);
+  const [infoVisibleIndex, setInfoVisibleIndex] = useState(null); // 인포텍스트 표시 상태
 
   useEffect(() => {
     const { kakao } = window;
@@ -42,6 +43,7 @@ function KakaoMap() {
     }
 
     const geocoder = new kakao.maps.services.Geocoder();
+    const places = new kakao.maps.services.Places();
 
     async function fetchItineraryFromSessionStorage() {
       try {
@@ -62,6 +64,7 @@ function KakaoMap() {
             await new Promise((resolve) => {
               geocoder.addressSearch(address, (result, status) => {
                 if (status === kakao.maps.services.Status.OK) {
+                  // 주소 좌표 변환 성공
                   const coordinates = {
                     title: name,
                     latlng: {
@@ -70,13 +73,49 @@ function KakaoMap() {
                     },
                   };
                   fetchedPositions.push(coordinates);
+                  resolve();
+                } else if (
+                  status === kakao.maps.services.Status.ZERO_RESULT &&
+                  result?.length > 0
+                ) {
+                  // 유사 주소를 사용
+                  const similarAddress = result[0];
+                  const coordinates = {
+                    title: name,
+                    latlng: {
+                      lat: parseFloat(similarAddress.y),
+                      lng: parseFloat(similarAddress.x),
+                    },
+                  };
+                  fetchedPositions.push(coordinates);
+                  resolve();
                 } else {
-                  console.error(
-                    `Failed to fetch coordinates for ${name} (${address}):`,
-                    status
+                  // "제주 + name"으로 키워드 검색
+                  places.keywordSearch(
+                    `제주 ${name}`,
+                    (results, keywordStatus) => {
+                      if (
+                        keywordStatus === kakao.maps.services.Status.OK &&
+                        results.length > 0
+                      ) {
+                        const keywordCoordinates = {
+                          title: results[0].place_name, // 검색된 첫 번째 장소
+                          latlng: {
+                            lat: parseFloat(results[0].y),
+                            lng: parseFloat(results[0].x),
+                          },
+                        };
+                        fetchedPositions.push(keywordCoordinates);
+                      } else {
+                        console.warn(
+                          `Failed to find a fallback for ${name} (${address}):`,
+                          keywordStatus
+                        );
+                      }
+                      resolve();
+                    }
                   );
                 }
-                resolve();
               });
             });
           }
@@ -100,7 +139,7 @@ function KakaoMap() {
       {/* PolylineComponent: 마커를 잇는 선 */}
       {positions.length > 1 && <PolylineComponent positions={positions} />}
 
-      {/* MapMarker: 마커 표시 */}
+      {/* MapMarker: 마커 표시 및 마우스 오버 시 인포텍스트 표시 */}
       {positions.map((position, index) => (
         <MapMarker
           key={`${position.title}-${index}`}
@@ -112,14 +151,12 @@ function KakaoMap() {
               height: 35,
             },
           }}
-          title={position.title}
+          title={position.title} // 마우스 오버 시 기본 툴팁
+          onMouseOver={() => setInfoVisibleIndex(index)} // 마우스 오버 이벤트
+          onMouseOut={() => setInfoVisibleIndex(null)} // 마우스 아웃 이벤트
         >
-          {/* 첫 번째 마커에만 InfoWindow 표시 */}
-          {index === 0 && (
-            <div style={{ padding: "5px", color: "#000" }}>
-              이곳에서 여행을 시작하세요!
-            </div>
-          )}
+          {/* InfoWindow를 통해 마우스 오버 시 인포텍스트 표시 */}
+          {infoVisibleIndex === index && <div>{position.title}</div>}
         </MapMarker>
       ))}
     </Map>

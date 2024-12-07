@@ -294,12 +294,14 @@ function NewChat() {
       if (location_info?.places) {
         const processedPlaces = processPlaces(location_info.places);
 
+
         setPlaces((prevPlaces) => {
           const mergedPlaces = { ...prevPlaces, ...processedPlaces };
           sessionStorage.setItem("places", JSON.stringify(mergedPlaces));
           console.log("Merged places saved to sessionStorage:", mergedPlaces);
           return mergedPlaces;
         });
+
       }
 
       if (location_info?.hash_tag) {
@@ -613,7 +615,13 @@ function NewChat() {
                   }
                 >
                   {/*마크다운 메시지 렌더링 */}
-                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                  {msg.sender === "GPT" ? (
+                    <ReactMarkdown className="markdown">
+                      {msg.text}
+                    </ReactMarkdown>
+                  ) : (
+                    <span>{msg.text}</span>
+                  )}
                 </div>
               </div>
             ))}
