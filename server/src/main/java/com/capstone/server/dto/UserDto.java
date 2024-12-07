@@ -2,22 +2,22 @@ package com.capstone.server.dto;
 
 import com.capstone.server.domain.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor // 기본 생성자 추가
 public class UserDto {
-    private Long id;
-    private String username;
+    private Integer id;
+    private String nickname;
     private String email;
-    
-    // 기본 생성자
-    public UserDto() {}
+    private String password;
 
-    // User 엔티티를 받아서 UserDto 객체를 생성하는 생성자
     public UserDto(User user) {
         this.id = user.getId();
-        this.username = user.getUsername();
+        this.nickname = user.getNickname();
         this.email = user.getEmail();
+        this.password = user.getPassword();
     }
 }

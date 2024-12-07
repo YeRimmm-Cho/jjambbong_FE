@@ -1,4 +1,0 @@
-flask
-langchain
-openai
-pinecone-client

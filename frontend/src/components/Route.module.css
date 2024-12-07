@@ -1,0 +1,92 @@
+.detailedSchedule {
+  width: 100%;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  justify-content: flex-start;
+  overflow-x: auto; /* 수평 스크롤 허용 */
+  white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+.tabButton {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  cursor: pointer;
+  border-radius: 8px;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.tabButton.active {
+  background-color: #ffa94f;
+  color: #fff;
+  border-color: #ffa94f;
+}
+
+.spotList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  overflow: hidden; /* 스크롤바 제거 */
+}
+.routeDetails {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px;
+  transition: background-color 0.3s;
+}
+
+.routeDetails:hover {
+  background-color: #fff7f2;
+  border-radius: 8px;
+}
+
+.spotInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1; /* 동일한 공간 차지 */
+}
+
+.imageContainer {
+  position: relative;
+  width: 75px;
+  height: 75px;
+}
+
+.spotImage {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%; /* 원형 이미지 */
+  object-fit: cover;
+  margin: 0;
+}
+
+.imageLabel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  text-align: center;
+  font-size: 12px;
+  padding: 5px;
+  border-radius: 0 0 50% 50%; /* 이미지 하단에 맞춘 곡선 */
+}
+
+.arrow {
+  margin: 0 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #555;
+}
