@@ -72,6 +72,7 @@ function TravelSummary() {
                 ? spot.address || "주소 정보 없음"
                 : spot.location || "주소 정보 없음",
               category: spot.category || "카테고리 없음",
+              imageUrl: spot.imageUrl || null, // imageUrl 그대로 사용
             }))
           : [];
         return {
@@ -153,6 +154,7 @@ function TravelSummary() {
                       name: spot.name || "이름 없음",
                       category: spot.category || "카테고리 없음",
                       address: spot.address,
+                      imageUrl: spot.imageUrl, // imageUrl 그대로 전달
                     }}
                   />
                 ))

@@ -17,14 +17,11 @@ const DetailedSchedule = () => {
     let placesData = {};
     let isChatData = false;
 
-    // 채팅 데이터 처리
     if (chatPlaces) {
       console.log("Processing Chat Data");
       placesData = chatPlaces;
       isChatData = true;
-    }
-    // 저장된 일정 데이터 처리
-    else if (itinerary?.title) {
+    } else if (itinerary?.title) {
       console.log("Processing Saved Itinerary Data");
       const userId = localStorage.getItem("userId");
       const travelName = itinerary.title;
@@ -47,9 +44,7 @@ const DetailedSchedule = () => {
         setIsLoading(false);
         return;
       }
-    }
-    // 데이터가 없는 경우
-    else {
+    } else {
       setErrorMessage("데이터를 불러올 수 없습니다.");
       navigate("/mypage");
       setIsLoading(false);
@@ -58,14 +53,13 @@ const DetailedSchedule = () => {
 
     console.log("Places Data Before Formatting:", placesData);
 
-    // 데이터 형식 변환
     const formattedData = Object.entries(placesData).map(
       ([dayKey, dayData], index) => {
         const spotArray = Array.isArray(dayData)
-          ? dayData // dayData가 배열인 경우
+          ? dayData
           : Array.isArray(dayData?.spots)
-            ? dayData.spots // dayData 안에 spots 배열이 있는 경우
-            : []; // 둘 다 아니면 빈 배열
+            ? dayData.spots
+            : [];
 
         const validSpots = spotArray.map((spot, idx) => {
           if (!spot || typeof spot !== "object") {
@@ -74,19 +68,20 @@ const DetailedSchedule = () => {
               name: "이름 없음",
               category: "카테고리 없음",
               address: "주소 정보 없음",
+              imageUrl: null, // 기본 이미지 없음 처리
             };
           }
 
-          // 주소 필드 처리
           const address =
             isChatData && spot.address
-              ? spot.address // 채팅 데이터는 address 사용
-              : spot.location || "주소 정보 없음"; // 저장된 데이터는 location 사용
+              ? spot.address
+              : spot.location || "주소 정보 없음";
 
           return {
             name: spot.name || "이름 없음",
             category: spot.category || "카테고리 없음",
             address,
+            imageUrl: spot.imageUrl || null, // imageUrl 추가
           };
         });
 
@@ -100,7 +95,6 @@ const DetailedSchedule = () => {
 
     console.log("Formatted itinerary days:", formattedData);
 
-    // 결과를 상태로 설정
     if (formattedData.length > 0) {
       setItineraryDays(formattedData);
       setActiveDay(formattedData[0]?.displayDay || null);
@@ -146,6 +140,7 @@ const DetailedSchedule = () => {
                     name: spot.name,
                     category: spot.category,
                     address: spot.address,
+                    imageUrl: spot.imageUrl, // imageUrl 전달
                   }}
                 />
               )) || <p>해당 일정에 여행지가 없습니다.</p>}
