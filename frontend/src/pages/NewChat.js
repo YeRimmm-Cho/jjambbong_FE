@@ -105,13 +105,14 @@ function NewChat() {
   useEffect(() => {
     const savedMessages =
       JSON.parse(sessionStorage.getItem("chatMessages")) || [];
-    if (
-      savedMessages.length > 0 &&
-      savedMessages[savedMessages.length - 1].sender === "user"
-    ) {
-      setIsWaitingForModify(true);
+    if (savedMessages.length > 0) {
+      const lastMessage = savedMessages[savedMessages.length - 1];
+
+      setIsWaitingForModify(lastMessage.sender === "user"); // Modify 상태 복원
+      setIsInputDisabled(false); // 항상 입력창 활성화
     } else {
       setIsWaitingForModify(false);
+      setIsInputDisabled(true); // 메시지가 없으면 입력창 비활성화
     }
   }, []);
 
@@ -136,7 +137,8 @@ function NewChat() {
       // 마지막 메시지가 사용자 메시지이며, 이미 처리되지 않은 경우
       if (
         lastMessage.sender === "user" &&
-        lastMessage.id !== lastHandledMessageId
+        lastMessage.id !== lastHandledMessageId &&
+        !isGenerating // 요청 중인 상태에서 중복 요청 방지
       ) {
         console.log("Handling Modify for:", lastMessage.text);
 
@@ -230,12 +232,12 @@ function NewChat() {
       addMessage("탐탐이가 응답하지 않습니다. 다시 시도해주세요.", false);
     }
   };
-
+  const updaterRef = useRef();
   // plan API 연결
   const handleConfirm = async () => {
-    if (isConfirmButtonDisabled) return; // 버튼이 비활성화된 경우 실행 차단
+    if (isConfirmButtonDisabled) return;
 
-    setIsConfirmButtonDisabled(true); // 버튼 비활성화
+    setIsConfirmButtonDisabled(true);
     const travelDays = Math.ceil(
       (dateRange[1] - dateRange[0]) / (1000 * 60 * 60 * 24)
     );
@@ -248,7 +250,7 @@ function NewChat() {
       travel_theme: selectedThemes.join(", "),
     };
 
-    setIsGenerating(true); // 로딩 시작
+    setIsGenerating(true);
 
     try {
       const {
@@ -257,12 +259,18 @@ function NewChat() {
         location_info,
       } = await getTravelPlan(requestData);
 
-      // 장소 데이터 처리 및 상태 업데이트
       if (location_info?.places) {
         const processedPlaces = processPlaces(location_info.places);
-        setPlaces(processedPlaces);
+
+        // 세션 스토리지에 장소 데이터 저장
+        sessionStorage.setItem("places", JSON.stringify(processedPlaces));
+
+        // GooglePlacesImageUpdater 호출
+        if (updaterRef.current) {
+          await updaterRef.current.updateSessionStorageWithImages();
+        }
       }
-      // API에서 받은 해시태그 데이터 저장
+
       if (location_info?.hash_tag) {
         setHashTags(location_info.hash_tag);
         sessionStorage.setItem(
@@ -271,19 +279,16 @@ function NewChat() {
         );
       }
 
-      // Plan 응답 버블
       addMessage(planResponse, false);
       addMessage(followUp, false);
-      setIsInputDisabled(false); // 입력창 활성화
-
-      // Modify 입력 대기 상태
+      setIsInputDisabled(false);
       setIsWaitingForModify(true);
     } catch (error) {
       console.error("Plan 요청 오류:", error);
       addMessage("Error: 일정 생성에 실패했습니다. 다시 시도해주세요.", false);
-      setIsConfirmButtonDisabled(false); // 실패 시 버튼 다시 활성화
+      setIsConfirmButtonDisabled(false);
     } finally {
-      setIsGenerating(false); // 로딩 상태 종료
+      setIsGenerating(false);
     }
   };
 
@@ -576,7 +581,13 @@ function NewChat() {
                   }
                 >
                   {/*마크다운 메시지 렌더링 */}
-                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                  {msg.sender === "GPT" ? (
+                    <ReactMarkdown className="markdown">
+                      {msg.text}
+                    </ReactMarkdown>
+                  ) : (
+                    <span>{msg.text}</span>
+                  )}
                 </div>
               </div>
             ))}
