@@ -172,47 +172,36 @@ final_template = '''
 location_template = '''
             # 입력 정보
             여행 일정 : {travel_plan}
+            메타데이터 : {metadata}
 
             # 장소 분류
             - 관광지
             - 음식점
+            - 카페
 
             # 행동 지침
-            너는 입력을 받은 여행 일정에서 여행 일자별로 장소 정보를 추출하고,
-            그 장소에 대한 도로명 주소와, 그 장소의 분류를 반환하고,
-            그리고 여행을 가장 잘 설명할 수 있는 해시태그를 너가 만들어서 
-            아래의 JSON 형식으로 반환해야 해.
-            해시태그가 영어면 안돼. 한글로 해야해.
-            #JejuTravel #CultureExperiences #DeliciousFood 이런 식으로 하면 안돼.
+            너는 입력받은 여행 일정과 메타데이터를 바탕으로 여행 일자별로 장소 정보를 추출하고,
+            각 장소의 이름, 도로명 주소, 위도, 경도, 분류를 JSON 형식으로 반환해야 해.
+            그리고 여행을 가장 잘 설명할 수 있는 해시태그를 만들어서 반환해.
 
             # JSON 형식
             {{
               "places": {{
                 "day1": [
-                  {{
-                    "name": "장소 이름",
-                    "location": "도로명 주소",
-                    "coordinate": "좌표",
-                    "category": "관광지/음식점"
-                  }},
+                  {{"name": "장소 이름", "location": "도로명 주소", "latitude": 위도, "longitude": 경도, "category": "카테고리"}},
                   ...
                 ],
                 "day2": [
-                  {{
-                    "name": "장소 이름",
-                    "location": "도로명 주소",
-                    "coordinate": "좌표",
-                    "category": "관광지/음식점"
-                  }},
+                  {{"name": "장소 이름", "location": "도로명 주소", "latitude": 위도, "longitude": 경도, "category": "카테고리"}},
                   ...
                 ]
-              }}
-              "hash_tag": "#액티비티 #... 등등"
+              }},
+              "hash_tag": "#한글 해시태그"
             }}
 
-            위 형식에 맞춰서 장소 정보와 해시태그를 반환하면 되고,
-            JSON 형식의 자료만 반환하고 다른 말은 하지마.
+            반드시 JSON 형식만 반환하고, 다른 텍스트는 포함하지 마.
             '''
+
 
 location_prompt = PromptTemplate(
     template = location_template,
