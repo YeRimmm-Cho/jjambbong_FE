@@ -3,6 +3,8 @@ import { login } from "../api/userApi";
 import styles from "./LoginPage.module.css";
 import { ReactComponent as Logo } from "../assets/logo.svg";
 import airplaneImage from "../assets/icon_airplane.png";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -10,13 +12,14 @@ function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const response = await login(email, password);
       alert(`${response.user.nickname}님, 환영합니다!`);
-      window.location.href = "/";
+      navigate("/");
     } catch (error) {
       setErrorMessage(error.response?.data?.message || "로그인 실패");
     } finally {
@@ -32,7 +35,7 @@ function LoginPage() {
   };
 
   const handleLogoClick = () => {
-    window.location.href = "/";
+    navigate("/");
   };
 
   return (
@@ -89,9 +92,9 @@ function LoginPage() {
 
         <p className={styles.signupLink}>
           계정이 없으신가요?{" "}
-          <a href="/signup" className={styles.signupLinkText}>
+          <Link to="/signup" className={styles.signupLinkText}>
             회원가입 하기
-          </a>
+          </Link>
         </p>
       </div>
     </div>

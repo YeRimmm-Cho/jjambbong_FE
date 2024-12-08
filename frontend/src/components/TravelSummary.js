@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./TravelSummary.module.css";
 import TravelSpot from "./TravelSpot";
@@ -24,15 +24,15 @@ function TravelSummary() {
   } = location.state || {};
 
   // 데이터 처리 함수
-  const handleDataProcessing = async () => {
+  const handleDataProcessing = useCallback(async () => {
     let placesData = {};
     let tags = [];
-    let isChatData = false; // 기본값은 false
+    let isChatData = false;
 
     if (chatPlaces && chatHashTags) {
       placesData = chatPlaces;
       tags = chatHashTags;
-      isChatData = true; // location.state 데이터 사용
+      isChatData = true;
     } else if (itinerary?.title) {
       try {
         const userId = localStorage.getItem("userId");
@@ -46,17 +46,7 @@ function TravelSummary() {
           return;
         }
 
-        // JSON 객체로 전달
-        const payload = {
-          user_id: userId,
-          travel_name: travelName,
-        };
-
-        console.log("Request Data:", payload); // 디버깅용
-
-        const response = await loadDetailedPlan(userId, travelName); // payload를 JSON 객체로 전달
-        console.log("API Response:", response);
-
+        const response = await loadDetailedPlan(userId, travelName);
         placesData = response?.plan?.places || {};
         tags = response?.plan?.hash_tag || [];
         isChatData = false;
@@ -73,17 +63,16 @@ function TravelSummary() {
       return;
     }
 
-    console.log("Places Data:", placesData);
-    console.log("Is Chat Data:", isChatData);
-
-    // 이후 데이터 처리 로직
     const processedPlaces = Object.entries(placesData).map(
       ([dayKey, spots]) => {
         const validSpots = Array.isArray(spots)
           ? spots.map((spot) => ({
               name: spot.name || "이름 없음",
-              address: spot.location || "주소 정보 없음",
+              address: isChatData
+                ? spot.address || "주소 정보 없음"
+                : spot.location || "주소 정보 없음",
               category: spot.category || "카테고리 없음",
+              imageUrl: spot.imageUrl || null, // imageUrl 그대로 사용
             }))
           : [];
         return {
@@ -99,9 +88,15 @@ function TravelSummary() {
       0
     );
     const totalDays = processedPlaces.length;
+
     setItinerarySummary({ totalPlaces, tags, totalDays });
     processHashTags(tags);
-  };
+  }, [chatPlaces, chatHashTags, itinerary, navigate]);
+
+  // useEffect에서 handleDataProcessing 호출
+  useEffect(() => {
+    handleDataProcessing();
+  }, [handleDataProcessing]);
 
   // 해시태그 처리 함수
   const processHashTags = (tags) => {
@@ -115,11 +110,6 @@ function TravelSummary() {
       setFormattedTags([]);
     }
   };
-
-  // 데이터 로드
-  useEffect(() => {
-    handleDataProcessing();
-  }, [chatPlaces, chatHashTags, navigate]);
 
   // 사용자 이름 로드
   useEffect(() => {
@@ -164,6 +154,7 @@ function TravelSummary() {
                       name: spot.name || "이름 없음",
                       category: spot.category || "카테고리 없음",
                       address: spot.address,
+                      imageUrl: spot.imageUrl, // imageUrl 그대로 전달
                     }}
                   />
                 ))

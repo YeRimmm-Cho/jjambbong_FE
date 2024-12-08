@@ -18,10 +18,11 @@ const DetailedSchedule = () => {
     let isChatData = false;
 
     if (chatPlaces) {
-      // 챗 데이터를 처리
+      console.log("Processing Chat Data");
       placesData = chatPlaces;
       isChatData = true;
     } else if (itinerary?.title) {
+      console.log("Processing Saved Itinerary Data");
       const userId = localStorage.getItem("userId");
       const travelName = itinerary.title;
 
@@ -34,11 +35,10 @@ const DetailedSchedule = () => {
 
       try {
         const response = await loadDetailedPlan(userId, travelName);
-        console.log("API Response:", response);
         placesData = response?.plan?.places || {};
         isChatData = false;
       } catch (error) {
-        console.error("API 호출 실패:", error);
+        console.error("Error loading saved itinerary data:", error);
         setErrorMessage("데이터를 불러오는 중 오류가 발생했습니다.");
         navigate("/mypage");
         setIsLoading(false);
@@ -53,30 +53,51 @@ const DetailedSchedule = () => {
 
     console.log("Places Data Before Formatting:", placesData);
 
-    const formattedData = Object.entries(placesData)
-      .map(([dayKey, spots], index) => {
-        const validSpots = Array.isArray(spots)
-          ? spots.map((spot) => ({
-              name: spot.name || "이름 없음",
-              address: spot.location || "주소 정보 없음",
-              category: spot.category || "카테고리 없음",
-            }))
-          : [];
-        const parsedDay = parseInt(dayKey.replace(/[^0-9]/g, ""), 10);
-        return {
-          displayDay: index + 1, // 1일차부터 시작
-          originalDay: !isNaN(parsedDay) ? parsedDay : index, // 숫자로 변환
-          spots: validSpots, // spots에 유효한 데이터를 매핑
-        };
-      })
-      .filter((day) => !isNaN(day.originalDay)) // 유효하지 않은 day 제거
-      .sort((a, b) => a.originalDay - b.originalDay);
+    const formattedData = Object.entries(placesData).map(
+      ([dayKey, dayData], index) => {
+        const spotArray = Array.isArray(dayData)
+          ? dayData
+          : Array.isArray(dayData?.spots)
+            ? dayData.spots
+            : [];
 
-    console.log("Formatted Itinerary Days:", formattedData);
+        const validSpots = spotArray.map((spot, idx) => {
+          if (!spot || typeof spot !== "object") {
+            console.error(`Invalid spot at index ${idx}:`, spot);
+            return {
+              name: "이름 없음",
+              category: "카테고리 없음",
+              address: "주소 정보 없음",
+              imageUrl: null, // 기본 이미지 없음 처리
+            };
+          }
+
+          const address =
+            isChatData && spot.address
+              ? spot.address
+              : spot.location || "주소 정보 없음";
+
+          return {
+            name: spot.name || "이름 없음",
+            category: spot.category || "카테고리 없음",
+            address,
+            imageUrl: spot.imageUrl || null, // imageUrl 추가
+          };
+        });
+
+        return {
+          displayDay: index + 1,
+          originalDay: dayKey.replace(/[^0-9]/g, ""),
+          spots: validSpots,
+        };
+      }
+    );
+
+    console.log("Formatted itinerary days:", formattedData);
 
     if (formattedData.length > 0) {
       setItineraryDays(formattedData);
-      setActiveDay(formattedData[0]?.displayDay); // 첫 번째 탭 활성화
+      setActiveDay(formattedData[0]?.displayDay || null);
     } else {
       setErrorMessage("일정 데이터가 없습니다.");
     }
@@ -88,21 +109,14 @@ const DetailedSchedule = () => {
     handleDataProcessing();
   }, [chatPlaces, itinerary, navigate]);
 
-  const handleTabClick = (displayDay) => {
-    setActiveDay(displayDay);
-  };
-
   return (
     <div className={styles.detailedSchedule}>
       {isLoading ? (
         <p>일정을 불러오는 중입니다...</p>
       ) : errorMessage ? (
         <p className={styles.error}>{errorMessage}</p>
-      ) : itineraryDays.length === 0 ? (
-        <p className={styles.error}>해당 일정에 여행지가 없습니다.</p>
       ) : (
         <>
-          {/* 탭 버튼 */}
           <div className={styles.tabs}>
             {itineraryDays.map((day) => (
               <button
@@ -110,32 +124,26 @@ const DetailedSchedule = () => {
                 className={`${styles.tabButton} ${
                   activeDay === day.displayDay ? styles.active : ""
                 }`}
-                onClick={() => handleTabClick(day.displayDay)}
+                onClick={() => setActiveDay(day.displayDay)}
               >
                 {`${day.displayDay}일차`}
               </button>
             ))}
           </div>
-
-          {/* 장소 리스트 */}
           <div className={styles.spotList}>
-            {itineraryDays.find((day) => day.displayDay === activeDay)?.spots
-              .length > 0 ? (
-              itineraryDays
-                .find((day) => day.displayDay === activeDay)
-                .spots.map((spot, idx) => (
-                  <TravelSpot
-                    key={idx}
-                    spotData={{
-                      name: spot.name,
-                      category: spot.category,
-                      address: spot.address,
-                    }}
-                  />
-                ))
-            ) : (
-              <p>해당 일정에 여행지가 없습니다.</p>
-            )}
+            {itineraryDays
+              .find((day) => day.displayDay === activeDay)
+              ?.spots.map((spot, idx) => (
+                <TravelSpot
+                  key={idx}
+                  spotData={{
+                    name: spot.name,
+                    category: spot.category,
+                    address: spot.address,
+                    imageUrl: spot.imageUrl, // imageUrl 전달
+                  }}
+                />
+              )) || <p>해당 일정에 여행지가 없습니다.</p>}
           </div>
         </>
       )}

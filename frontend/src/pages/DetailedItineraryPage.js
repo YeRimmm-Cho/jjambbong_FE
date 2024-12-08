@@ -9,14 +9,13 @@ import Checklist from "../components/Checklist";
 import Modal from "../components/Modal";
 import InputModal from "../components/InputModal";
 import styles from "./DetailedItineraryPage.module.css";
-import { saveTravelPlan, loadDetailedPlan } from "../api/savePlanApi";
+import { saveTravelPlan } from "../api/savePlanApi";
 import KakaoMap from "../components/KakaoMap";
-import axios from "axios";
 
 function DetailedItineraryPage() {
   const location = useLocation(); // 이전 페이지에서 상태 가져오기
   const {
-    savedMessages = [],
+    savedMessages = [], // 채팅 데이터
     places: initialPlaces = null,
     hashTags = [],
     dateRange: initialDateRange = [null, null],
@@ -61,26 +60,10 @@ function DetailedItineraryPage() {
     sessionStorage.setItem("places", JSON.stringify(places));
   }, [dateRange, selectedCompanion, selectedThemes, places]);
 
-  const handleBack = () => {
-    // 이전 페이지로 이동 시 상태 전달
-    navigate(-1, {
-      state: {
-        savedMessages,
-        places,
-        hashTags,
-        dateRange,
-        selectedCompanion,
-        selectedThemes,
-      },
-    });
-  };
-
-  // 일정 확정 모달 열기
   const handleConfirmClick = () => {
     setIsModalOpen(true);
   };
 
-  // 일정 확정 모달 닫기
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
@@ -94,7 +77,6 @@ function DetailedItineraryPage() {
     setIsInputModalOpen(false); // 제목 입력 모달 닫기
   };
 
-  // 제목 입력 모달 열기
   const handleInputModalConfirm = async (title) => {
     try {
       if (!title.trim()) {
@@ -104,7 +86,6 @@ function DetailedItineraryPage() {
 
       setIsInputModalOpen(false); // 모달 닫기
 
-      // 사용자 정보 가져오기
       const { userId } = userInfo;
 
       // 서버로 전송할 데이터 준비
@@ -143,9 +124,12 @@ function DetailedItineraryPage() {
       {/* 오른쪽 지도 영역 */}
       <div className={styles.mapContainer}>
         <KakaoMap />
-        <button className={styles.confirmButton} onClick={handleConfirmClick}>
-          일정 확정하기
-        </button>
+        {/* savedMessages가 있을 때만 버튼 표시 */}
+        {savedMessages.length > 0 && (
+          <button className={styles.confirmButton} onClick={handleConfirmClick}>
+            일정 확정하기
+          </button>
+        )}
       </div>
 
       {/* 모달 컴포넌트 */}
