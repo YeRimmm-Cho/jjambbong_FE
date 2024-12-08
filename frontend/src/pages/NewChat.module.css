@@ -164,6 +164,7 @@
 .chatInput {
   flex: none;
   padding: 15px 20px;
+  margin-left: 40px;
   width: 85%;
   max-width: 1000px;
   font-size: 16px;
