@@ -581,7 +581,13 @@ function NewChat() {
                   }
                 >
                   {/*마크다운 메시지 렌더링 */}
-                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                  {msg.sender === "GPT" ? (
+                    <ReactMarkdown className="markdown">
+                      {msg.text}
+                    </ReactMarkdown>
+                  ) : (
+                    <span>{msg.text}</span>
+                  )}
                 </div>
               </div>
             ))}

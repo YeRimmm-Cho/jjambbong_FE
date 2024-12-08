@@ -38,11 +38,35 @@ plan_template = PromptTemplate(
         f"{role_description_text}\n\n"
         "여행 정보: 여행날짜: {travel_date}, 여행기간: {travel_days}, "
         "여행동반자: {travel_mate}, 여행테마: {travel_theme}."
-        "이 정보를 기반으로 제주도 여행 일정을 작성해줘. 각 날짜별 추천 활동을 포함해야 해."
+        "추천된 장소:\n{theme_context}\n\n"
+        "이 정보를 기반으로 제주도 여행 일정을 작성해줘. 추천된 장소만을 이용해서 여행 일정을 만드는거야, 너가 막 만들면 안돼 각 날짜별 추천 활동을 포함해야 해."
+        "추천된 장소의 category를 보면 관광지, cafe, restaurants이 들어있는데 적절하게 잘 배치하고"
+        "추천된 장소가 영어이름이라면 한글로 적절하게 변환해서 보여줘, 영어 이름이면 안돼 꼭 한글로 보여줘야해"
+        "카테고리가 cafe인 경우에는 카페, restaurants인 경우에는 음식점으로 나오게 해줘"
         "여행 계획을 추천한 뒤에, 추천한 계획에서 수정하고 싶은 부분이 있으면 말해달라고 사용자에게 말해."
     )
 )
+#3-1) 여행 장소 정보 추출 템플릿
+final_location_prompt = PromptTemplate(
+    input_variables=["plan_response", "metadata"],
+    template="""
+    다음은 GPT가 생성한 여행 계획입니다:
+    {plan_response}
 
+    이 계획에서 사용된 장소를 다음 형식으로 반환해 주세요:
+    {{
+      "places": {{
+        "day1": [
+          {{"name": "장소 이름", "location": "장소 주소", "coordinate": "좌표", "category": "카테고리"}}
+        ],
+        ...
+      }},
+      "hash_tag": "여행 테마에 맞는 해시태그"
+    }}
+    장소 정보는 다음 메타데이터에서 가져와야해:
+    {metadata}
+    """
+)
 #4) 여행 계획 수정 템플릿
 modify_template = PromptTemplate(
     input_variables=["current_plan", "modification_request"],
