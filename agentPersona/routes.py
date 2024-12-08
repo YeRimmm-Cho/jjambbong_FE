@@ -206,6 +206,25 @@ def plan():
             "travel_theme": travel_theme
         }
 
+        # DB에 저장하는 코드
+        existing_plan = TravelPlan.query.filter_by(user_id=user_id).first()  # user_id를 기준으로 조회
+
+        if existing_plan:
+            # 기존 데이터가 있으면 업데이트
+            existing_plan.travel_info = json.dumps(travel_info, ensure_ascii=False)
+            existing_plan.plan_response = plan_response
+            existing_plan.location_info = json.dumps(location_response, ensure_ascii=False)
+        else:
+            # 기존 데이터가 없으면 새로 추가
+            db.session.add(TravelPlan(
+                user_id=user_id,
+                travel_info=json.dumps(travel_info, ensure_ascii=False),
+                plan_response=plan_response,
+                location_info=json.dumps(location_response, ensure_ascii=False)
+            ))
+    
+        db.session.commit()
+
         # 최종 응답 반환
         response_data = {
             "response": plan_response,
