@@ -52,7 +52,7 @@ index = pinecone.Index(index_name)  # Pinecone 인덱스를 직접 정의
 main_bp = Blueprint("main", __name__)
 
 # Pinecone에서 검색 결과 가져오기
-def search_pinecone(query_text, top_k=25, category_filter=None):
+def search_pinecone(query_text, top_k=50, category_filter=None):
     query_vector = model.encode(query_text).tolist()
     results = index.query(vector=query_vector, top_k=top_k, include_metadata=True)
     filtered_results = [
@@ -60,7 +60,6 @@ def search_pinecone(query_text, top_k=25, category_filter=None):
         if not category_filter or category_filter in match["metadata"].get("category", "")
     ]
     return filtered_results
-
 
 # 중복 제거
 def remove_duplicates(results):
@@ -76,48 +75,60 @@ def remove_duplicates(results):
 
 # 날짜별로 장소를 분배
 def distribute_results_by_days(results, travel_days):
+    """
+    장소 순서를 유지하면서 날짜별로 배분.
+    """
     if not results or travel_days <= 0:
         return {}
 
-    places_per_day = max(len(results) // travel_days, 1)
-    distributed_results = {}
-    for i in range(travel_days):
-        start_index = i * places_per_day
-        end_index = start_index + places_per_day
-        distributed_results[f"day{i+1}"] = results[start_index:end_index]
+    # 만약 장소 수가 날짜 수보다 적다면, 각 장소를 개별 날짜에 배치
+    if len(results) < travel_days:
+        distributed_results = {f"day{i+1}": [] for i in range(travel_days)}
+        for i, place in enumerate(results):
+            distributed_results[f"day{i+1}"].append(place)
+        return distributed_results
 
-    leftover = results[travel_days * places_per_day:]
-    for i, place in enumerate(leftover):
-        distributed_results[f"day{(i % travel_days) + 1}"].append(place)
+    # 일반적인 분배
+    distributed_results = {f"day{i+1}": [] for i in range(travel_days)}
+    places_per_day = len(results) // travel_days
+
+    for idx, place in enumerate(results):
+        day = f"day{(idx // places_per_day) + 1}"
+        # 분배 범위 초과 방지
+        if day not in distributed_results:
+            day = f"day{travel_days}"
+        distributed_results[day].append(place)
 
     return distributed_results
 
 
-def extract_used_places_from_response(plan_response, metadata):
+def extract_ordered_places(plan_response, metadata):
     """
-    LLM 응답에서 언급된 장소 이름을 Pinecone 메타데이터와 매칭하여 정제된 장소 목록을 반환.
+    LLM 응답에서 언급된 장소 순서를 기반으로 Pinecone 메타데이터와 매칭하여 장소 목록 반환.
     """
     try:
-        # 응답에서 장소 이름 추출 (단순 split 대신 모든 텍스트 검색)
-        place_names = set()
-        for meta in metadata:
-            if meta["name"] in plan_response:  # 이름이 LLM 응답 내 포함된 경우
-                place_names.add(meta["name"])
+        # LLM 응답 내에서 장소 이름 추출
+        place_names = []
+        for line in plan_response.split("\n"):
+            for meta in metadata:
+                if meta["name"] in line and meta["name"] not in place_names:
+                    place_names.append(meta["name"])
 
-        # Pinecone 메타데이터에서 일치하는 장소 정보만 필터링
-        filtered_places = [
+        # Pinecone 메타데이터에서 순서에 맞게 일치하는 장소 정보 필터링
+        ordered_places = [
             {
                 "name": meta["name"],
                 "location": meta["address"],
                 "coordinate": f"{meta['latitude']}, {meta['longitude']}",
                 "category": meta["category"]
             }
-            for meta in metadata if meta["name"] in place_names
+            for name in place_names
+            for meta in metadata
+            if meta["name"] == name
         ]
-
-        return filtered_places
+        return ordered_places
     except Exception as e:
-        raise ValueError(f"Error while extracting places: {str(e)}")
+        raise ValueError(f"Error while extracting ordered places: {str(e)}")
 
 # 5: 라우트 생성
 @main_bp.route("/greeting", methods=["POST"])
@@ -156,9 +167,9 @@ def plan():
 
     try:
         # Pinecone 검색
-        tourist_spots = search_pinecone(f"제주도 {travel_theme} 관련 관광지 추천", top_k=10, category_filter="관광지")
-        restaurants = search_pinecone(f"제주도 {travel_theme} 관련 맛집 추천", top_k=10, category_filter="restaurants")
-        cafes = search_pinecone(f"제주도 {travel_theme} 관련 카페 추천", top_k=10, category_filter="cafe")
+        tourist_spots = search_pinecone(f"제주도 {travel_theme} 관련 관광지 추천", top_k=20, category_filter="관광지")
+        restaurants = search_pinecone(f"제주도 {travel_theme} 관련 맛집 추천", top_k=20, category_filter="음식점")
+        cafes = search_pinecone(f"제주도 {travel_theme} 관련 카페 추천", top_k=10, category_filter="카페")
         all_results = remove_duplicates(tourist_spots + restaurants + cafes)
 
         # LLM에 전달할 텍스트 컨텍스트 생성
@@ -175,12 +186,16 @@ def plan():
             "travel_theme": travel_theme,
             "theme_context": theme_context
         }
-        plan_chain = plan_prompt | plan_model | StrOutputParser()  # 예: LangChain 기반 체인
+        plan_chain = plan_prompt | plan_model | StrOutputParser()
         plan_response = plan_chain.invoke(input_data)
 
         # LLM 응답 기반 데이터 정제
-        used_places = extract_used_places_from_response(plan_response, [result["metadata"] for result in all_results])
-        distributed_places = distribute_results_by_days(used_places, travel_days)
+        ordered_places = extract_ordered_places(plan_response, [result["metadata"] for result in all_results])
+        distributed_places = distribute_results_by_days(ordered_places, travel_days)
+
+        # # 디버깅: 분배된 결과 출력
+        # print("Ordered Places:", ordered_places)
+        # print("Distributed Places:", distributed_places)
 
         # JSON 응답 생성
         location_info = {
@@ -205,6 +220,22 @@ def plan():
             "travel_mate": travel_mate,
             "travel_theme": travel_theme
         }
+        # DB에 저장하는 코드
+        existing_plan = TravelPlan.query.filter_by(user_id=user_id).first()  # user_id를 기준으로 조회
+
+        if existing_plan:
+            # 기존 데이터가 있으면 업데이트
+            existing_plan.travel_info = json.dumps(travel_info, ensure_ascii=False)
+            existing_plan.plan_response = plan_response
+            existing_plan.location_info = json.dumps(location_info, ensure_ascii=False)
+        else:
+            # 기존 데이터가 없으면 새로 추가
+            db.session.add(TravelPlan(
+                user_id=user_id,
+                travel_info=json.dumps(travel_info, ensure_ascii=False),
+                plan_response=plan_response,
+                location_info=json.dumps(location_info, ensure_ascii=False)
+            ))
 
         # DB에 저장하는 코드
         existing_plan = TravelPlan.query.filter_by(user_id=user_id).first()  # user_id를 기준으로 조회
@@ -225,7 +256,6 @@ def plan():
     
         db.session.commit()
 
-        # 최종 응답 반환
         response_data = {
             "response": plan_response,
             "follow_up": "여행 계획이 생성되었습니다. 수정하고 싶은 부분이 있으면 말씀해주세요! 😊",
