@@ -213,14 +213,14 @@ def plan():
             # 기존 데이터가 있으면 업데이트
             existing_plan.travel_info = json.dumps(travel_info, ensure_ascii=False)
             existing_plan.plan_response = plan_response
-            existing_plan.location_info = json.dumps(location_response, ensure_ascii=False)
+            existing_plan.location_info = json.dumps(location_info ensure_ascii=False)
         else:
             # 기존 데이터가 없으면 새로 추가
             db.session.add(TravelPlan(
                 user_id=user_id,
                 travel_info=json.dumps(travel_info, ensure_ascii=False),
                 plan_response=plan_response,
-                location_info=json.dumps(location_response, ensure_ascii=False)
+                location_info=json.dumps(location_info, ensure_ascii=False)
             ))
     
         db.session.commit()
