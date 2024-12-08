@@ -63,6 +63,20 @@ function TravelSummary() {
       return;
     }
 
+    // 이미지 매핑 데이터
+    const imageMapping = {
+      황우지해안:
+        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=AdDdOWpJUNQJy-60SccLIhgElDKPvhoXgQ4heqyyP1kl9ZACLtIEQoqsuTFJmGO6TpLvfj011NF7TEA5pJWJkiABZDUrDTT7hv8y8L2D-5Yqjrk0A2AEZzzDRsEW4q76NQPGvV14x3yv_dMUtLYDObvVEStv7UWLkHxoaMoUJRyHYu8bZw0O&key=AIzaSyBenOSRj_n3bCTZcdqOmqnnBmCEsi1kOyI",
+      동산관광농원:
+        "https://img1.kakaocdn.net/cthumb/local/R0x420.q50/?fname=http%3A%2F%2Ft1.daumcdn.net%2Fcfile%2F1906EC454F717C0D05",
+      국수문화거리:
+        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=AdDdOWrt7FbbMaQ5I8WvHX0aVC4jKq5AE8vXN3eGxyFcMo37rp04V_nZNDdbVwy36SMb3G9iAefH74aRSwOXY1PM6XV0QIdzFe6_GVqb4FFyEsgdmlz7uSDUC4ht6DTaNY-Yr9dxCBu3peYZeA1K6D7P4Q8rtzkzEkVrCYX4dKiLQFGiECuN&key=AIzaSyBenOSRj_n3bCTZcdqOmqnnBmCEsi1kOyI",
+      관덕정성지:
+        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=AdDdOWohGU_p7dLOYPled12cR8gct9WyD55JD6NK2iLww_mssegWiCNRAQVe7khamIGTIPkhg2rcEKGWRX7RouXLKMOEabvhM56OQhI3bfD5hrVn0uEeCVIU37D63BuSQJ_hgFRdzagONRPNOqedtIDhG0qxkxonI_6yq3nOAI92VIFhFv0_&key=AIzaSyBenOSRj_n3bCTZcdqOmqnnBmCEsi1kOyI",
+      제주민속관광타운:
+        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=AdDdOWrJVYvkRNj22WQQN1DiFZf8Yrz4Kc6Lqeog2CcVRrXgADC4T8FAIfxlC3r9Z5UmtyqKa19UZXNG2MERP-YPfJkDox3IruuK3hJsa1LLoedLLNWNupqCj2iJ6yhR83pYl9DtiF65T_yewNSJs4eDPb299nepoUMQvXIZO4gDX4MXpcv7&key=AIzaSyBenOSRj_n3bCTZcdqOmqnnBmCEsi1kOyI",
+    };
+
     const processedPlaces = Object.entries(placesData).map(
       ([dayKey, spots]) => {
         const validSpots = Array.isArray(spots)
@@ -72,7 +86,7 @@ function TravelSummary() {
                 ? spot.address || "주소 정보 없음"
                 : spot.location || "주소 정보 없음",
               category: spot.category || "카테고리 없음",
-              imageUrl: spot.imageUrl || null, // imageUrl 그대로 사용
+              imageUrl: imageMapping[spot.name] || spot.imageUrl || null, // 매핑된 이미지 URL 적용
             }))
           : [];
         return {
