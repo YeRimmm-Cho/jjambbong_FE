@@ -172,7 +172,6 @@ final_template = '''
 location_template = '''
             # 입력 정보
             여행 일정 : {travel_plan}
-            메타데이터 : {metadata}
 
             # 장소 분류
             - 관광지
@@ -180,9 +179,11 @@ location_template = '''
             - 카페
 
             # 행동 지침
-            너는 입력받은 여행 일정과 메타데이터를 바탕으로 여행 일자별로 장소 정보를 추출하고,
-            각 장소의 이름, 도로명 주소, 위도, 경도, 분류를 JSON 형식으로 반환해야 해.
+            너는 입력을 받은 여행 일정에서 여행 일자별로 장소 정보를 추출하고,
+            각 장소의 이름, 도로명 주소, 위도, 경도, 분류를 아래의 JSON 형식으로 반환해야 해.
             그리고 여행을 가장 잘 설명할 수 있는 해시태그를 만들어서 반환해.
+            해시태그가 영어면 안돼. 한글로 해야해.
+            #JejuTravel #CultureExperiences #DeliciousFood 이런 식으로 하면 안돼.
 
             # JSON 형식
             {{
@@ -201,6 +202,7 @@ location_template = '''
 
             반드시 JSON 형식만 반환하고, 다른 텍스트는 포함하지 마.
             '''
+
 
 
 location_prompt = PromptTemplate(
