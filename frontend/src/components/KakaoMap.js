@@ -132,7 +132,7 @@ function KakaoMap() {
 
   return (
     <Map
-      center={positions[0]?.latlng || { lat: 37.5665, lng: 126.978 }}
+      center={positions[0]?.latlng || { lat: 33.3617, lng: 126.5292 }}
       style={{ width: "100%", height: "100%" }}
       level={9}
     >
