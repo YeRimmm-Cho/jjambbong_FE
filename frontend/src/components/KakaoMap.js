@@ -137,7 +137,7 @@ function KakaoMap() {
       level={9}
     >
       {/* PolylineComponent: 마커를 잇는 선 */}
-      {positions.length > 1 && <PolylineComponent positions={positions} />}
+      {/* {positions.length > 1 && <PolylineComponent positions={positions} />} */}
 
       {/* MapMarker: 마커 표시 및 마우스 오버 시 인포텍스트 표시 */}
       {positions.map((position, index) => (
