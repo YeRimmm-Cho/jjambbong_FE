@@ -11,11 +11,12 @@
 ---
 
 [1. 팀원](#팀원)<br>
-[2. 프로젝트 개요](#프로젝트-개요)<br>
-[3. 프로젝트 구조](#프로젝트-구조)<br>
-[4. 기술 스택](#기술-스택)<br>
-
-
+[2. 프로젝트 소개](#프로젝트-소개)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.1. 프로젝트 구조](#프로젝트-구조)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[2.2. 기술 스택](#기술-스택)<br>
+[3. 협업 규칙](#협업-규칙)<br>
+[4. 추가자료](#추가자료)<br>
+<br><br>
 
 
 ## 🍊팀원
@@ -39,31 +40,25 @@
 [목차로](#목차)
 
 </div>
-<br>
+<br><br>
 
-
-
-
-## 🍊LLM 기반 제주도 여행 계획 추천 서비스 - "탐라, 탐나"🍊
-
----
-### 🍊개요
+### 🍊 개요
 - LLM과 RAG를 결하여 제주도를 여행하는 사용자들이 개인의 취향과 필요에 맞춘 여행 계획을 쉽게 세우고 실행할 수 있도록 돕는 플랫폼 개발<br><br>
 
-### 🍊개발목표
+### 🍊 개발목표
 - 사용자 중심의 맞춤형 여행 일정 추천 서비스 제공
 - 여행 일정 관리의 편의성 제공
 - 최신 데이터와 LLM의 결합으로 신뢰도 강화<br><br>
 
-### 🍊주요 기능
+### 🍊 주요 기능
 - **사용자 맞춤형 여행 추천**
   - 사용자가 입력한 여행 정보(여행 기간, 동반자, 선호 테마 등)를 바탕으로 페르소나가 부여된 LLM이 여행 일정을 추천
   - 실시간 대화형 인터페이스를 통해 추천받은 일정 수정 및 상호작용 가능<br><br>
-  
+
 - **RAG(Retrieval-Augmented Generation) 기반 장소 데이터 활용**
   - 크롤링한 데이터를 기반으로 한 최신 장소 정보 제공
   - RAG 기술을 사용하여 데이터베이스에서 관련 정보를 검색하고 LLM이 자연어로 여행 일정 생성<br><br>
-  
+
 - **세부 일정 및 경로 생성**
   - 추천된 여행지에 경로 제공<br><br>
 
@@ -71,12 +66,47 @@
   - 생성된 여행 일정을 사용자가 저장할 수 있는 기능 지원
   - 저장된 일정을 사용자가 언제든 다시 확인 가능
 
+<br><br>
+
+## 🖥️ 주요 화면 구성
+
+<table>
+  <tr>
+    <th>사용자 초기 입력 화면</th>
+    <th>일정 추천 화면</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/ff3d1b71-f28a-4883-9961-9fe1d18addc5" alt="사용자 초기 입력 화면" width="400"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/5177b7ce-d49d-4f64-8788-85fe0a61e877" alt="일정 추천 화면" width="400"></td>
+  </tr>
+  <tr>
+    <th>상세 일정 화면</th>
+    <th>길찾기 화면</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/477f37ee-7fe3-4bfc-9fa8-155027865a08" alt="상세 일정 화면" width="400"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/61fce3c3-f302-44e9-9ff4-37d417dd4710" alt="길찾기 화면" width="400"></td>
+  </tr>
+    <tr>
+    <th>일정 확정 화면</th>
+    <th>마이페이지 일정 목록 화면</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/6d735b02-6c10-4c21-9162-f55764198fff" alt="일정 확정 화면" width="300"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/44de33be-60f4-4a68-b12b-756a8a2212fe" alt=마이페이지 일정 목록 화면" width="300"></td>
+  </tr>
+</table>
+
 <br>
 
-## 프로젝트 구조
+🔗 [**시연 동영상 링크**](https://youtu.be/xXba5srjkrQ)
+
+<br><br>
+
+## 📂 프로젝트 구조
 
 ---
-
+### ✔️Back-end
 ```
 2024-2-SCS4031-jjambbong-3
 ├── .github
@@ -97,14 +127,38 @@
 ├── requirements.txt
 ├── .env
 
+
 ```
-<div align="right">
+### ✔️Front-end
+```
+frontend
+ ┣ node_modules
+ ┣ public
+ ┃ ┣ mockdata
+ ┃ ┣ favicon.ico
+ ┃ ┣ index.html
+ ┃ ┣ logo.svg
+ ┃ ┗ manifest.json
+ ┣ src
+ ┃ ┣ api        # API 연결 코드 모음
+ ┃ ┣ assets     # 사용 이미지 및 아이콘 모음
+ ┃ ┃ ┣ fonts    # 사용 폰트
+ ┃ ┃ ┣ images
+ ┃ ┃ ┗ logo.svg
+ ┃ ┣ components		  # 재사용 가능 컴포넌트 모음
+ ┃ ┣ pages	        # 페이지 모음
+ ┃ ┣ App.js
+ ┃ ┣ index.js
+ ┃ ┣ setupProxy.js
+ ┃ ┗ url.txt
+ ┣ .gitignore
+ ┣ package-lock.json
+ ┣ package.json
+ ┗ yarn.lock
+```
+<br><br>
 
-[목차로](#목차)
-
-</div>
-
-
+## 🛠️ 기술 스택
 
 ## 기술 스택
 
@@ -187,11 +241,72 @@
 
 </div>
 
-
-## 참고자료
+## 협업 규칙
 
 ---
 
-[노션 회의록 바로가기](https://meadow-cast-ab6.notion.site/819004d3d6a94c39b9271febe71a94ee?pvs=4)
+### 🍊Branch 규칙
+- 메인 브랜치와 기능별 브랜치를 구분하여 사용
+- `main`: 배포 가능한 상태의 코드만을 관리하는 브랜치
+- `[#기능이슈번호]-feat-[#파트]-[#기능명]`: 파트와 기능별로 브랜치를 생성하여 작업</br>
+  예) `15-feat-BE-agentpersona`
+
+### 🍊commit 규칙
+- 커밋 메시지는 다음과 같은 형식으로 작성
+  ```
+  convention:[#파트] 커밋메시지
+  예) feat:[BE] 로그인 API 구현
+  ```
+- 깃 컨벤션</br>
+  - `feat`: 새로운 기능 추가
+  - `fix`: 버그 수정
+  - `docs`: 문서 수정
+  - `style`: 코드 포맷팅, 세미콜론 누락, 코드 변경이 없는 경우
+  - `test`: 테스트 코드, 리팩토링 테스트 코드 추가
+  - `design`: 디자인 관련 수정
+  - `refactor`: 코드 리팩토링
+  - `remove`: 파일 또는 코드 삭제
+  - `rename`: 파일 또는 코드명 변경
+
+### 🍊PR 규칙
+- 템플릿을 사용하여 PR을 작성: [PR 템플릿 바로가기](https://github.com/CSID-DGU/2024-2-SCS4031-jjambbong-3/blob/main/.github/pull_request_template.md)
+- 기능 이슈번호에 따라 PR을 상세하게 작성하도록 하였음
+
+### 🍊Issue 규칙
+- 템플릿을 사용하여 Issue를 작성: [Issue 템플릿 바로가기](https://github.com/CSID-DGU/2024-2-SCS4031-jjambbong-3/tree/main/.github/ISSUE_TEMPLATE)
+- PR에 해당하는 이슈번호를 작성하여 PR과 이슈를 연결
 
 
+
+<div align="right">
+
+[목차로](#목차)
+
+</div>
+
+## 추가자료
+
+---
+
+### 프로젝트 관리
+- 회의록 바로가기: [노션 회의록 바로가기](https://meadow-cast-ab6.notion.site/819004d3d6a94c39b9271febe71a94ee?pvs=4)</br>
+- 프로젝트 일정 관리: [간트차트 바로가기](https://docs.google.com/spreadsheets/d/1pmHWCLUkOmYGtPjWniW8xUe0MbYlfN0K/edit?gid=1439925983#gid=1439925983)
+
+
+### 발표자료 및 계획서와 보고서
+- 수행계획서: [수행계획서 바로보기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%88%98%ED%96%89%EA%B3%84%ED%9A%8D%EC%84%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
+- 최종보고서: [최종보고서 바로보기](
+- 제안발표: [제안발표자료 바로보기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%A0%9C%EC%95%88%EB%B0%9C%ED%91%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
+- 중간발표: [중간발표자료 바로보기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%A4%91%EA%B0%84%EB%B0%9C%ED%91%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
+- 최종발표: [최종발표자료 바로보기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%B5%9C%EC%A2%85%EB%B0%9C%ED%91%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
+- 특허명세서: [특허명세서 바로보기](
+
+### 프로젝트 진행 관련 자료
+- 기능명세서: [기능명세서 바로가기](https://meadow-cast-ab6.notion.site/15c2184fcc7f8064af2bcdaf2561bf32?pvs=4)
+
+
+<div align="right">
+
+[목차로](#목차)
+
+</div>
