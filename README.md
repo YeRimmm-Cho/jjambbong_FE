@@ -1,13 +1,10 @@
 # 2024-2-SCS4031-jjambbong-3
 
----
-
 융합캡스톤디자인 짬뽕(S3)의 레파지토리입니다.
+<br><br>
 
+## 🤝 팀원
 
-## 팀원
-
----
 |<img src="https://avatars.githubusercontent.com/u/144208568?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/155754445?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/162420581?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/144078388?v=4" width="150" height="150"/>|
 |:-:|:-:|:-:|:-:|
 |김수현[@SuHyunKKim](https://github.com/SuHyunKKim) |서가은[@gaaaani](https://github.com/gaaaani)|이현종[@HyunJong00](https://github.com/HyunJong00)|조예림[@YeRimmm-Cho](https://github.com/YeRimmm-Cho)|
@@ -23,18 +20,17 @@
 팀원 | 조예림 | 2020111500 | 회계학과 | 융합소프트웨어 
 <br>
 
-## 🍊LLM 기반 제주도 여행 계획 추천 서비스 - "탐라, 탐나"🍊
+## 🍊 LLM 기반 제주도 여행 계획 추천 서비스 - "탐라, 탐나" 🍊
 
----
-### 🍊개요
+### 🍊 개요
 - LLM과 RAG를 결하여 제주도를 여행하는 사용자들이 개인의 취향과 필요에 맞춘 여행 계획을 쉽게 세우고 실행할 수 있도록 돕는 플랫폼 개발<br><br>
 
-### 🍊개발목표
+### 🍊 개발목표
 - 사용자 중심의 맞춤형 여행 일정 추천 서비스 제공
 - 여행 일정 관리의 편의성 제공
 - 최신 데이터와 LLM의 결합으로 신뢰도 강화<br><br>
 
-### 🍊주요 기능
+### 🍊 주요 기능
 - **사용자 맞춤형 여행 추천**
   - 사용자가 입력한 여행 정보(여행 기간, 동반자, 선호 테마 등)를 바탕으로 페르소나가 부여된 LLM이 여행 일정을 추천
   - 실시간 대화형 인터페이스를 통해 추천받은 일정 수정 및 상호작용 가능<br><br>
@@ -50,12 +46,47 @@
   - 생성된 여행 일정을 사용자가 저장할 수 있는 기능 지원
   - 저장된 일정을 사용자가 언제든 다시 확인 가능
 
+<br><br>
+
+## 🖥️ 주요 화면 구성
+
+<table>
+  <tr>
+    <th>사용자 초기 입력 화면</th>
+    <th>일정 추천 화면</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/ff3d1b71-f28a-4883-9961-9fe1d18addc5" alt="사용자 초기 입력 화면" width="400"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/5177b7ce-d49d-4f64-8788-85fe0a61e877" alt="일정 추천 화면" width="400"></td>
+  </tr>
+  <tr>
+    <th>상세 일정 화면</th>
+    <th>길찾기 화면</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/477f37ee-7fe3-4bfc-9fa8-155027865a08" alt="상세 일정 화면" width="400"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/61fce3c3-f302-44e9-9ff4-37d417dd4710" alt="길찾기 화면" width="400"></td>
+  </tr>
+    <tr>
+    <th>일정 확정 화면</th>
+    <th>마이페이지 일정 목록 화면</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/6d735b02-6c10-4c21-9162-f55764198fff" alt="일정 확정 화면" width="300"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/44de33be-60f4-4a68-b12b-756a8a2212fe" alt=마이페이지 일정 목록 화면" width="300"></td>
+  </tr>
+</table>
+
 <br>
 
-## 프로젝트 구조
+🔗 [**시연 동영상 링크**](https://youtu.be/xXba5srjkrQ)
+
+<br><br>
+
+## 📂 프로젝트 구조
 
 ---
-
+### ✔️Back-end
 ```
 2024-2-SCS4031-jjambbong-3
 ├── .github
@@ -78,5 +109,35 @@
 
 
 ```
-
-
+### ✔️Front-end
+```
+frontend
+ ┣ node_modules
+ ┣ public
+ ┃ ┣ mockdata
+ ┃ ┣ favicon.ico
+ ┃ ┣ index.html
+ ┃ ┣ logo.svg
+ ┃ ┗ manifest.json
+ ┣ src
+ ┃ ┣ api        # API 연결 코드 모음
+ ┃ ┣ assets     # 사용 이미지 및 아이콘 모음
+ ┃ ┃ ┣ fonts    # 사용 폰트
+ ┃ ┃ ┣ images
+ ┃ ┃ ┗ logo.svg
+ ┃ ┣ components		  # 재사용 가능 컴포넌트 모음
+ ┃ ┣ pages	        # 페이지 모음
+ ┃ ┣ App.js
+ ┃ ┣ index.js
+ ┃ ┣ setupProxy.js
+ ┃ ┗ url.txt
+ ┣ .gitignore
+ ┣ package-lock.json
+ ┣ package.json
+ ┗ yarn.lock
+```
+<br><br>
+## 🛠️ 기술 스택
+### ✔️Front-end
+<img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=HTML5&logoColor=white"><img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=CSS3&logoColor=white"><img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white"><img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=black">
+### ✔️Back-end
