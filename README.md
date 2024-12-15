@@ -1,26 +1,28 @@
 # 🍊당신의 제주도 여행을 탐라, 탐나와 함께.
+---
 ![Group 64746](https://github.com/user-attachments/assets/c1597f72-1208-46fd-aca1-7857fe7dbd13)
 
 
 
 ## 목차
-[1. 팀원](#🤝-팀원)<br>
-[2. 프로젝트 소개](#🍊-프로젝트-소개-🍊)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[2.1. 주요 화면 구성](#🖥️-주요-화면-구성)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[2.2. 프로젝트 구조](#📂-프로젝트-구조)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;[2.3. 기술 스택](#🛠️-기술-스택)<br>
-[3. 협업 규칙](#협업-규칙)<br>
-[4. 추가자료](#추가자료)<br>
+---
+[1. 팀원](#-🤝-팀원)
+[2. 프로젝트 소개](#-🍊-프로젝트-소개-🍊)
+&nbsp;&nbsp;&nbsp;&nbsp;[2.1. 주요 화면 구성](#-🖥️-주요-화면-구성)
+&nbsp;&nbsp;&nbsp;&nbsp;[2.2. 프로젝트 구조](#-📂-프로젝트-구조)
+&nbsp;&nbsp;&nbsp;&nbsp;[2.3. 기술 스택](#-🛠️-기술-스택)
+[3. 협업 규칙](#협업-규칙)
+[4. 시작 가이드](#시작-가이드)
+[5. 추가 자료](#추가자료)
 <br><br>
 
 ## 🤝 팀원
-
+---
 |<img src="https://avatars.githubusercontent.com/u/144208568?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/155754445?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/162420581?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/144078388?v=4" width="150" height="150"/>|
 |:-:|:-:|:-:|:-:|
 |김수현[@SuHyunKKim](https://github.com/SuHyunKKim) |서가은[@gaaaani](https://github.com/gaaaani)|이현종[@HyunJong00](https://github.com/HyunJong00)|조예림[@YeRimmm-Cho](https://github.com/YeRimmm-Cho)|
 |백엔드 |백엔드 |프론트엔드 |프론트엔드 |
 
-<br>
 
 구분 | 성명 | 학번 | 소속학과 | 연계전공
 ------|-------|-------|-------|-------
@@ -28,23 +30,24 @@
 팀원 | 서가은 | 2021110261 | 통계학과 | 융합소프트웨어      
 팀원 | 이현종 | 2019111655 | 바이오환경과학과 | 융합소프트웨어 
 팀원 | 조예림 | 2020111500 | 회계학과 | 융합소프트웨어 
-<br>
+
+<br><br>
+
+
 
 ## 🍊 프로젝트 소개 🍊
-
+---
 ### 🍊 LLM 기반 제주도 여행 계획 추천 서비스 "탐라, 탐나"
-- LLM과 RAG를 결하여 제주도를 여행하는 사용자들이 개인의 취향과 필요에 맞춘 여행 계획을 쉽게 세우고 실행할 수 있도록 돕는 플랫폼 개발<br><br>
-
+- LLM과 RAG를 결하여 제주도를 여행하는 사용자들이 개인의 취향과 필요에 맞춘 여행 계획을 쉽게 세우고 실행할 수 있도록 돕는 플랫폼 개발<br>
 ### 🍊 개발목표
 - 사용자 중심의 맞춤형 여행 일정 추천 서비스 제공
 - 여행 일정 관리의 편의성 제공
-- 최신 데이터와 LLM의 결합으로 신뢰도 강화<br><br>
+- 최신 데이터와 LLM의 결합으로 신뢰도 강화<br>
 
 ### 🍊 주요 기능
 - **사용자 맞춤형 여행 추천**
   - 사용자가 입력한 여행 정보(여행 기간, 동반자, 선호 테마 등)를 바탕으로 페르소나가 부여된 LLM이 여행 일정을 추천
   - 실시간 대화형 인터페이스를 통해 추천받은 일정 수정 및 상호작용 가능<br><br>
-
 - **RAG(Retrieval-Augmented Generation) 기반 장소 데이터 활용**
   - 크롤링한 데이터를 기반으로 한 최신 장소 정보 제공
   - RAG 기술을 사용하여 데이터베이스에서 관련 정보를 검색하고 LLM이 자연어로 여행 일정 생성<br><br>
@@ -54,12 +57,10 @@
 
 - **여행 일정 저장 및 관리**
   - 생성된 여행 일정을 사용자가 저장할 수 있는 기능 지원
-  - 저장된 일정을 사용자가 언제든 다시 확인 가능
-
-<br><br>
+  - 저장된 일정을 사용자가 언제든 다시 확인 가능<br><br>
 
 ## 🖥️ 주요 화면 구성
-
+---
 <table>
   <tr>
     <th>사용자 초기 입력 화면</th>
@@ -89,63 +90,72 @@
 
 <br>
 
+#### ✔️시연 영상 링크
 🔗 [**시연 동영상 링크**](https://youtu.be/xXba5srjkrQ)
 
 <br><br>
+<div align="right">
+
+[목차로](#목차)
+
+</div>
 
 ## 📂 프로젝트 구조
+---
 ### ✔️Back-end
 ```
 2024-2-SCS4031-jjambbong-3
-├── .github
-├── .idea
-├── .vscode
-├── frontend
+├── agentPersona           # LLM 모델 디렉토리
+│   ├── tamtam             # 프롬프트 템플릿, ai api, 실험 폴더
+│   ├── venv               # 이 루트에 가상환경 생성
+│   ├── app4.py            # 메인 flask 어플리케이션
+│   ├── requirements.txt
+│   ├── .env
 ├── server
 │   ├── src
 │   │   ├── main
-│   │   │   ├── java.com.capstone.server
-│   │   │   │ 
-│   │   │   ├── python
-│   │   │   │   ├── app.py
-│   │   │   ├── resources
-├── PinecornDB
-├── venv
-├── README.md
-├── requirements.txt
-├── .env
-
-
+│   │   │   ├── java.com.capstone.server  # 스프링부트 모듈 파일 폴더
+│   │   │   ├── resources  # 어플리케이션 properties
+│   ├── build.gradle       # gradle 빌드 파일
+├── data
+│   ├── testdb.sqlite      # 프로젝트 DB
 ```
 ### ✔️Front-end
 ```
 frontend
- ┣ node_modules
- ┣ public
- ┃ ┣ mockdata
- ┃ ┣ favicon.ico
- ┃ ┣ index.html
- ┃ ┣ logo.svg
- ┃ ┗ manifest.json
- ┣ src
- ┃ ┣ api        # API 연결 코드 모음
- ┃ ┣ assets     # 사용 이미지 및 아이콘 모음
- ┃ ┃ ┣ fonts    # 사용 폰트
- ┃ ┃ ┣ images
- ┃ ┃ ┗ logo.svg
- ┃ ┣ components		  # 재사용 가능 컴포넌트 모음
- ┃ ┣ pages	        # 페이지 모음
- ┃ ┣ App.js
- ┃ ┣ index.js
- ┃ ┣ setupProxy.js
- ┃ ┗ url.txt
- ┣ .gitignore
- ┣ package-lock.json
- ┣ package.json
- ┗ yarn.lock
+├── node_modules
+├── public
+│   ├── mockdata
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── logo.svg
+│   ├── manifest.json
+├── src
+│   ├── api             # API 연결 코드 모음
+│   ├── assets          # 사용 이미지 및 아이콘 모음
+│   │   ├── fonts       # 사용 폰트
+│   │   ├── images
+│   │   ├── logo.svg
+│   ├── components		# 재사용 가능 컴포넌트 모음
+│   ├── pages	        # 페이지 모음
+│   ├── App.js
+│   ├── index.js
+│   ├── setupProxy.js
+│   ├── url.txt
+├── .gitignore
+├── package-lock.json
+├── package.json
+├── yarn.lock
 ```
-<br><br>
+<br>
+<div align="right">
+
+[목차로](#목차)
+
+</div>
+
 ## 🛠️ 기술 스택
+---
 <div style="display:flex; flex-direction:column; align-items:flex-start;">
     <!-- Frontend -->
     <p><strong>Frontend</strong></p>
@@ -217,9 +227,14 @@ frontend
       <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
     </div>
 </div>
+<br>
+<div align="right">
 
+[목차로](#목차)
+</div>
 
 ## 협업 규칙
+---
 ### 🍊Branch 규칙
 - 메인 브랜치와 기능별 브랜치를 구분하여 사용
 - `main`: 배포 가능한 상태의 코드만을 관리하는 브랜치
@@ -250,8 +265,59 @@ frontend
 ### 🍊Issue 규칙
 - 템플릿을 사용하여 Issue를 작성: [Issue 템플릿 바로가기](https://github.com/CSID-DGU/2024-2-SCS4031-jjambbong-3/tree/main/.github/ISSUE_TEMPLATE)
 - PR에 해당하는 이슈번호를 작성하여 PR과 이슈를 연결
+<br>
+<div align="right">
 
+[목차로](#목차)
 
+</div>
+
+## 시작 가이드
+---
+### Requirements
+로컬 환경에서 빌드하고 실행하려면 다음이 필요함:
+```
+* Intellij - for Springboot
+* Ngrok
+* Front, Back .env 파일 (요청시 제공)
+```
+
+### 실행 방법
+- Springboot, flask, react 총 3개의 프로젝트를 실행해야함
+- Intellij 상에서 리엑트와 플라스크를 위한 두개의 터미널, 총 2개를 실행해야함
+![image](https://github.com/user-attachments/assets/7561f579-2957-4ae3-9e4b-abcfbbc7210e)
+![image](https://github.com/user-attachments/assets/1a7f64b0-051d-47e5-8a11-5a08666fe17b)
+##### 1-1. 백엔드 가상환경 생성 및 실행
+```
+cd ./agentPersona
+python -m venv [가상환경이름]
+./venv/Scripts/activate
+```
+##### 1.2 라이브러리 설치
+```
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+pip install -r requirements.txt --no-deps
+```
+##### 1.3플라스크 프로젝트 실행
+```
+python app4.py
+```
+##### 2.1 프런트 프로젝트 라이브러리 설치
+```
+cd ./frontend # 프로젝트 루트 디렉토리 기준
+npm install
+```
+##### 2.2 프런트 프로젝트 실행
+```
+npm start
+```
+##### 3.1 스프링 프로젝트 실행
+- server 디렉토리의 gradle 파일 빌드 및 실행
+![image](https://github.com/user-attachments/assets/43a6f66f-6261-41ce-ae8b-b2b629e7a409)
+![image](https://github.com/user-attachments/assets/e4f21c20-9ec0-49be-b108-27d3ca2b674e)
+
+##### 4. 구체적인 실행 방법 링크
+(작성예정)
 
 <div align="right">
 
@@ -259,10 +325,14 @@ frontend
 
 </div>
 
+
+
 ## 추가자료
+---
 ### 프로젝트 관리
-- 회의록 바로가기: [노션 회의록 바로가기](https://meadow-cast-ab6.notion.site/819004d3d6a94c39b9271febe71a94ee?pvs=4)</br>
+- 회의록 바로가기: [노션 회의록 바로가기](https://meadow-cast-ab6.notion.site/15c2184fcc7f8017a4c1d2e5902bbcba?v=15c2184fcc7f81dc94db000c014875ba&pvs=4)</br>
 - 프로젝트 일정 관리: [간트차트 바로가기](https://docs.google.com/spreadsheets/d/1pmHWCLUkOmYGtPjWniW8xUe0MbYlfN0K/edit?gid=1439925983#gid=1439925983)
+
 
 
 ### 발표자료 및 계획서와 보고서
@@ -275,6 +345,7 @@ frontend
 
 ### 프로젝트 진행 관련 자료
 - 기능명세서: [기능명세서 바로가기](https://meadow-cast-ab6.notion.site/15c2184fcc7f8064af2bcdaf2561bf32?pvs=4)
+- API 명세서: [API 명세서 바로가기](https://meadow-cast-ab6.notion.site/API-4f8a75307f27427297e140102ffc0222?pvs=4)
 
 
 <div align="right">
