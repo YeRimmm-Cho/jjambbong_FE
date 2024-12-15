@@ -18,7 +18,6 @@ import ReactMarkdown from "react-markdown";
 import GooglePlacesImageUpdater from "../api/GooglePlacesImageFetcher";
 
 function NewChat() {
-  const [forceRender, setForceRender] = useState(false); // 렌더링 트리거 상태
   const [places, setPlaces] = useState(() => {
     try {
       const storedPlaces = sessionStorage.getItem("places");

@@ -1,14 +1,13 @@
 import React from "react";
 import styles from "./TravelSpot.module.css";
-
+import defaultImageUrl from "../assets/images/jeju.png";
 function TravelSpot({ spotData }) {
   const { imageUrl, name, category, address } = spotData;
-
   return (
     <div className={styles.spotContainer}>
       {/* 이미지 표시 */}
       <img
-        src={imageUrl || "https://via.placeholder.com/150"} // 이미지가 없으면 기본 이미지
+        src={imageUrl || defaultImageUrl} // 이미지가 없으면 기본 이미지
         alt={name || "Travel Spot"} // 대체 텍스트
         className={styles.image}
       />
