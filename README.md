@@ -53,8 +53,8 @@
     <th align="center"><img src="https://github.com/user-attachments/assets/0b9ab0a7-14a8-4731-844a-bde95aa6dc89" alt="사용자 초기 입력 화면" width="400"></th>
   </tr>
   <tr>
-    <td><center>컨슈머 인사이트 여행 도표</td>
-    <td><center>관광 트랜드 평가</td>
+    <td><center>컨슈머 인사이트 여행 도표</center></td>
+    <td><center>관광 트랜드 평가</center></td>
   </tr>
 </table>
 
