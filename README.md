@@ -424,7 +424,6 @@ npm start
 
 <h2 id="5.-추가-자료">📑 추가 자료</h2>
 
-## 추가자료
 ### 프로젝트 관리
 - 회의록 바로가기: [노션 회의록 바로가기](https://meadow-cast-ab6.notion.site/15c2184fcc7f8017a4c1d2e5902bbcba?v=15c2184fcc7f81dc94db000c014875ba&pvs=4)</br>
 - 프로젝트 일정 관리: [간트차트 바로가기](https://docs.google.com/spreadsheets/d/1pmHWCLUkOmYGtPjWniW8xUe0MbYlfN0K/edit?gid=1439925983#gid=1439925983)
