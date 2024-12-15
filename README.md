@@ -1,4 +1,7 @@
-# 🍊당신의 제주도 여행을 탐라, 탐나와 함께.
+<img src="https://capsule-render.vercel.app/api?type=waving&color=auto&height=200&section=header&text=🍊%20당신의%20제주도%20여행을%20탐라,%20탐나와%20함께%20🍊&fontSize=40" />
+
+
+
 ![Group 64746](https://github.com/user-attachments/assets/c1597f72-1208-46fd-aca1-7857fe7dbd13)
 
 
