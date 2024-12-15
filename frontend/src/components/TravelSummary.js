@@ -63,7 +63,7 @@ function TravelSummary() {
       return;
     }
 
-    // 이미지 매핑 데이터
+    // 이미지 매핑 안될때 일부 이미지의 url
     const imageMapping = {
       황우지해안:
         "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=AdDdOWpJUNQJy-60SccLIhgElDKPvhoXgQ4heqyyP1kl9ZACLtIEQoqsuTFJmGO6TpLvfj011NF7TEA5pJWJkiABZDUrDTT7hv8y8L2D-5Yqjrk0A2AEZzzDRsEW4q76NQPGvV14x3yv_dMUtLYDObvVEStv7UWLkHxoaMoUJRyHYu8bZw0O&key=AIzaSyBenOSRj_n3bCTZcdqOmqnnBmCEsi1kOyI",
