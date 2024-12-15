@@ -6,7 +6,7 @@
 
 
 
-## 목차
+## 📌 목차
 [1. 팀원](#-🤝-팀원)<br>
 [2. 프로젝트 소개](#-🍊-프로젝트-소개-🍊)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[2.1. 주요 화면 구성](#-🖥️-주요-화면-구성)<br>
@@ -319,7 +319,7 @@ frontend
 [목차로](#목차)
 </div>
 
-## 협업 규칙
+## 📜 협업 규칙
 ### 🍊Branch 규칙
 - 메인 브랜치와 기능별 브랜치를 구분하여 사용
 - `main`: 배포 가능한 상태의 코드만을 관리하는 브랜치
@@ -357,7 +357,7 @@ frontend
 
 </div>
 
-## 시작 가이드
+## ⚙️ 시작 가이드
 ### Requirements
 로컬 환경에서 빌드하고 실행하려면 다음이 필요함:
 ```
@@ -411,7 +411,7 @@ npm start
 
 
 
-## 추가자료
+## 👀 추가자료
 ### 프로젝트 관리
 - 회의록 바로가기: [노션 회의록 바로가기](https://meadow-cast-ab6.notion.site/15c2184fcc7f8017a4c1d2e5902bbcba?v=15c2184fcc7f81dc94db000c014875ba&pvs=4)</br>
 - 프로젝트 일정 관리: [간트차트 바로가기](https://docs.google.com/spreadsheets/d/1pmHWCLUkOmYGtPjWniW8xUe0MbYlfN0K/edit?gid=1439925983#gid=1439925983)
