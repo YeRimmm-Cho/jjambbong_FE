@@ -432,12 +432,12 @@ npm start
 
 
 ### 발표자료 및 계획서와 보고서
-- 수행계획서: [수행계획서 바로보기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%88%98%ED%96%89%EA%B3%84%ED%9A%8D%EC%84%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
-- 최종보고서: [최종보고서 바로보기](
-- 제안발표: [제안발표자료 바로보기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%A0%9C%EC%95%88%EB%B0%9C%ED%91%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
-- 중간발표: [중간발표자료 바로보기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%A4%91%EA%B0%84%EB%B0%9C%ED%91%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
-- 최종발표: [최종발표자료 바로보기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%B5%9C%EC%A2%85%EB%B0%9C%ED%91%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
-- 특허명세서: [특허명세서 바로보기](
+- 수행계획서: [수행계획서 바로가기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%88%98%ED%96%89%EA%B3%84%ED%9A%8D%EC%84%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
+- 최종보고서: [최종보고서 바로가기](https://github.com/CSID-DGU/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%B5%9C%EC%A2%85%EB%B3%B4%EA%B3%A0%EC%84%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
+- 제안발표: [제안발표자료 바로가기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%A0%9C%EC%95%88%EB%B0%9C%ED%91%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
+- 중간발표: [중간발표자료 바로가기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%A4%91%EA%B0%84%EB%B0%9C%ED%91%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
+- 최종발표: [최종발표자료 바로가기](https://github.com/SuHyunKKim/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%EC%B5%9C%EC%A2%85%EB%B0%9C%ED%91%9C_S3_%EC%A7%AC%EB%BD%95.pdf)
+- 특허명세서: [특허명세서 바로가기](https://github.com/CSID-DGU/2024-2-SCS4031-jjambbong-3/blob/main/Docs/%ED%8A%B9%ED%97%88%EB%AA%85%EC%84%B8%EC%84%9C_S3_%EC%A7%AC%EB%BD%95_%EC%B5%9C%EC%A2%85.pdf)
 
 ### 프로젝트 진행 관련 자료
 - 기능명세서: [기능명세서 바로가기](https://meadow-cast-ab6.notion.site/15c2184fcc7f8064af2bcdaf2561bf32?pvs=4)
