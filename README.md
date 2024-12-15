@@ -410,7 +410,7 @@ npm start
 ```
 #### 3.1 스프링 프로젝트 실행
 - server 디렉토리의 gradle 파일 빌드 및 실행<br>
-![image](https://github.com/user-attachments/assets/43a6f66f-6261-41ce-ae8b-b2b629e7a409)
+![image](https://github.com/user-attachments/assets/43a6f66f-6261-41ce-ae8b-b2b629e7a409)<br>
 ![image](https://github.com/user-attachments/assets/e4f21c20-9ec0-49be-b108-27d3ca2b674e)
 
 #### 4. 구체적인 실행 방법 링크
