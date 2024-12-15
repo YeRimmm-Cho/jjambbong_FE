@@ -4,8 +4,6 @@ import styles from "./TravelSpot.module.css";
 function TravelSpot({ spotData }) {
   const { imageUrl, name, category, address } = spotData;
 
-  console.log("TravelSpot spotData:", spotData); // 디버깅용 데이터 확인
-
   return (
     <div className={styles.spotContainer}>
       {/* 이미지 표시 */}
