@@ -392,7 +392,10 @@ python -m venv [가상환경이름]
 ```
 #### 1.2 라이브러리 설치
 ```
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+pip install --upgrade pip setuptools wheel && \
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu && \
+pip install flask flask-cors python-dotenv flask-sqlalchemy langchain openai pinecone-client langchain-pinecone sentence-transformers pymysql && \
+pip install --upgrade langchain langchain-community && \
 pip install -r requirements.txt --no-deps
 ```
 #### 1.3플라스크 프로젝트 실행
@@ -402,6 +405,7 @@ python app4.py
 #### 2.1 프런트 프로젝트 라이브러리 설치
 ```
 cd ./frontend # 프로젝트 루트 디렉토리 기준
+npm install react-scripts --save
 npm install
 ```
 #### 2.2 프런트 프로젝트 실행
