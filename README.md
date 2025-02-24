@@ -172,8 +172,8 @@
     <th>마이페이지 일정 목록 화면</th>
   </tr>
   <tr>
-    <td align="center"><img src="https://github.com/user-attachments/assets/6d735b02-6c10-4c21-9162-f55764198fff" alt="일정 확정 화면" width="300"></td>
-    <td align="center"><img src="https://github.com/user-attachments/assets/44de33be-60f4-4a68-b12b-756a8a2212fe" alt=마이페이지 일정 목록 화면" width="300"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/6d735b02-6c10-4c21-9162-f55764198fff" alt="일정 확정 화면" width="400"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/44de33be-60f4-4a68-b12b-756a8a2212fe" alt=마이페이지 일정 목록 화면" width="400"></td>
   </tr>
 </table>
 
